@@ -1,0 +1,535 @@
+<title>ระบบบริหารจัดการคดีสำนักงานกฎหมาย — ข้อเสนอหัวข้อโปรเจกต์</title>
+
+<style>
+  :root {
+    /* ---- light (default, un-stamped) ---- */
+    --paper:      #F8F7F4;
+    --card:       #FFFFFF;
+    --card-2:     #F1EFEA;
+    --ink:        #1A1719;
+    --ink-2:      #4A4247;
+    --ink-3:      #7C7176;
+    --rule:       #E0DAD6;
+    --rule-2:     #CFC7C2;
+    --seal:       #9E1B32;
+    --seal-soft:  #F3E3E5;
+    --seal-ink:   #FFFFFF;
+    --black-chip-bg:   #1A1719;
+    --black-chip-fg:   #F8F7F4;
+    --shadow:     0 1px 2px rgba(26,23,25,.05), 0 8px 24px -12px rgba(26,23,25,.18);
+
+    --font-thai: "Sukhumvit Set", "Noto Sans Thai", "Thonburi", "Leelawadee UI", system-ui, -apple-system, sans-serif;
+    --font-lat:  "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+    --s1: .5rem; --s2: .875rem; --s3: 1.5rem; --s4: 2.25rem; --s5: 3.5rem; --s6: 5.5rem;
+    --measure: 34rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:    #141215;
+      --card:     #1C191C;
+      --card-2:   #232025;
+      --ink:      #EDE8E6;
+      --ink-2:    #BFB6B4;
+      --ink-3:    #8C8083;
+      --rule:     #302B31;
+      --rule-2:   #423B42;
+      --seal:     #E0707E;
+      --seal-soft:#33212a;
+      --seal-ink: #171315;
+      --black-chip-bg: #EDE8E6;
+      --black-chip-fg: #141215;
+      --shadow:   0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper:    #141215;
+    --card:     #1C191C;
+    --card-2:   #232025;
+    --ink:      #EDE8E6;
+    --ink-2:    #BFB6B4;
+    --ink-3:    #8C8083;
+    --rule:     #302B31;
+    --rule-2:   #423B42;
+    --seal:     #E0707E;
+    --seal-soft:#33212a;
+    --seal-ink: #171315;
+    --black-chip-bg: #EDE8E6;
+    --black-chip-fg: #141215;
+    --shadow:   0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-thai);
+    font-size: 17px;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: var(--s5) var(--s3) var(--s6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s6);
+  }
+
+  /* ---------- shared type ---------- */
+  h1, h2, h3 { margin: 0; text-wrap: balance; line-height: 1.35; font-weight: 700; }
+  p { margin: 0; }
+
+  .eyebrow {
+    font-family: var(--font-lat);
+    font-size: .8rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-style: italic;
+  }
+
+  .lede { color: var(--ink-2); max-width: var(--measure); }
+
+  code, .mono {
+    font-family: var(--font-mono);
+    font-size: .9em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- section frame ---------- */
+  section { display: flex; flex-direction: column; gap: var(--s3); }
+
+  .head { display: flex; flex-direction: column; gap: var(--s1); }
+
+  .head-rule {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s2);
+    border-top: 1px solid var(--rule-2);
+    padding-top: var(--s2);
+  }
+  .head-rule .num {
+    font-family: var(--font-mono);
+    font-size: .75rem;
+    color: var(--seal);
+    letter-spacing: .1em;
+  }
+  .head-rule h2 { font-size: 1.5rem; letter-spacing: -.01em; }
+
+  /* ---------- hero ---------- */
+  .hero { display: flex; flex-direction: column; gap: var(--s3); }
+  .hero h1 {
+    font-size: clamp(2rem, 6.2vw, 3.1rem);
+    letter-spacing: -.02em;
+    line-height: 1.25;
+  }
+  .hero .sub {
+    font-family: var(--font-lat);
+    font-size: clamp(1rem, 2.4vw, 1.2rem);
+    color: var(--ink-3);
+    letter-spacing: .01em;
+  }
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s1) var(--s3);
+    padding-top: var(--s2);
+    border-top: 1px solid var(--rule);
+    font-size: .9rem;
+    color: var(--ink-3);
+  }
+  .hero-meta b { color: var(--ink-2); font-weight: 600; }
+
+  /* ---------- stamps: the black / red case numbers ---------- */
+  .stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: .5em;
+    padding: .22em .7em;
+    border-radius: 2px;
+    font-size: .95rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .04em;
+    white-space: nowrap;
+  }
+  .stamp-black { background: var(--black-chip-bg); color: var(--black-chip-fg); }
+  .stamp-red   { background: var(--seal); color: var(--seal-ink); }
+
+  .stamp-pair { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
+  .stamp-pair .arrow { color: var(--ink-3); font-family: var(--font-mono); }
+
+  /* ---------- problem list ---------- */
+  .problems { display: grid; gap: var(--s2); grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+  .problem {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--seal);
+    border-radius: 3px;
+    padding: var(--s3);
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+  }
+  .problem h3 { font-size: 1rem; }
+  .problem p { font-size: .92rem; color: var(--ink-2); line-height: 1.7; }
+
+  /* ---------- lifecycle ---------- */
+  .flow { display: flex; flex-direction: column; }
+  .step {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0 var(--s3);
+    align-items: start;
+  }
+  .marker { display: flex; flex-direction: column; align-items: center; gap: 0; height: 100%; }
+  .dot {
+    width: 11px; height: 11px; margin-top: .62rem;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--rule-2);
+    flex: none;
+    transition: background .5s ease, border-color .5s ease;
+  }
+  .step.key .dot { border-color: var(--seal); background: var(--seal); }
+  .line { width: 2px; flex: 1 1 auto; background: var(--rule); min-height: 1.5rem; }
+  .step:last-child .line { display: none; }
+
+  .step-body { padding-bottom: var(--s3); display: flex; flex-direction: column; gap: .4rem; }
+  .step-title { font-weight: 700; font-size: 1.05rem; }
+  .step-body p { color: var(--ink-2); font-size: .95rem; line-height: 1.7; }
+
+  /* ---------- billing: one instruction, three results ---------- */
+  .plans { display: grid; gap: var(--s2); grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
+  .plan {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: var(--s3);
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    box-shadow: var(--shadow);
+  }
+  .plan .kind { font-size: .95rem; font-weight: 700; }
+  .plan .formula { font-family: var(--font-mono); font-size: .82rem; color: var(--ink-3); }
+  .plan .amount {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--seal);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.01em;
+  }
+  .plan .note { font-size: .82rem; color: var(--ink-3); }
+
+  .converge {
+    display: flex; flex-direction: column; align-items: center; gap: var(--s2);
+    padding-top: var(--s1);
+  }
+  .converge .tick { font-family: var(--font-mono); color: var(--ink-3); font-size: .8rem; letter-spacing: .1em; }
+
+  .codeblock {
+    width: 100%;
+    background: var(--card-2);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: var(--s3);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: .85rem;
+    line-height: 1.7;
+    color: var(--ink);
+    white-space: pre;
+  }
+  .codeblock .cm { color: var(--ink-3); }
+  .codeblock .hl { color: var(--seal); font-weight: 600; }
+
+  .callout {
+    border-left: 3px solid var(--seal);
+    background: var(--seal-soft);
+    border-radius: 0 3px 3px 0;
+    padding: var(--s3);
+    font-size: .95rem;
+    color: var(--ink-2);
+    line-height: 1.75;
+  }
+  .callout b { color: var(--ink); }
+
+  /* ---------- layers ---------- */
+  .layers { display: flex; flex-direction: column; gap: 0; }
+  .layer {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: var(--s3);
+    align-items: baseline;
+    padding: var(--s3) 0;
+    border-top: 1px solid var(--rule);
+  }
+  .layer:last-child { border-bottom: 1px solid var(--rule); }
+  .layer .name { font-family: var(--font-mono); font-size: .85rem; color: var(--seal); }
+  .layer .what { font-size: .95rem; color: var(--ink-2); line-height: 1.7; }
+  .layer .what b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- data figures ---------- */
+  .figs { display: grid; gap: var(--s2); grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); }
+  .fig {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: var(--s3) var(--s2);
+    text-align: center;
+    display: flex; flex-direction: column; gap: .1rem;
+  }
+  .fig .n {
+    font-size: 1.9rem; font-weight: 700; letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .fig .l { font-size: .82rem; color: var(--ink-3); }
+
+  /* ---------- closing ---------- */
+  .why { display: grid; gap: var(--s2); grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+  .why div {
+    border-top: 2px solid var(--ink);
+    padding-top: var(--s2);
+    font-size: .95rem;
+    color: var(--ink-2);
+    line-height: 1.7;
+  }
+  .why b { color: var(--ink); }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    padding-top: var(--s3);
+    font-size: .85rem;
+    color: var(--ink-3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s1) var(--s3);
+    justify-content: space-between;
+  }
+
+  /* ---------- reveal ---------- */
+  .rv { opacity: 0; transform: translateY(10px); transition: opacity .6s ease, transform .6s ease; }
+  .rv.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .rv, .dot { transition: none; }
+    .rv { opacity: 1; transform: none; }
+  }
+
+  @media (max-width: 34rem) {
+    .layer { grid-template-columns: 1fr; gap: .25rem; }
+    .step { grid-template-columns: 1.75rem 1fr; gap: 0 var(--s2); }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="hero rv">
+    <p class="eyebrow">ข้อเสนอหัวข้อโปรเจกต์ · Object-Oriented Programming</p>
+    <h1>ระบบบริหารจัดการคดี<br>สำนักงานกฎหมาย</h1>
+    <p class="sub">Law Firm Case Management System</p>
+    <p class="lede">รวมข้อมูลคดี ชั่วโมงทำงานของทนาย และการออกใบแจ้งหนี้ ไว้ในระบบเดียว โดยยึด <b>หมายเลขคดี</b> เป็นกุญแจหลักแบบเดียวกับที่สำนักงานกฎหมายใช้จริง</p>
+    <div class="hero-meta">
+      <span>ผู้จัดทำ <b>นายเมทนี พูลสมบัติ</b></span>
+      <span>รหัส <b>6821500060</b></span>
+      <span>ขนาดทีม <b>1 คน</b></span>
+    </div>
+  </header>
+
+  <section class="rv">
+    <div class="head head-rule">
+      <span class="num">01</span>
+      <h2>ปัญหาที่พบ</h2>
+    </div>
+    <p class="lede">สำนักงานกฎหมายขนาดเล็ก ทนาย 3–10 คน ส่วนใหญ่ยังจดคดี ชั่วโมงทำงาน และค่าจ้าง แยกกันคนละไฟล์</p>
+    <div class="problems">
+      <div class="problem">
+        <h3>ออกใบแจ้งหนี้ผิด</h3>
+        <p>สำนักงานเดียวมีค่าจ้างหลายรูปแบบ ทั้งรายชั่วโมง เหมาจ่าย และคิดเป็นเปอร์เซ็นต์จากทุนทรัพย์ที่ชนะ คิดด้วยมือจึงตกหล่นบ่อย</p>
+      </div>
+      <div class="problem">
+        <h3>ตามอายุความไม่ทัน</h3>
+        <p>ไม่มีอะไรเตือนว่าคดีไหนใกล้ครบกำหนดยื่นฟ้อง กว่าจะรู้ก็มักสายไปแล้ว</p>
+      </div>
+      <div class="problem">
+        <h3>ไม่เห็นภาระงานทนาย</h3>
+        <p>มอบหมายคดีซ้อนกันจนบางคนงานล้น ขณะที่บางคนยังรับได้อีก</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="rv">
+    <div class="head head-rule">
+      <span class="num">02</span>
+      <h2>คดีหนึ่งเดินอย่างไรในระบบ</h2>
+    </div>
+    <p class="lede">ระบบเดินตามขั้นตอนจริงของคดี ข้ามขั้นไม่ได้ และหมายเลขคดีจะเกิดขึ้นตามจังหวะที่ศาลออกให้จริง</p>
+
+    <div class="flow">
+      <div class="step">
+        <div class="marker"><span class="dot"></span><span class="line"></span></div>
+        <div class="step-body">
+          <span class="step-title">รับเรื่อง</span>
+          <p>ลูกความเข้าปรึกษา เปิดแฟ้มคดี เลือกประเภท — แพ่ง อาญา หรือแรงงาน ระบบคำนวณค่าขึ้นศาลและวันครบอายุความให้ตามประเภทนั้น</p>
+        </div>
+      </div>
+
+      <div class="step key">
+        <div class="marker"><span class="dot"></span><span class="line"></span></div>
+        <div class="step-body">
+          <span class="step-title">ยื่นฟ้อง</span>
+          <p>ศาลรับคำฟ้องแล้วออกหมายเลขคดีดำให้ ตั้งแต่นี้ไปทุกคนในสำนักงานอ้างถึงคดีด้วยเลขนี้</p>
+          <div class="stamp-pair"><span class="stamp stamp-black">หมายเลขคดีดำ&nbsp; พ. 1234/2568</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="marker"><span class="dot"></span><span class="line"></span></div>
+        <div class="step-body">
+          <span class="step-title">สืบพยาน</span>
+          <p>ทนายที่รับผิดชอบบันทึกชั่วโมงทำงานลงคดีทุกวัน ชั่วโมงสะสมนี้คือฐานของค่าจ้างในตอนท้าย</p>
+        </div>
+      </div>
+
+      <div class="step key">
+        <div class="marker"><span class="dot"></span><span class="line"></span></div>
+        <div class="step-body">
+          <span class="step-title">ตัดสิน</span>
+          <p>ศาลมีคำพิพากษาแล้วออกหมายเลขคดีแดง ระบบไม่ยอมให้กรอกเลขนี้ก่อนคดีถึงขั้นนี้ เพราะของจริงยังไม่มีเลขให้</p>
+          <div class="stamp-pair"><span class="stamp stamp-red">หมายเลขคดีแดง&nbsp; พ. 987/2569</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="marker"><span class="dot"></span><span class="line"></span></div>
+        <div class="step-body">
+          <span class="step-title">ปิดคดี</span>
+          <p>ออกใบแจ้งหนี้ — ค่าทนายตามรูปแบบที่ตกลงกับลูกความรายนั้น บวกค่าขึ้นศาลที่จ่ายไป</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <b>ทำไมต้องยึดหมายเลขคดี</b> — หน้างานจริงไม่มีใครค้นคดีด้วยชื่อทนายหรือชื่อคู่ความเป็นอันดับแรก ทุกคนจำหมายเลขคดี ช่องค้นหาของระบบจึงรับหมายเลขคดีดำและคดีแดงก่อน พิมพ์ <span class="mono">พ. 1234/2568</span> หรือ <span class="mono">1234/2568</span> ก็เข้าหน้าคดีเดียวกัน ค้นด้วยชื่อเป็นทางเลือกรอง
+    </div>
+  </section>
+
+  <section class="rv">
+    <div class="head head-rule">
+      <span class="num">03</span>
+      <h2>หัวใจของงานนี้ในเชิง OOP</h2>
+    </div>
+    <p class="lede">ค่าทนายสามแบบ คิดคนละสูตรกันคนละทาง แต่โปรแกรมสั่งด้วยคำสั่งเดียว</p>
+
+    <div class="plans">
+      <div class="plan">
+        <span class="kind">รายชั่วโมง</span>
+        <span class="formula">rate × hours</span>
+        <span class="amount">100,000 ฿</span>
+        <span class="note">2,500 ฿ × 40 ชั่วโมง</span>
+      </div>
+      <div class="plan">
+        <span class="kind">เหมาจ่าย</span>
+        <span class="formula">fixed_amount</span>
+        <span class="amount">80,000 ฿</span>
+        <span class="note">ทำกี่ชั่วโมงก็ราคาเดิม</span>
+      </div>
+      <div class="plan">
+        <span class="kind">ร้อยละของทุนทรัพย์</span>
+        <span class="formula">percent × amount_won</span>
+        <span class="amount">200,000 ฿</span>
+        <span class="note">20% ของ 1,000,000 ฿ · แพ้คดีได้ 0 ฿</span>
+      </div>
+    </div>
+
+    <div class="converge">
+      <span class="tick">ทั้งสามแบบ ถูกเรียกด้วยบรรทัดเดียวกันนี้</span>
+      <div class="codeblock"><span class="cm"># รายได้รวมทั้งสำนักงาน</span>
+def total_revenue(self):
+    return sum(<span class="hl">c.billing_plan.calculate_fee(c)</span> for c in self.cases)</div>
+    </div>
+
+    <div class="callout">
+      ไม่มีการเช็คว่าคดีนี้คิดเงินแบบไหนด้วย <span class="mono">if-else</span> เลยสักบรรทัด — คลาสของค่าจ้างแต่ละแบบรู้สูตรของตัวเอง เพิ่มรูปแบบค่าจ้างแบบที่สี่ในอนาคต ก็ไม่ต้องแก้โค้ดตรงนี้
+    </div>
+  </section>
+
+  <section class="rv">
+    <div class="head head-rule">
+      <span class="num">04</span>
+      <h2>ภาพรวมของระบบ</h2>
+    </div>
+    <p class="lede">แบ่งเป็นสามชั้น โดยมีกฎข้อเดียวที่ถือเคร่งครัด — ชั้นที่เก็บกฎของงานกฎหมาย ห้ามรู้จักฐานข้อมูลและห้ามรู้จักหน้าจอ</p>
+
+    <div class="layers">
+      <div class="layer">
+        <span class="name">หน้าจอ</span>
+        <span class="what"><b>เว็บ</b> — หน้ารายการคดี ช่องค้นหา หน้าบันทึกชั่วโมง หน้าใบแจ้งหนี้ และหน้ารายงาน</span>
+      </div>
+      <div class="layer">
+        <span class="name">ตัวระบบ</span>
+        <span class="what"><b>Python เป็น Backend</b> — คลาสประเภทคดี คลาสรูปแบบค่าจ้าง และกฎการเปลี่ยนสถานะคดี อยู่ในชั้นนี้ทั้งหมด นี่คือส่วนที่เป็นเนื้องานของวิชา</span>
+      </div>
+      <div class="layer">
+        <span class="name">ฐานข้อมูล</span>
+        <span class="what"><b>MySQL</b> 6 ตาราง — ลูกความ ทนาย คดี การมอบหมายงาน บันทึกเวลา ใบแจ้งหนี้ โดยหมายเลขคดีดำและคดีแดงทำดัชนีไว้ เพราะเป็นช่องทางค้นหาที่ใช้บ่อยที่สุด</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="rv">
+    <div class="head head-rule">
+      <span class="num">05</span>
+      <h2>ข้อมูลที่ใช้</h2>
+    </div>
+    <p class="lede">ข้อมูลคดีจริงเป็นความลับระหว่างทนายกับลูกความ ข้อมูลในระบบจึงเป็นข้อมูลจำลองทั้งหมด ชื่อบุคคลและหมายเลขคดีสมมติขึ้นใหม่ แต่โครงสร้างอ้างอิงเอกสารที่ใช้จริง</p>
+
+    <div class="figs">
+      <div class="fig"><span class="n">60</span><span class="l">คดี</span></div>
+      <div class="fig"><span class="n">40</span><span class="l">ลูกความ</span></div>
+      <div class="fig"><span class="n">8</span><span class="l">ทนาย</span></div>
+      <div class="fig"><span class="n">500</span><span class="l">บันทึกชั่วโมง</span></div>
+    </div>
+
+    <div class="callout">
+      คดีทั้ง 60 คดีจงใจกระจายให้ครบทุกกรณี — คดีที่ยังไม่ยื่นฟ้อง คดีที่มีแต่หมายเลขคดีดำ คดีที่ตัดสินแล้วมีครบทั้งสองเลข และคดีที่ยกเลิกกลางทางซึ่งจะไม่มีหมายเลขคดีแดงตลอดไป เพื่อให้ทดสอบกฎในระบบได้ครบทุกเส้นทาง
+      <br><br>
+      ส่วนหนึ่งต่อยอดจากชุดข้อมูลที่จัดทำไว้ในวิชา Applied Machine Learning โดยนำเฉพาะลูกความที่ตัดสินใจว่าจ้างมาแปลงเป็นคดีตั้งต้น ค่าจ้างและสัดส่วนประเภทคดีจึงกระจายตัวสมจริง
+    </div>
+  </section>
+
+  <section class="rv">
+    <div class="head head-rule">
+      <span class="num">06</span>
+      <h2>ทำไมหัวข้อนี้เหมาะกับวิชา</h2>
+    </div>
+    <div class="why">
+      <div><b>คลาสลูกต่างกันที่พฤติกรรม ไม่ใช่ต่างแค่ชื่อข้อมูล</b> — คดีแต่ละประเภทคิดค่าขึ้นศาลและนับอายุความคนละแบบ ค่าจ้างแต่ละรูปแบบคิดเงินคนละสูตร</div>
+      <div><b>มีกฎที่ต้องปกป้อง</b> — สถานะคดีข้ามขั้นไม่ได้ และหมายเลขคดีแดงใส่ก่อนศาลตัดสินไม่ได้ เป็นเหตุผลจริงที่ต้องปิดข้อมูลไม่ให้แก้ตรง ๆ จากภายนอก</div>
+      <div><b>ขนาดพอดีกับหนึ่งคน</b> — 6 ตาราง คลาสหลักราวสิบคลาส ทำเสร็จได้จริงในเวลาที่มี โดยไม่ต้องตัดส่วนที่เป็นเนื้อหาของวิชาออก</div>
+    </div>
+  </section>
+
+  <footer>
+    <span>ระบบบริหารจัดการคดีสำนักงานกฎหมาย · ข้อเสนอหัวข้อโปรเจกต์</span>
+    <span>นายเมทนี พูลสมบัติ · 6821500060</span>
+  </footer>
+
+</div>
+
+<script>
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    }
+  }, { rootMargin: "0px 0px -8% 0px" });
+  document.querySelectorAll(".rv").forEach((el) => io.observe(el));
+</script>

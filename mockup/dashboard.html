@@ -1,0 +1,175 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8">
+<title>Mockup</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pri:#5E35B1; --pri2:#7E57C2; --lav:#EDE7F6; --lav2:#D1C4E9;
+  --ink:#241C33; --ink2:#6B6280; --line:#E8E3F2; --bg:#F7F5FC;
+  --warn:#E1523D; --amber:#D98A0B;
+}
+body{font-family:"Sukhumvit Set","Noto Sans Thai",system-ui,sans-serif;background:var(--bg);color:var(--ink);width:1440px;height:790px;display:flex;overflow:hidden}
+/* sidebar */
+.side{width:236px;background:#fff;border-right:1px solid var(--line);padding:22px 16px;flex:none}
+.brand{display:flex;align-items:center;gap:10px;padding:0 6px 22px}
+.brand b{font-size:15px;line-height:1.25}
+.brand span{display:block;font-size:10.5px;color:var(--ink2);font-weight:400;letter-spacing:.04em}
+.nav a{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;font-size:13.5px;color:var(--ink2);text-decoration:none;margin-bottom:3px}
+.nav a.on{background:var(--lav);color:var(--pri);font-weight:700}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--lav2)}
+.nav a.on .dot{background:var(--pri)}
+.side .foot{position:absolute;bottom:22px;width:204px;border-top:1px solid var(--line);padding-top:12px;display:flex;align-items:center;gap:9px}
+.av{width:30px;height:30px;border-radius:50%;background:var(--lav2);color:var(--pri);display:grid;place-items:center;font-size:12px;font-weight:700}
+/* main */
+.main{flex:1;padding:22px 26px;overflow:hidden}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+h1{font-size:21px;letter-spacing:-.01em}
+.sub{font-size:12px;color:var(--ink2);margin-top:2px}
+.search{width:340px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:12.5px;color:#A79FBC}
+.cols{display:grid;grid-template-columns:1fr 322px;gap:18px}
+.banner{display:flex;align-items:center;gap:10px;background:#FFF3F1;border:1px solid #F6D3CD;border-left:3px solid var(--warn);border-radius:9px;padding:11px 14px;margin-bottom:14px}
+.banner b{font-size:12.5px;color:#8E2F20}
+.banner p{font-size:11.5px;color:#A5624F}
+.sec{font-size:11px;letter-spacing:.1em;color:var(--ink2);text-transform:uppercase;margin:0 0 9px 2px}
+/* appt cards */
+.card{background:#fff;border:1px solid var(--line);border-left:3px solid var(--pri);border-radius:11px;padding:13px 15px;margin-bottom:10px;display:flex;gap:15px;align-items:center;box-shadow:0 1px 2px rgba(36,28,51,.04)}
+.card.meet{border-left-color:var(--lav2)}
+.card.dead{border-left-color:var(--warn)}
+.time{width:52px;font-size:14.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.time small{display:block;font-size:10px;color:var(--ink2);font-weight:400}
+.body{flex:1}
+.row1{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.chip{font-size:10.5px;font-weight:700;padding:2.5px 9px;border-radius:20px;background:var(--pri);color:#fff}
+.chip.l{background:var(--lav);color:var(--pri)}
+.chip.d{background:#FBE3DF;color:#A5341F}
+.no{font-size:11px;font-weight:700;background:var(--ink);color:#fff;padding:2.5px 9px;border-radius:4px;font-variant-numeric:tabular-nums}
+.t{font-size:13.5px;font-weight:600}
+.m{font-size:11.5px;color:var(--ink2);margin-top:2px}
+.btn{font-size:11.5px;border:1px solid var(--lav2);color:var(--pri);background:#fff;border-radius:8px;padding:6px 12px;font-weight:600}
+.btn.p{background:var(--pri);color:#fff;border-color:var(--pri)}
+/* right */
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:14px}
+.panel h3{font-size:13px;margin-bottom:11px}
+.dl{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.dl:first-of-type{border-top:0}
+.bg{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:#FBE3DF;color:#A5341F;white-space:nowrap;font-variant-numeric:tabular-nums}
+.bg.a{background:#FDF0D9;color:#8A5A05}
+.dl div{flex:1}
+.dl .t2{font-size:12px;font-weight:600}
+.dl .m2{font-size:10.5px;color:var(--ink2)}
+.bars{display:flex;align-items:flex-end;gap:7px;height:66px;margin:12px 0 8px}
+.bars i{flex:1;background:var(--lav);border-radius:4px 4px 0 0;display:block}
+.bars i.on{background:var(--pri2)}
+.days{display:flex;gap:7px;font-size:10px;color:var(--ink2)}
+.days span{flex:1;text-align:center}
+.stat{display:flex;gap:14px;border-top:1px solid var(--line);padding-top:11px;margin-top:4px}
+.stat div{flex:1}
+.stat b{font-size:19px;font-variant-numeric:tabular-nums}
+.stat small{display:block;font-size:10.5px;color:var(--ink2)}
+</style></head><body>
+
+<aside class="side">
+  <div class="brand">
+    <svg width="30" height="30" viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="24" fill="#EDE7F6"/>
+      <path d="M24 11v26M15 37h18M10 19h28M10 19l-5 9a5 5 0 0 0 10 0zM38 19l-5 9a5 5 0 0 0 10 0z" stroke="#5E35B1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="24" cy="11" r="2.6" fill="#5E35B1"/>
+    </svg>
+    <div><b>สำนวน</b><span>LAWYER SCHEDULE</span></div>
+  </div>
+  <nav class="nav">
+    <a class="on"><i class="dot"></i>วันนี้</a>
+    <a><i class="dot"></i>ปฏิทินนัด</a>
+    <a><i class="dot"></i>คดีของฉัน</a>
+    <a><i class="dot"></i>ลูกความ</a>
+    <a><i class="dot"></i>บันทึกเวลา</a>
+    <a><i class="dot"></i>ใบแจ้งค่าวิชาชีพ</a>
+    <a><i class="dot"></i>รายงาน</a>
+  </nav>
+  <div class="foot"><div class="av">มณ</div><div style="font-size:12px">ทนายมณี ศรีวัฒน์<div style="font-size:10.5px;color:#6B6280">คดีที่ถืออยู่ 18</div></div></div>
+</aside>
+
+<main class="main">
+  <div class="top">
+    <div><h1>วันนี้</h1><p class="sub">อังคารที่ 18 สิงหาคม 2569 · มีนัด 3 รายการ</p></div>
+    <div class="search">ค้นหาด้วยหมายเลขคดีดำหรือคดีแดง เช่น พ. 1234/2568</div>
+  </div>
+
+  <div class="banner">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 8v5M12 16.5v.5" stroke="#E1523D" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="#E1523D" stroke-width="2"/></svg>
+    <div><b>นัดวันที่ 20 ส.ค. ชนกัน</b><p>ศาลแพ่ง 09:00 กับ ศาลจังหวัดนนทบุรี 10:30 เว้นเวลาเดินทางไม่ถึง 90 นาที</p></div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <p class="sec">ตารางวันนี้</p>
+
+      <div class="card">
+        <div class="time">09:00<small>3 ชม.</small></div>
+        <div class="body">
+          <div class="row1"><span class="chip">นัดศาล</span><span class="no">พ. 1234/2568</span></div>
+          <div class="t">สืบพยานโจทก์ · ศาลแพ่ง ห้องพิจารณา 704</div>
+          <div class="m">บริษัท ธนกิจรุ่งเรือง จำกัด (โจทก์) — คดีผิดสัญญาซื้อขาย</div>
+        </div>
+        <button class="btn p">บันทึกเวลา</button>
+      </div>
+
+      <div class="card meet">
+        <div class="time">13:30<small>1 ชม.</small></div>
+        <div class="body">
+          <div class="row1"><span class="chip l">นัดลูกความ</span><span class="no">อ. 567/2568</span></div>
+          <div class="t">พบลูกความเตรียมคำให้การ · สำนักงาน</div>
+          <div class="m">นายสมชาย ก. (จำเลย)</div>
+        </div>
+        <button class="btn">บันทึกเวลา</button>
+      </div>
+
+      <div class="card dead">
+        <div class="time">16:00<small>กำหนด</small></div>
+        <div class="body">
+          <div class="row1"><span class="chip d">กำหนดยื่นเอกสาร</span><span class="no">รง. 89/2568</span></div>
+          <div class="t">ยื่นบัญชีระบุพยาน · ศาลแรงงานกลาง</div>
+          <div class="m">ครบกำหนดวันนี้ — นับจากวันชี้สองสถาน 4 ส.ค. 2569</div>
+        </div>
+        <button class="btn">ทำเสร็จแล้ว</button>
+      </div>
+
+      <p class="sec" style="margin-top:16px">พรุ่งนี้</p>
+      <div class="card meet" style="opacity:.62">
+        <div class="time">10:00<small>2 ชม.</small></div>
+        <div class="body">
+          <div class="row1"><span class="chip l">นัดไกล่เกลี่ย</span><span class="no">พ. 902/2568</span></div>
+          <div class="t">ศาลจังหวัดนนทบุรี ห้องไกล่เกลี่ย 2</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h3>ใกล้ครบกำหนด</h3>
+        <div class="dl"><span class="bg">เหลือ 6 วัน</span><div><div class="t2">ยื่นอุทธรณ์</div><div class="m2">พ. 88/2568 · ครบ 24 ส.ค.</div></div></div>
+        <div class="dl"><span class="bg a">เหลือ 12 วัน</span><div><div class="t2">ยื่นคำให้การ</div><div class="m2">อ. 567/2568 · ครบ 30 ส.ค.</div></div></div>
+        <div class="dl"><span class="bg a">เหลือ 21 วัน</span><div><div class="t2">อายุความฟ้องคดี</div><div class="m2">ยังไม่ยื่นฟ้อง · ครบ 8 ก.ย.</div></div></div>
+      </div>
+
+      <div class="panel">
+        <h3>สัปดาห์นี้</h3>
+        <div class="bars"><i style="height:38%"></i><i style="height:64%"></i><i class="on" style="height:88%"></i><i style="height:46%"></i><i style="height:70%"></i><i style="height:22%"></i><i style="height:12%"></i></div>
+        <div class="days"><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span><span>อา</span></div>
+        <div class="stat">
+          <div><b>22</b><small>ชม. เรียกเก็บได้</small></div>
+          <div><b>31</b><small>ชม. ทำงานจริง</small></div>
+          <div><b>5</b><small>นัดที่ขึ้นศาล</small></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>ค่าว่าความสะสม · พ. 1234/2568</h3>
+        <div class="stat" style="border-top:0;padding-top:0">
+          <div><b>5</b><small>นัดที่ขึ้นแล้ว</small></div>
+          <div><b>40,000</b><small>บาท · 8,000/นัด</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</body></html>
