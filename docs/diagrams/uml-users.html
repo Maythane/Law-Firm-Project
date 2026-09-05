@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ผู้ใช้และบทบาท · ผังคลาส</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600&family=Noto+Serif+Thai:wght@400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #f5eafa;
+      --color-ink:     #2e1f3d;
+      --color-muted:   #6b5b7b;
+      --color-accent:  #b35cdb;
+      --font-sans:     'Geist', 'Noto Sans Thai', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', 'Noto Serif Thai', serif;
+      --font-mono:     'Geist Mono', 'Noto Sans Thai', ui-monospace, monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+    .frame { max-width: 1240px; width: 100%; }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      color: var(--color-ink);
+      margin-bottom: 0.5rem;
+    }
+    .sub {
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: var(--color-muted);
+      max-width: 62ch;
+      margin-bottom: 1.5rem;
+    }
+    svg { width: 100%; min-width: 900px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">UML class · BL-01, BL-23</p>
+    <h1>ผู้ใช้ระบบ สามบทบาท และการสืบทอดสองชั้น</h1>
+    <p class="sub">การสืบทอดสองชั้น <code>Person → SystemUser → Lawyer</code> · ทั้งสามบทบาทตอบ <code>can_view_case()</code> ต่างกัน — ทนายเห็นเฉพาะคดีที่ตอบรับแล้ว ผู้จัดการเห็นทุกคดี ส่วนแอดมินคืน <strong>False</strong> เสมอ เพราะดูแลผู้ใช้ ไม่ใช่เนื้อคดี</p>
+
+    <svg viewBox="0 0 1000 780" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="uml-users-title uml-users-desc">
+      <title id="uml-users-title">ผู้ใช้และบทบาท · ผังคลาส</title>
+      <desc id="uml-users-desc">ผังคลาสแสดงคลาสนามธรรม Person ที่แตกเป็น Client และคลาสนามธรรม SystemUser ซึ่งมีบทบาทลูกสามตัวคือ Lawyer, Manager และ Admin โดยแต่ละบทบาทนิยามสิทธิ์การเข้าถึงคดีของตัวเองผ่านเมธอด can_view_case</desc>
+      <defs>
+        <marker id="uml-triangle" markerWidth="16" markerHeight="12" refX="15" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0 0, 16 6, 0 12" fill="#f5eafa" stroke="#2e1f3d" stroke-width="1"/>
+        </marker>
+        <marker id="uml-triangle-accent" markerWidth="16" markerHeight="12" refX="15" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0 0, 16 6, 0 12" fill="#f5eafa" stroke="#b35cdb" stroke-width="1"/>
+        </marker>
+        <marker id="uml-diamond-filled" markerWidth="18" markerHeight="10" refX="0" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0 5, 9 0, 18 5, 9 10" fill="#2e1f3d"/>
+        </marker>
+        <marker id="uml-diamond-hollow" markerWidth="18" markerHeight="10" refX="0" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0 5, 9 0, 18 5, 9 10" fill="#f5eafa" stroke="#2e1f3d" stroke-width="1"/>
+        </marker>
+        <marker id="uml-open" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L9,4 L0,8" fill="none" stroke="#6b5b7b" stroke-width="1"/>
+        </marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5eafa"/>
+
+      <!-- Relationships (drawn before boxes) -->
+      <!-- Client extends Person -->
+      <path d="M 170,260 V 232 Q 170,224 178,224 H 432 Q 440,224 440,216 V 184" fill="none" stroke="#2e1f3d" stroke-width="1" marker-end="url(#uml-triangle)"/>
+      <!-- SystemUser extends Person -->
+      <line x1="500" y1="260" x2="500" y2="184" stroke="#2e1f3d" stroke-width="1" marker-end="url(#uml-triangle)"/>
+      <!-- Lawyer extends SystemUser -->
+      <path d="M 180,500 V 472 Q 180,464 188,464 H 412 Q 420,464 420,456 V 444" fill="none" stroke="#b35cdb" stroke-width="1" marker-end="url(#uml-triangle-accent)"/>
+      <!-- Manager extends SystemUser -->
+      <line x1="500" y1="500" x2="500" y2="444" stroke="#b35cdb" stroke-width="1" marker-end="url(#uml-triangle-accent)"/>
+      <!-- Admin extends SystemUser -->
+      <path d="M 820,500 V 472 Q 820,464 812,464 H 588 Q 580,464 580,456 V 444" fill="none" stroke="#b35cdb" stroke-width="1" marker-end="url(#uml-triangle-accent)"/>
+
+      <!-- Class: Person (abstract) -->
+      <rect x="340" y="40" width="320" height="144" rx="6" fill="#ffffff"/>
+      <rect x="340" y="40" width="320" height="144" rx="6" fill="#ffffff" stroke="#2e1f3d" stroke-width="1"/>
+      <line x1="340" y1="80" x2="660" y2="80" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
+      <line x1="340" y1="152" x2="660" y2="152" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
+      <text x="500" y="58" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">«abstract»</text>
+      <text x="500" y="74" fill="#2e1f3d" font-size="12" font-weight="600" font-style="italic" font-family="'Geist', sans-serif" text-anchor="middle">Person</text>
+      <text x="356" y="100" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- name: str</text>
+      <text x="356" y="120" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- citizen_id: str</text>
+      <text x="356" y="140" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- phone: str</text>
+      <text x="356" y="172" fill="#2e1f3d" font-size="9" font-style="italic" font-family="'Geist Mono', monospace">+ display_name(): str</text>
+
+      <!-- Class: Client -->
+      <rect x="40" y="260" width="260" height="140" rx="6" fill="#ffffff"/>
+      <rect x="40" y="260" width="260" height="140" rx="6" fill="#ffffff" stroke="#2e1f3d" stroke-width="1"/>
+      <line x1="40" y1="296" x2="300" y2="296" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
+      <line x1="40" y1="368" x2="300" y2="368" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
+      <text x="170" y="284" fill="#2e1f3d" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Client</text>
+      <text x="56" y="316" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- address: str</text>
+      <text x="56" y="336" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- email: str</text>
+      <text x="56" y="356" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- cases: list[Case]</text>
+      <text x="56" y="388" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ display_name(): str</text>
+
+      <!-- Class: SystemUser (abstract, focal) -->
+      <rect x="340" y="260" width="320" height="184" rx="6" fill="#f5eafa"/>
+      <rect x="340" y="260" width="320" height="184" rx="6" fill="rgba(179,92,219,0.06)" stroke="#b35cdb" stroke-width="1"/>
+      <rect x="340" y="266" width="320" height="34" fill="rgba(179,92,219,0.10)"/>
+      <line x1="340" y1="300" x2="660" y2="300" stroke="rgba(179,92,219,0.40)" stroke-width="1"/>
+      <line x1="340" y1="372" x2="660" y2="372" stroke="rgba(179,92,219,0.40)" stroke-width="1"/>
+      <text x="500" y="278" fill="#b35cdb" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">«abstract»</text>
+      <text x="500" y="294" fill="#2e1f3d" font-size="12" font-weight="600" font-style="italic" font-family="'Geist', sans-serif" text-anchor="middle">SystemUser</text>
+      <text x="356" y="320" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- username: str</text>
+      <text x="356" y="340" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- password_hash: str</text>
+      <text x="356" y="360" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- is_active: bool</text>
+      <text x="356" y="392" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ check_password(raw): bool</text>
+      <text x="356" y="412" fill="#2e1f3d" font-size="9" font-style="italic" font-family="'Geist Mono', monospace">+ can_view_case(case): bool</text>
+      <text x="356" y="432" fill="#2e1f3d" font-size="9" font-style="italic" font-family="'Geist Mono', monospace">+ role_label(): str</text>
+
+      <!-- Class: Lawyer -->
+      <rect x="40" y="500" width="280" height="160" rx="6" fill="#ffffff"/>
+      <rect x="40" y="500" width="280" height="160" rx="6" fill="#ffffff" stroke="#2e1f3d" stroke-width="1"/>
+      <line x1="40" y1="536" x2="320" y2="536" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
+      <line x1="40" y1="588" x2="320" y2="588" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
+      <text x="180" y="524" fill="#2e1f3d" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Lawyer</text>
+      <text x="56" y="556" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- bar_license: str</text>
+      <text x="56" y="576" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- assignments: list</text>
+      <text x="56" y="608" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ can_view_case(): accepted</text>
+      <text x="56" y="628" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ workload(): int</text>
+      <text x="56" y="648" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ role_label(): "lawyer"</text>
+
+      <!-- Class: Manager -->
+      <rect x="360" y="500" width="280" height="108" rx="6" fill="#ffffff"/>
+      <rect x="360" y="500" width="280" height="108" rx="6" fill="#ffffff" stroke="#2e1f3d" stroke-width="1"/>
+      <line x1="360" y1="536" x2="640" y2="536" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
+      <text x="500" y="524" fill="#2e1f3d" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Manager</text>
+      <text x="376" y="556" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ assign(case, lawyer)</text>
+      <text x="376" y="576" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ can_view_case(): True</text>
+      <text x="376" y="596" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ role_label(): "manager"</text>
+
+      <!-- Class: Admin -->
+      <rect x="680" y="500" width="280" height="108" rx="6" fill="#ffffff"/>
+      <rect x="680" y="500" width="280" height="108" rx="6" fill="#ffffff" stroke="#2e1f3d" stroke-width="1"/>
+      <line x1="680" y1="536" x2="960" y2="536" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
+      <text x="820" y="524" fill="#2e1f3d" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Admin</text>
+      <text x="696" y="556" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ create_user(u): SystemUser</text>
+      <text x="696" y="576" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ can_view_case(): False</text>
+      <text x="696" y="596" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ role_label(): "admin"</text>
+
+      <!-- Legend -->
+      <line x1="40" y1="700" x2="960" y2="700" stroke="rgba(46,31,61,0.10)" stroke-width="0.8"/>
+      <text x="40" y="720" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+
+      <line x1="140" y1="740" x2="164" y2="740" stroke="#2e1f3d" stroke-width="1" marker-end="url(#uml-triangle)"/>
+      <text x="184" y="744" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">INHERITANCE</text>
+
+      <line x1="280" y1="740" x2="304" y2="740" stroke="#2e1f3d" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#uml-triangle)"/>
+      <text x="324" y="744" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">REALIZATION</text>
+
+      <line x1="420" y1="740" x2="452" y2="740" stroke="#2e1f3d" stroke-width="1" marker-start="url(#uml-diamond-filled)"/>
+      <text x="464" y="744" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">COMPOSITION</text>
+
+      <line x1="560" y1="740" x2="592" y2="740" stroke="#2e1f3d" stroke-width="1" marker-start="url(#uml-diamond-hollow)"/>
+      <text x="604" y="744" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">AGGREGATION</text>
+
+      <line x1="700" y1="740" x2="724" y2="740" stroke="#6b5b7b" stroke-width="1" marker-end="url(#uml-open)"/>
+      <text x="744" y="744" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">ASSOCIATION</text>
+
+      <line x1="840" y1="740" x2="864" y2="740" stroke="#6b5b7b" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#uml-open)"/>
+      <text x="884" y="744" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">DEPENDENCY</text>
+    </svg>
+  </div>
+</body>
+</html>
