@@ -45,6 +45,22 @@
 
 **หมายเลขที่เลิกใช้แล้ว** — BL-07, BL-08, BL-09, BL-10, BL-13, BL-15, BL-17 และ BR-2, BR-6, BR-10 ถึง BR-14 · คงหมายเลขที่เหลือไว้เท่าเดิมเพื่อไม่ให้การอ้างอิงในเอกสารและเทสต์คลาดกัน
 
+### ตัดสินเพิ่มเมื่อ 6 กันยายน 2569 — ก่อนเริ่มเขียนโค้ด
+
+| เรื่อง | ค่าที่ใช้ | กระทบอะไร |
+|---|---|---|
+| **ฐานข้อมูล** | **MariaDB 10.4 ของ XAMPP** แทน MySQL 8 · phpMyAdmin แทน Workbench | `schema.sql` ใช้ collation `utf8mb4_unicode_ci` ห้ามใช้ `utf8mb4_0900_ai_ci` ที่มีเฉพาะ MySQL 8 · `mysql-connector-python` ทดสอบแล้วว่าต่อได้ผ่าน socket ของ XAMPP |
+| **ปี พ.ศ. / ค.ศ.** | ฐานข้อมูลและชั้น domain เป็น ค.ศ. เสมอ · แปลงเป็น พ.ศ. เฉพาะตอนแสดงผลด้วย Jinja2 filter `\|thaidate` | [BL-20](#bl-20), [BL-21](#bl-21) · ห้ามให้ พ.ศ. เข้าไปในการนับวันเตือน 3/1/15 |
+| **`id` ในคลาส domain** | มี `id: int \| None = None` ให้ repository เซ็ตหลัง INSERT · `None` แปลว่ายังไม่ถูกบันทึก | ทุกคลาสใน `domain/` · [BL-18](#bl-18) |
+| **สไตล์คลาส** | ปิดเฉพาะฟิลด์ที่มี invariant — `Case._status` เข้าถึงผ่าน `@property` แก้ได้ทาง `advance_status()` เท่านั้น · คลาสข้อมูลล้วน (`Client`) ใช้ `@dataclass` | [BL-01](#bl-01), [BL-02](#bl-02), [BL-03](#bl-03), [BL-23](#bl-23), [BL-24](#bl-24) · ผังคลาสใน `uml.md` ใช้ `-`/`+` ตามโค้ดจริง |
+| **exception** | `domain/errors.py` — `DomainError` เป็นแม่ แตกเป็น `ScheduleConflictError`, `InvalidStatusTransition`, `RescheduleNotAllowed`, `AssignmentError` | ทุก BR ที่ต้องโยน error · ชั้น FastAPI แมป `DomainError` → HTTP 400 ที่ handler เดียว · เทสต์จับ exception ตรงชนิด |
+| **`FilingDeadline` กับการตรวจนัดชน** | เป็นรายการทั้งวัน **ไม่เข้า** `find_conflicts()` แต่แสดงใน `day_view()` และหน้าเตือน | [BL-04](#bl-04) · ทนายเลือกวันยื่นเองได้ก่อนครบกำหนด จึงไม่ใช่ช่วงเวลาที่ติดพัน |
+| **สถานะยกเลิก** | `cancel(reason)` ได้จากทุกสถานะยกเว้นปิดคดี/ยกเลิกแล้ว · `reopen(reason)` **กลับมาที่สถานะก่อนยกเลิก** ไม่ใช่ย้อนไปเปิดคดีใหม่ | [BL-02](#bl-02) · แยกจาก `advance_status()` เพราะไม่ใช่การเดินหน้า และบังคับให้มีเหตุผลกำกับ |
+| **ภาษา** | ชื่อในโค้ดและค่าใน enum เป็นอังกฤษ (`pending`, `accepted`) · คอมเมนต์และ docstring เป็นไทยพร้อมอ้างรหัส BR · หน้าจอไทยล้วน | ทุกรายการ |
+| **ค่าเชื่อมต่อ** | `.env` ไม่ commit · `repository/db.py` มีค่า default เป็น XAMPP (`root`, รหัสว่าง, ฐาน `lawfirm`) | [BL-18](#bl-18) · clone แล้วรันได้ทันทีโดยไม่ต้องตั้งค่า |
+
+---
+
 ---
 
 ## 3. Backlog หลัก
