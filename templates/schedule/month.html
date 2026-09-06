@@ -1,0 +1,30 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<h2>ปฏิทิน {{ month }}/{{ year + 543 }} — {{ lawyer.display_name() }}</h2>
+<p>
+  <a href="/schedule/month?year={{ prev_year }}&month={{ prev_month }}" role="button" class="secondary">← เดือนก่อน</a>
+  <a href="/schedule/today" role="button" class="secondary">วันนี้</a>
+  <a href="/schedule/month?year={{ next_year }}&month={{ next_month }}" role="button" class="secondary">เดือนถัดไป →</a>
+</p>
+<table>
+  <thead><tr><th>จ</th><th>อ</th><th>พ</th><th>พฤ</th><th>ศ</th><th>ส</th><th>อา</th></tr></thead>
+  <tbody>
+  {% for week in calendar_weeks %}
+    <tr>
+    {% for cell in week %}
+      {% if cell is none %}
+      <td></td>
+      {% else %}
+      <td>
+        <a href="/schedule/day?d={{ '%04d-%02d-%02d'|format(year, month, cell.day) }}">
+          <strong>{{ cell.day }}</strong>
+          {% if cell.count %}<br><small>{{ cell.count }} นัด · {{ cell.kinds|join(', ') }}</small>{% endif %}
+        </a>
+      </td>
+      {% endif %}
+    {% endfor %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

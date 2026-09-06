@@ -1,0 +1,17 @@
+{% if appointments %}
+<table>
+  <thead><tr><th>เวลา</th><th>ชนิด</th><th>คดี</th><th>สถานที่</th></tr></thead>
+  <tbody>
+  {% for a in appointments %}
+    <tr>
+      <td>{{ a.starts_at.strftime('%H:%M') }}–{{ a.ends_at.strftime('%H:%M') }}</td>
+      <td>{{ a.kind_label() }}</td>
+      <td><a href="/cases/{{ a.case.id }}">{{ a.case.display_black_no() }} — {{ a.case.title }}</a></td>
+      <td>{{ a.location }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>ไม่มีนัด</p>
+{% endif %}

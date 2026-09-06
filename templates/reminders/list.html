@@ -1,0 +1,25 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<h2>รายการเตือน — {{ lawyer.display_name() }}</h2>
+{% if items %}
+<table>
+  <thead><tr><th>กำหนด</th><th>ชนิด</th><th>คดี</th><th></th></tr></thead>
+  <tbody>
+  {% for a in items %}
+    <tr>
+      <td>{{ a.starts_at|thaidate('datetime') }}</td>
+      <td>{{ a.kind_label() }}</td>
+      <td><a href="/cases/{{ a.case.id }}">{{ a.case.display_black_no() }} — {{ a.case.title }}</a></td>
+      <td>
+        <form method="post" action="/reminders/{{ a.id }}/done" style="display:inline">
+          <button type="submit">ทำแล้ว</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>ไม่มีรายการเตือนตอนนี้</p>
+{% endif %}
+{% endblock %}

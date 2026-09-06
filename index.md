@@ -2,7 +2,7 @@
 
 นายเมทนี พูลสมบัติ 6821500060 · Object-Oriented Programming
 
-**ความคืบหน้า** 0 / 23 · ออกแบบเสร็จ ตั้งสภาพแวดล้อมเสร็จ กำลังเริ่ม BL-01 · รวม 65 ชม. · **กำหนดส่ง 6 สัปดาห์ (กลางเดือนตุลาคม 2569)**
+**ความคืบหน้า** 23 / 23 — **เสร็จครบทุกรายการ** · README.md เขียนและทดสอบจริงบน venv ใหม่ล้วนๆ แล้ว (ติดตั้ง + DB + seed + รันเซิร์ฟเวอร์ + เทส ทำงานตามที่เขียนไว้ทุกขั้นตอน) · รวม 65 ชม. · **กำหนดส่ง 6 สัปดาห์ (กลางเดือนตุลาคม 2569)**
 
 โปรเจกต์ย้ายออกจาก iCloud มาที่ `~/Work Space/Law Firm Project` และอยู่ใต้ git แล้วเมื่อ 6 ก.ย. 2569 · รัน `.venv/bin/pytest` สำหรับเทสต์ · ฐานข้อมูลใช้ MariaDB ของ XAMPP
 
@@ -18,6 +18,7 @@
 | [`pitch.html`](pitch.html) | สไลด์เสนอหัวข้อ |
 | [`mockup/dashboard.html`](mockup/dashboard.html) | ภาพหน้าจอตารางวันนี้ |
 | [`docs/diagrams/`](docs/diagrams/) | ผังคลาสตระกูลนัดหมาย · ผังคลาสผู้ใช้และบทบาท · ผังสถาปัตยกรรม (HTML เปิดในเบราว์เซอร์) |
+| [`seed.sql`](seed.sql) | สร้างโดย `tools/generate_seed.py` — **ห้ามแก้ตรงๆ** แก้สคริปต์แล้วรันใหม่ · นำเข้า `lawfirm-db` แล้ว |
 | [`survey_questions.md`](survey_questions.md) | แบบสอบถาม — **ยกเลิกแล้ว** เก็บไว้เป็นบันทึก |
 
 > **เอกสารทั้งสามตรงกันแล้ว** — `proposal.md` แก้ตามขอบเขตใหม่เมื่อ 2 ก.ย. 2569 ครบทั้ง §2, §3, §4, §7, §8 และ §9
@@ -53,35 +54,35 @@
 
 ### ชั้น domain — ทดสอบได้โดยไม่ต้องต่อฐานข้อมูล · 19 ชม.
 
-- [ ] [**BL-01**](backlog.md#bl-01) `Person` → `Lawyer`, `Client` · Must
-- [ ] [**BL-02**](backlog.md#bl-02) `Case` — สถานะและหมายเลขคดีดำ–แดง · Must
-- [ ] [**BL-03**](backlog.md#bl-03) `Appointment` → 3 คลาสลูก พร้อมระยะเตือน 3/1/15 และกฎการเลื่อน · Must
-- [ ] [**BL-04**](backlog.md#bl-04) `Schedule` — ตารางรายวัน/รายสัปดาห์ และตรวจนัดชน · Must
-- [ ] [**BL-05**](backlog.md#bl-05) `FilingDeadline.from_event()` นับวันครบกำหนดอัตโนมัติ · Must
-- [ ] [**BL-06**](backlog.md#bl-06) `upcoming_reminders()` หน้ารวมรายการใกล้ครบกำหนด · Must
-- [ ] [**BL-11**](backlog.md#bl-11) `LawFirm` — เปิดคดี ค้นหาด้วยหมายเลขคดี · Should
-- [ ] [**BL-12**](backlog.md#bl-12) เลื่อน/ยกเลิกนัด พร้อมประวัติ · Should
-- [ ] [**BL-14**](backlog.md#bl-14) มอบหมายทนายหลายคนต่อคดี · Should
+- [x] [**BL-01**](backlog.md#bl-01) `Person` → `Lawyer`, `Client` · Must
+- [x] [**BL-02**](backlog.md#bl-02) `Case` — สถานะและหมายเลขคดีดำ–แดง · Must
+- [x] [**BL-03**](backlog.md#bl-03) `Appointment` → 3 คลาสลูก พร้อมระยะเตือน 3/1/15 และกฎการเลื่อน · Must
+- [x] [**BL-04**](backlog.md#bl-04) `Schedule` — ตารางรายวัน/รายสัปดาห์ และตรวจนัดชน · Must
+- [x] [**BL-05**](backlog.md#bl-05) `FilingDeadline.from_event()` นับวันครบกำหนดอัตโนมัติ · Must
+- [x] [**BL-06**](backlog.md#bl-06) `upcoming_reminders()` หน้ารวมรายการใกล้ครบกำหนด · Must
+- [x] [**BL-11**](backlog.md#bl-11) `LawFirm` — เปิดคดี ค้นหาด้วยหมายเลขคดี · Should
+- [x] [**BL-12**](backlog.md#bl-12) เลื่อน/ยกเลิกนัด พร้อมประวัติ · Should
+- [x] [**BL-14**](backlog.md#bl-14) มอบหมายทนายหลายคนต่อคดี · Should
 
 ### ชั้นข้อมูล หน้าจอ และการทดสอบ · 21 ชม.
 
-- [ ] [**BL-16**](backlog.md#bl-16) `tests/test_schedule.py` · Must
-- [ ] [**BL-18**](backlog.md#bl-18) `schema.sql` + `repository/` ต่อ MySQL · Must
-- [ ] [**BL-19**](backlog.md#bl-19) `tools/generate_seed.py` → `seed.sql` · Must
-- [ ] [**BL-20**](backlog.md#bl-20) FastAPI + templates หน้าแรกคือตารางวันนี้ · Must
-- [ ] [**BL-21**](backlog.md#bl-21) หน้าคดี หน้าเตือน · Must
-- [ ] [**BL-22**](backlog.md#bl-22) `README.md` คำสั่งติดตั้งและรัน · Must
+- [x] [**BL-16**](backlog.md#bl-16) `tests/test_schedule.py` · Must
+- [x] [**BL-18**](backlog.md#bl-18) `schema.sql` + `repository/` ต่อ MySQL · Must
+- [x] [**BL-19**](backlog.md#bl-19) `tools/generate_seed.py` → `seed.sql` · Must
+- [x] [**BL-20**](backlog.md#bl-20) FastAPI + templates หน้าแรกคือตารางวันนี้ · Must
+- [x] [**BL-21**](backlog.md#bl-21) หน้าคดี หน้าเตือน · Must
+- [x] [**BL-22**](backlog.md#bl-22) `README.md` คำสั่งติดตั้งและรัน · Must
 
 ### ชั้นบทบาทผู้ใช้และการมอบหมายงาน · 25 ชม.
 
-- [ ] [**BL-23**](backlog.md#bl-23) `SystemUser` → `Manager`, `Admin` + `can_view_case()` · Must
-- [ ] [**BL-24**](backlog.md#bl-24) `CaseAssignment` — รับ/ปฏิเสธคดี + BR-15 ถึง BR-19 · Must
-- [ ] [**BL-25**](backlog.md#bl-25) ล็อกอิน + session + `require_role()` · Must
-- [ ] [**BL-26**](backlog.md#bl-26) หน้ามอบหมายของ manager + ตารางภาระงานทนาย · Must
-- [ ] [**BL-27**](backlog.md#bl-27) กล่องคดีรอการตอบรับ + ปุ่มรับ/ไม่รับ · Must
-- [ ] [**BL-28**](backlog.md#bl-28) ปฏิทินรายเดือนของทนาย · Should
-- [ ] [**BL-29**](backlog.md#bl-29) หน้าจัดการผู้ใช้ของ admin · Should
-- [ ] [**BL-30**](backlog.md#bl-30) `tests/test_assignment.py` · Must
+- [x] [**BL-23**](backlog.md#bl-23) `SystemUser` → `Manager`, `Admin` + `can_view_case()` · Must
+- [x] [**BL-24**](backlog.md#bl-24) `CaseAssignment` — รับ/ปฏิเสธคดี + BR-15 ถึง BR-19 · Must
+- [x] [**BL-25**](backlog.md#bl-25) ล็อกอิน + session + `require_role()` · Must
+- [x] [**BL-26**](backlog.md#bl-26) หน้ามอบหมายของ manager + ตารางภาระงานทนาย · Must
+- [x] [**BL-27**](backlog.md#bl-27) กล่องคดีรอการตอบรับ + ปุ่มรับ/ไม่รับ · Must
+- [x] [**BL-28**](backlog.md#bl-28) ปฏิทินรายเดือนของทนาย · Should
+- [x] [**BL-29**](backlog.md#bl-29) หน้าจัดการผู้ใช้ของ admin · Should
+- [x] [**BL-30**](backlog.md#bl-30) `tests/test_assignment.py` · Must
 
 **ลำดับที่ควรทำ** — BL-01 ถึง BL-06 → BL-23, BL-24 (ยังอยู่ในชั้น domain) → BL-16, BL-30 ยืนยันกฎด้วยเทสต์ → BL-11, BL-12, BL-14 → BL-18 ถึง BL-22 และ BL-25 ถึง BL-29
 

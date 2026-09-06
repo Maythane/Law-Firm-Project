@@ -57,7 +57,7 @@
 | **`FilingDeadline` กับการตรวจนัดชน** | เป็นรายการทั้งวัน **ไม่เข้า** `find_conflicts()` แต่แสดงใน `day_view()` และหน้าเตือน | [BL-04](#bl-04) · ทนายเลือกวันยื่นเองได้ก่อนครบกำหนด จึงไม่ใช่ช่วงเวลาที่ติดพัน |
 | **สถานะยกเลิก** | `cancel(reason)` ได้จากทุกสถานะยกเว้นปิดคดี/ยกเลิกแล้ว · `reopen(reason)` **กลับมาที่สถานะก่อนยกเลิก** ไม่ใช่ย้อนไปเปิดคดีใหม่ | [BL-02](#bl-02) · แยกจาก `advance_status()` เพราะไม่ใช่การเดินหน้า และบังคับให้มีเหตุผลกำกับ |
 | **ภาษา** | ชื่อในโค้ดและค่าใน enum เป็นอังกฤษ (`pending`, `accepted`) · คอมเมนต์และ docstring เป็นไทยพร้อมอ้างรหัส BR · หน้าจอไทยล้วน | ทุกรายการ |
-| **ค่าเชื่อมต่อ** | `.env` ไม่ commit · `repository/db.py` มีค่า default เป็น XAMPP (`root`, รหัสว่าง, ฐาน `lawfirm`) | [BL-18](#bl-18) · clone แล้วรันได้ทันทีโดยไม่ต้องตั้งค่า |
+| **ค่าเชื่อมต่อ** | `.env` ไม่ commit · `repository/db.py` มีค่า default เป็น XAMPP (`root`, รหัสว่าง, ฐาน `lawfirm-db`) | [BL-18](#bl-18) · clone แล้วรันได้ทันทีโดยไม่ต้องตั้งค่า |
 
 ---
 
@@ -71,26 +71,26 @@
 
 | รหัส | รายการ | ที่มา | ระดับ | ประมาณการ | สถานะ |
 |---|---|---|---|---|---|
-| [BL-01](#bl-01) | `Person` → `Lawyer`, `Client` | FR-D5 | Must | 1 | ยังไม่เริ่ม |
-| [BL-02](#bl-02) | `Case` — สถานะ `advance_status()` และหมายเลขคดีดำ/แดง | FR-D2 · BR-7, 8, 9 | Must | 2 | ยังไม่เริ่ม |
-| [BL-03](#bl-03) | `Appointment` → 3 คลาสลูก พร้อม `reminder_lead_days()` 3/1/15 และ `can_reschedule()` | FR-A1, B2 · BR-3, 4, 5 | Must | 3 | ยังไม่เริ่ม |
-| [BL-04](#bl-04) | `Schedule` — `day_view()`, `week_view()`, `find_conflicts()` ตรวจเวลาทับ | FR-A2, A3 · BR-1 | Must | 3 | ยังไม่เริ่ม |
-| [BL-05](#bl-05) | `FilingDeadline.from_event()` นับวันครบกำหนดอัตโนมัติ | FR-B1 | Must | 2 | ยังไม่เริ่ม |
-| [BL-06](#bl-06) | `upcoming_reminders()` หน้ารวมรายการใกล้ครบกำหนด | FR-B3, B4 | Must | 2 | ยังไม่เริ่ม |
-| [BL-11](#bl-11) | `LawFirm` — `open_case()`, `find_by_case_no()`, `search()` | FR-D3 | Should | 3 | ยังไม่เริ่ม |
-| [BL-12](#bl-12) | เลื่อน/ยกเลิกนัด พร้อมเก็บประวัติและเหตุผล | FR-A4 | Should | 2 | ยังไม่เริ่ม |
-| [BL-14](#bl-14) | มอบหมายทนายหลายคนต่อคดี | FR-D4 | Should | 1 | ยังไม่เริ่ม |
+| [BL-01](#bl-01) | `Person` → `Lawyer`, `Client` | FR-D5 | Must | 1 | เสร็จ |
+| [BL-02](#bl-02) | `Case` — สถานะ `advance_status()` และหมายเลขคดีดำ/แดง | FR-D2 · BR-7, 8, 9 | Must | 2 | เสร็จ |
+| [BL-03](#bl-03) | `Appointment` → 3 คลาสลูก พร้อม `reminder_lead_days()` 3/1/15 และ `can_reschedule()` | FR-A1, B2 · BR-3, 4, 5 | Must | 3 | เสร็จ |
+| [BL-04](#bl-04) | `Schedule` — `day_view()`, `week_view()`, `find_conflicts()` ตรวจเวลาทับ | FR-A2, A3 · BR-1 | Must | 3 | เสร็จ |
+| [BL-05](#bl-05) | `FilingDeadline.from_event()` นับวันครบกำหนดอัตโนมัติ | FR-B1 | Must | 2 | เสร็จ |
+| [BL-06](#bl-06) | `upcoming_reminders()` หน้ารวมรายการใกล้ครบกำหนด | FR-B3, B4 | Must | 2 | เสร็จ |
+| [BL-11](#bl-11) | `LawFirm` — `open_case()`, `find_by_case_no()`, `search()` | FR-D3 | Should | 3 | เสร็จ |
+| [BL-12](#bl-12) | เลื่อน/ยกเลิกนัด พร้อมเก็บประวัติและเหตุผล | FR-A4 | Should | 2 | เสร็จ |
+| [BL-14](#bl-14) | มอบหมายทนายหลายคนต่อคดี | FR-D4 | Should | 1 | เสร็จ |
 
 ### ชั้นข้อมูล หน้าจอ และการทดสอบ · 21 ชม.
 
 | รหัส | รายการ | ที่มา | ระดับ | ประมาณการ | สถานะ |
 |---|---|---|---|---|---|
-| [BL-16](#bl-16) | `tests/test_schedule.py` — นัดชน ระยะเตือน กฎการเลื่อน | §10 ข้อ 4 | Must | 3 | ยังไม่เริ่ม |
-| [BL-18](#bl-18) | `schema.sql` + `repository/` ต่อ MySQL | §8 | Must | 5 | ยังไม่เริ่ม |
-| [BL-19](#bl-19) | `tools/generate_seed.py` → `seed.sql` | §9.4 | Must | 3 | ยังไม่เริ่ม |
-| [BL-20](#bl-20) | FastAPI + templates — หน้าแรกคือตารางวันนี้ | FR-A2 | Must | 6 | ยังไม่เริ่ม |
-| [BL-21](#bl-21) | หน้าคดี หน้าเตือน | FR-B3 | Must | 3 | ยังไม่เริ่ม |
-| [BL-22](#bl-22) | `README.md` คำสั่งติดตั้งและรัน | §10 ข้อ 1 | Must | 1 | ยังไม่เริ่ม |
+| [BL-16](#bl-16) | `tests/test_schedule.py` — นัดชน ระยะเตือน กฎการเลื่อน | §10 ข้อ 4 | Must | 3 | เสร็จ |
+| [BL-18](#bl-18) | `schema.sql` + `repository/` ต่อ MySQL | §8 | Must | 5 | เสร็จ |
+| [BL-19](#bl-19) | `tools/generate_seed.py` → `seed.sql` | §9.4 | Must | 3 | เสร็จ |
+| [BL-20](#bl-20) | FastAPI + templates — หน้าแรกคือตารางวันนี้ | FR-A2 | Must | 6 | เสร็จ |
+| [BL-21](#bl-21) | หน้าคดี หน้าเตือน | FR-B3 | Must | 3 | เสร็จ |
+| [BL-22](#bl-22) | `README.md` คำสั่งติดตั้งและรัน | §10 ข้อ 1 | Must | 1 | เสร็จ |
 
 <a id="backlog-roles"></a>
 
@@ -100,14 +100,14 @@
 
 | รหัส | รายการ | ที่มา | ระดับ | ประมาณการ | สถานะ |
 |---|---|---|---|---|---|
-| [BL-23](#bl-23) | `SystemUser` → `Manager`, `Admin` + `can_view_case()`, `dashboard_cards()` | FR-F1, F2 | Must | 3 | ยังไม่เริ่ม |
-| [BL-24](#bl-24) | `CaseAssignment` — `accept()`, `decline(reason)` + BR-15 ถึง BR-19 | FR-F3, F4 | Must | 4 | ยังไม่เริ่ม |
-| [BL-25](#bl-25) | ล็อกอิน + session + `require_role()` | FR-F1 | Must | 4 | ยังไม่เริ่ม |
-| [BL-26](#bl-26) | หน้ามอบหมายของ manager + ตารางภาระงานทนาย | FR-F3 · FR-C4, C5 | Must | 4 | ยังไม่เริ่ม |
-| [BL-27](#bl-27) | กล่องคดีรอการตอบรับ + ปุ่มรับ/ไม่รับ บน dashboard ทนาย | FR-F4 | Must | 3 | ยังไม่เริ่ม |
-| [BL-28](#bl-28) | `month_view()` + หน้าปฏิทินรายเดือนของทนาย | FR-A2, A5 | Should | 3 | ยังไม่เริ่ม |
-| [BL-29](#bl-29) | หน้าจัดการผู้ใช้ของ admin | FR-F5 | Should | 2 | ยังไม่เริ่ม |
-| [BL-30](#bl-30) | `tests/test_assignment.py` — สถานะเดินทางเดียว, BR-17, BR-18 | §10 ข้อ 4 | Must | 2 | ยังไม่เริ่ม |
+| [BL-23](#bl-23) | `SystemUser` → `Manager`, `Admin` + `can_view_case()`, `dashboard_cards()` | FR-F1, F2 | Must | 3 | เสร็จ |
+| [BL-24](#bl-24) | `CaseAssignment` — `accept()`, `decline(reason)` + BR-15 ถึง BR-19 | FR-F3, F4 | Must | 4 | เสร็จ |
+| [BL-25](#bl-25) | ล็อกอิน + session + `require_role()` | FR-F1 | Must | 4 | เสร็จ |
+| [BL-26](#bl-26) | หน้ามอบหมายของ manager + ตารางภาระงานทนาย | FR-F3 · FR-C4, C5 | Must | 4 | เสร็จ |
+| [BL-27](#bl-27) | กล่องคดีรอการตอบรับ + ปุ่มรับ/ไม่รับ บน dashboard ทนาย | FR-F4 | Must | 3 | เสร็จ |
+| [BL-28](#bl-28) | `month_view()` + หน้าปฏิทินรายเดือนของทนาย | FR-A2, A5 | Should | 3 | เสร็จ |
+| [BL-29](#bl-29) | หน้าจัดการผู้ใช้ของ admin | FR-F5 | Should | 2 | เสร็จ |
+| [BL-30](#bl-30) | `tests/test_assignment.py` — สถานะเดินทางเดียว, BR-17, BR-18 | §10 ข้อ 4 | Must | 2 | เสร็จ |
 
 **ค่าที่ใช้ในช่องสถานะ** — ยังไม่เริ่ม · กำลังทำ · เสร็จ
 

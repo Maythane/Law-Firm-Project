@@ -1,0 +1,10 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<h2>เข้าสู่ระบบ</h2>
+{% if error %}<p style="color:var(--pico-del-color)"><strong>ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง หรือบัญชีถูกปิดใช้งาน</strong></p>{% endif %}
+<form method="post" action="/login">
+  <label>ชื่อผู้ใช้ <input type="text" name="username" required autofocus></label>
+  <label>รหัสผ่าน <input type="password" name="password" required></label>
+  <button type="submit">เข้าสู่ระบบ</button>
+</form>
+{% endblock %}

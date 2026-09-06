@@ -1,0 +1,51 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<h2>หน้าแรกผู้จัดการ — {{ manager.display_name() }}</h2>
+
+<h3>คดีที่ยังไม่มีทนายตอบรับ</h3>
+{% if unassigned_cases %}
+<table>
+  <thead><tr><th>คดี</th><th>สถานะ</th><th></th></tr></thead>
+  <tbody>
+  {% for c in unassigned_cases %}
+    <tr>
+      <td><a href="/cases/{{ c.id }}">{{ c.display_black_no() }} — {{ c.title }}</a></td>
+      <td>{{ c.status.value }}</td>
+      <td><a href="/manager/cases/{{ c.id }}/assign" role="button">มอบหมาย</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>ไม่มีคดีค้าง — ทุกคดีมีทนายตอบรับแล้ว</p>
+{% endif %}
+
+<h3>คดีที่เพิ่งถูกปฏิเสธ</h3>
+{% if recently_declined %}
+<table>
+  <thead><tr><th>คดี</th><th>ทนายที่ปฏิเสธ</th><th>เหตุผล</th><th></th></tr></thead>
+  <tbody>
+  {% for a in recently_declined %}
+    <tr>
+      <td><a href="/cases/{{ a.case.id }}">{{ a.case.display_black_no() }} — {{ a.case.title }}</a></td>
+      <td>{{ a.lawyer.display_name() }}</td>
+      <td>{{ a.decline_reason }}</td>
+      <td><a href="/manager/cases/{{ a.case.id }}/assign" role="button">มอบหมายใหม่</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>ไม่มีรายการถูกปฏิเสธล่าสุด</p>
+{% endif %}
+
+<h3>ภาระงานทนาย</h3>
+<table>
+  <thead><tr><th>ทนาย</th><th>ภาระงาน (คดีที่ตอบรับ + นัด 30 วันข้างหน้า)</th></tr></thead>
+  <tbody>
+  {% for lawyer, workload in workloads %}
+    <tr><td>{{ lawyer.display_name() }}</td><td>{{ workload }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

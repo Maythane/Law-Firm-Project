@@ -1,0 +1,11 @@
+{% extends "base/layout.html" %}
+{% block content %}
+{% include "schedule/_pending_box.html" %}
+<h2>ตารางวันนี้ ({{ today|thaidate }}) — {{ lawyer.display_name() }}</h2>
+<p>
+  <a href="/schedule/new" role="button">+ เพิ่มนัด</a>
+  <a href="/reminders" role="button" class="secondary">รายการเตือน</a>
+  <a href="/schedule/month" role="button" class="secondary">ปฏิทินรายเดือน</a>
+</p>
+{% include "schedule/_appointments_table.html" %}
+{% endblock %}

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ระบบผู้ช่วยจัดการคดี{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.12/htmx.min.js"></script>
+</head>
+<body>
+  <main class="container">
+    <nav>
+      <ul><li><strong>ระบบผู้ช่วยจัดการคดีและตารางนัดหมาย</strong></li></ul>
+      <ul><li>
+        {% if request.cookies.get('session') %}
+        <form method="post" action="/logout" style="display:inline">
+          <button type="submit" class="secondary">ออกจากระบบ</button>
+        </form>
+        {% endif %}
+      </li></ul>
+    </nav>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

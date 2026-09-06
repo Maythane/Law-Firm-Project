@@ -1,0 +1,32 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<h2>เพิ่มนัดหมาย — {{ lawyer.display_name() }}</h2>
+{% if error %}<p style="color:var(--pico-del-color)"><strong>{{ error }}</strong></p>{% endif %}
+<form method="post" action="/schedule/new">
+  <label>คดี
+    <select name="case_id" required>
+      {% for c in cases %}
+      <option value="{{ c.id }}" {% if values.get('case_id')|string == c.id|string %}selected{% endif %}>
+        {{ c.display_black_no() }} — {{ c.title }}
+      </option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>ชนิดนัด
+    <select name="kind" required>
+      <option value="hearing" {% if values.get('kind') == 'hearing' %}selected{% endif %}>นัดศาล</option>
+      <option value="meeting" {% if values.get('kind') == 'meeting' %}selected{% endif %}>นัดพบลูกความ</option>
+      <option value="deadline" {% if values.get('kind') == 'deadline' %}selected{% endif %}>กำหนดยื่นเอกสาร</option>
+    </select>
+  </label>
+  <div class="grid">
+    <label>เริ่ม <input type="datetime-local" name="starts_at" value="{{ values.get('starts_at', '') }}" required></label>
+    <label>สิ้นสุด <input type="datetime-local" name="ends_at" value="{{ values.get('ends_at', '') }}" required></label>
+  </div>
+  <label>สถานที่ <input type="text" name="location" value="{{ values.get('location', '') }}"></label>
+  <label>ชื่อศาล (เฉพาะนัดศาล) <input type="text" name="court_name" value="{{ values.get('court_name', '') }}"></label>
+  <label>เลขห้อง (เฉพาะนัดศาล) <input type="text" name="room_no" value="{{ values.get('room_no', '') }}"></label>
+  <label>เหตุการณ์ตั้งต้น (เฉพาะกำหนดยื่นเอกสาร) <input type="text" name="triggered_by_event" value="{{ values.get('triggered_by_event', '') }}"></label>
+  <button type="submit">บันทึกนัด</button>
+</form>
+{% endblock %}

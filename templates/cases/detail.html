@@ -1,0 +1,32 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<h2>{{ case.title }}</h2>
+<p>
+  หมายเลขคดีดำ: {{ case.display_black_no() }} · หมายเลขคดีแดง: {{ case.display_red_no() }}<br>
+  สถานะ: {{ case.status.value }}<br>
+  ศาล: {{ case.court_name }}<br>
+  ลูกความ: {{ case.client.display_name() }} ({{ case.client_role }})<br>
+  คู่ความอีกฝ่าย: {{ case.opposing_party }}<br>
+  ทนายที่รับผิดชอบ:
+  {% for l in case.lawyers() %}{{ l.display_name() }}{% if not loop.last %}, {% endif %}{% else %}ยังไม่มี{% endfor %}
+</p>
+<h3>นัดหมายทั้งหมด</h3>
+{% if appointments %}
+<table>
+  <thead><tr><th>วันเวลา</th><th>ชนิด</th><th>ทนาย</th><th>สถานที่</th><th>สถานะ</th></tr></thead>
+  <tbody>
+  {% for a in appointments %}
+    <tr>
+      <td>{{ a.starts_at|thaidate('datetime') }}</td>
+      <td>{{ a.kind_label() }}</td>
+      <td>{{ a.lawyer.display_name() }}</td>
+      <td>{{ a.location }}</td>
+      <td>{% if a.is_cancelled %}ยกเลิก{% elif a.is_done %}เสร็จแล้ว{% else %}-{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>ยังไม่มีนัดหมาย</p>
+{% endif %}
+{% endblock %}

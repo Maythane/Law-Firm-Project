@@ -1,0 +1,6 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<h2>ตาราง {{ day|thaidate }} — {{ lawyer.display_name() }}</h2>
+<p><a href="/schedule/month?year={{ day.year }}&month={{ day.month }}" role="button" class="secondary">← กลับปฏิทินเดือน</a></p>
+{% include "schedule/_appointments_table.html" %}
+{% endblock %}
