@@ -97,3 +97,22 @@ def cancel(conn, appt: Appointment, reason: str) -> None:
         (reason, appt.id),
     )
     conn.commit()
+
+
+def list_open_by_case_and_lawyer(conn, case_id: int, lawyer_id: int) -> list[Appointment]:
+    """นัดที่ยังไม่ถึง/ยังไม่เสร็จของทนายคนนี้ในคดีนี้ — แสดงตอน manager อนุมัติคำขอถอนตัว"""
+    cur = conn.cursor(dictionary=True)
+    cur.execute(
+        "SELECT * FROM appointments WHERE case_id = %s AND lawyer_id = %s "
+        "AND is_cancelled = 0 AND is_done = 0 AND starts_at >= NOW() ORDER BY starts_at",
+        (case_id, lawyer_id),
+    )
+    return [_row_to_appointment(conn, row) for row in cur.fetchall()]
+
+
+def reassign(conn, appt: Appointment, new_lawyer) -> None:
+    """ย้ายนัดไปทนายคนใหม่ (ตอนอนุมัติคำขอถอนตัว) — ผู้เรียกตรวจนัดชนมาแล้ว"""
+    appt.lawyer = new_lawyer
+    cur = conn.cursor()
+    cur.execute("UPDATE appointments SET lawyer_id = %s WHERE id = %s", (new_lawyer.id, appt.id))
+    conn.commit()

@@ -64,6 +64,31 @@ def set_password_hash(conn, user_id: int, password_hash: str) -> None:
     conn.commit()
 
 
+def update_profile(conn, user_id: int, name: str, username: str, password_hash: str | None = None) -> None:
+    """แก้ชื่อที่ใช้แสดง/username เสมอ · password_hash เป็น None แปลว่าไม่เปลี่ยนรหัสผ่าน (BL-37/BL-38)"""
+    cur = conn.cursor()
+    if password_hash:
+        cur.execute(
+            "UPDATE users SET name = %s, username = %s, password_hash = %s WHERE id = %s",
+            (name, username, password_hash, user_id),
+        )
+    else:
+        cur.execute("UPDATE users SET name = %s, username = %s WHERE id = %s", (name, username, user_id))
+    conn.commit()
+
+
+def count_by_role(conn) -> dict:
+    """จำนวนผู้ใช้แต่ละบทบาท แยกเปิด/ปิดใช้งาน — admin dashboard (BL-39)"""
+    counts = {role: {"total": 0, "active": 0} for role in _ROLE_TO_CLASS}
+    cur = conn.cursor(dictionary=True)
+    cur.execute("SELECT role, is_active, COUNT(*) AS n FROM users GROUP BY role, is_active")
+    for row in cur.fetchall():
+        counts[row["role"]]["total"] += row["n"]
+        if row["is_active"]:
+            counts[row["role"]]["active"] += row["n"]
+    return counts
+
+
 def add(conn, user: SystemUser) -> SystemUser:
     role = {Lawyer: "lawyer", Manager: "manager", Admin: "admin"}[type(user)]
     cur = conn.cursor()

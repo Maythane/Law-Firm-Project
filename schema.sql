@@ -46,10 +46,14 @@ CREATE TABLE IF NOT EXISTS case_assignments (
     lawyer_id INT NOT NULL,
     assigned_by INT NOT NULL,
     assigned_at DATETIME NOT NULL,
-    status ENUM('pending', 'accepted', 'declined') NOT NULL DEFAULT 'pending',
+    status ENUM('pending', 'accepted', 'declined', 'withdrawn') NOT NULL DEFAULT 'pending',
     responded_at DATETIME, -- ว่างได้
     decline_reason VARCHAR(255), -- บังคับเมื่อปฏิเสธ
     is_lead TINYINT(1) NOT NULL DEFAULT 0,
+    withdraw_requested_at DATETIME, -- ไม่ว่าง = ขอถอนตัว รออนุมัติ (status ยังเป็น accepted)
+    withdraw_reason_code VARCHAR(20),
+    withdraw_note VARCHAR(255),
+    withdraw_reject_reason VARCHAR(255),
     FOREIGN KEY (case_id) REFERENCES cases(id),
     FOREIGN KEY (lawyer_id) REFERENCES users(id),
     FOREIGN KEY (assigned_by) REFERENCES users(id),
@@ -85,4 +89,25 @@ CREATE TABLE IF NOT EXISTS appointment_changes (
     reason VARCHAR(255),
     changed_at DATETIME NOT NULL,
     FOREIGN KEY (appointment_id) REFERENCES appointments(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS case_notes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    case_id INT NOT NULL,
+    author_id INT NOT NULL,
+    text TEXT NOT NULL,
+    created_at DATETIME NOT NULL,
+    FOREIGN KEY (case_id) REFERENCES cases(id),
+    FOREIGN KEY (author_id) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS case_events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    case_id INT NOT NULL,
+    actor_id INT NOT NULL,
+    kind VARCHAR(30) NOT NULL, -- status, black_no, red_no, withdraw_request, withdraw_approved, withdraw_rejected
+    detail VARCHAR(500) NOT NULL,
+    created_at DATETIME NOT NULL,
+    FOREIGN KEY (case_id) REFERENCES cases(id),
+    FOREIGN KEY (actor_id) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -20,6 +20,13 @@ def get_by_id(conn, client_id: int) -> Client | None:
     return _row_to_client(row) if row else None
 
 
+def list_all(conn) -> list[Client]:
+    """รายชื่อลูกความทั้งหมด เรียงตามชื่อ — ใช้เลือกในฟอร์มเพิ่มคดีใหม่ (BL-31)"""
+    cur = conn.cursor(dictionary=True)
+    cur.execute("SELECT * FROM clients ORDER BY name")
+    return [_row_to_client(row) for row in cur.fetchall()]
+
+
 def add(conn, client: Client) -> Client:
     cur = conn.cursor()
     cur.execute(

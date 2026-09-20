@@ -154,3 +154,92 @@ def test_can_view_case_correct_for_all_three_roles():
     assert other_lawyer.can_view_case(case) is False
     assert manager.can_view_case(case) is True
     assert admin.can_view_case(case) is False
+
+
+# ---- ขอถอนตัวจากคดี ----
+
+def make_accepted_assignment(**case_overrides):
+    a = CaseAssignment(
+        case=make_case(**case_overrides), lawyer=make_lawyer(), assigned_by=make_manager(),
+        assigned_at=datetime.now(),
+    )
+    a.accept()
+    return a
+
+
+def test_request_withdraw_marks_request_but_keeps_accepted():
+    a = make_accepted_assignment()
+    a.request_withdraw("overload")
+    assert a.is_withdraw_requested()
+    assert a.status == AssignmentStatus.ACCEPTED
+
+
+def test_request_withdraw_twice_raises():
+    a = make_accepted_assignment()
+    a.request_withdraw("deadline")
+    with pytest.raises(AssignmentError):
+        a.request_withdraw("deadline")
+
+
+def test_request_withdraw_requires_accepted():
+    a = CaseAssignment(
+        case=make_case(), lawyer=make_lawyer(), assigned_by=make_manager(), assigned_at=datetime.now(),
+    )
+    with pytest.raises(AssignmentError):
+        a.request_withdraw("overload")
+
+
+def test_request_withdraw_other_requires_note():
+    a = make_accepted_assignment()
+    with pytest.raises(ValueError):
+        a.request_withdraw("other", "  ")
+    a.request_withdraw("other", "ป่วย")
+    assert a.withdraw_note == "ป่วย"
+
+
+def test_request_withdraw_unknown_reason_raises():
+    with pytest.raises(ValueError):
+        make_accepted_assignment().request_withdraw("whatever")
+
+
+def test_request_withdraw_on_closed_case_raises():
+    a = make_accepted_assignment()
+    a.case._status = CaseStatus.CLOSED
+    with pytest.raises(AssignmentError):
+        a.request_withdraw("overload")
+
+
+def test_approve_withdraw_sets_withdrawn_and_case_loses_lawyer():
+    a = make_accepted_assignment()
+    a.case._assignments.append(a)
+    a.request_withdraw("overload")
+    a.approve_withdraw()
+    assert a.status == AssignmentStatus.WITHDRAWN
+    assert a.case.lawyers() == []
+
+
+def test_approve_without_request_raises():
+    with pytest.raises(AssignmentError):
+        make_accepted_assignment().approve_withdraw()
+
+
+def test_reject_withdraw_needs_reason_and_allows_new_request():
+    a = make_accepted_assignment()
+    a.request_withdraw("overload")
+    with pytest.raises(ValueError):
+        a.reject_withdraw(" ")
+    a.reject_withdraw("ยังไม่มีคนแทน")
+    assert not a.is_withdraw_requested()
+    assert a.withdraw_reject_reason == "ยังไม่มีคนแทน"
+    a.request_withdraw("deadline")
+    assert a.withdraw_reject_reason is None
+
+
+def test_withdrawn_lawyer_can_be_assigned_again():
+    firm = LawFirm()
+    case, lawyer, manager = make_case(), make_lawyer(), make_manager()
+    a = firm.assign_lawyer(case, lawyer, manager)
+    a.accept()
+    a.request_withdraw("overload")
+    a.approve_withdraw()
+    firm.assign_lawyer(case, lawyer, manager)  # ไม่โยน BR-17 เพราะรายการเดิมจบแล้ว

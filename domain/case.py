@@ -8,7 +8,7 @@ display_black_no()/display_red_no() แค่คืนค่าที่มี�
 """
 
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, datetime
 from enum import Enum
 
 from domain.assignment import AssignmentStatus
@@ -36,6 +36,9 @@ _ADVANCE_ORDER = [
 ]
 
 _RED_NUMBER_ALLOWED_FROM = {CaseStatus.JUDGED, CaseStatus.FINAL, CaseStatus.CLOSED}
+_BLACK_NUMBER_ALLOWED_FROM = {
+    CaseStatus.FILED, CaseStatus.TRIAL, CaseStatus.JUDGED, CaseStatus.FINAL, CaseStatus.CLOSED,
+}
 
 
 @dataclass
@@ -74,6 +77,13 @@ class Case:
     def display_red_no(self) -> str:
         return self.red_case_no or "-"
 
+    def next_status(self) -> CaseStatus | None:
+        """สถานะขั้นถัดไปที่เลื่อนได้ — None ถ้าปิดคดีแล้วหรือถูกยกเลิก"""
+        if self._status == CaseStatus.CANCELLED:
+            return None
+        index = _ADVANCE_ORDER.index(self._status) + 1
+        return _ADVANCE_ORDER[index] if index < len(_ADVANCE_ORDER) else None
+
     def advance_status(self, new_status: CaseStatus) -> None:
         """เลื่อนได้ทีละขั้นเท่านั้น ข้ามขั้นแล้วโยน error — BR-7
         เข้าสถานะ FILED ต้องมีทนายตอบรับแล้วอย่างน้อย 1 คน — BR-18
@@ -94,12 +104,22 @@ class Case:
         self._status = new_status
 
     def assign_red_number(self, red_case_no: str) -> None:
-        """ออกเลขคดีแดงได้เฉพาะสถานะถึงตัดสินแล้ว — BR-8"""
+        """ออกเลขคดีแดงได้เฉพาะสถานะถึงตัดสินแล้ว — BR-8 (เรียกซ้ำเพื่อแก้เลขที่ใส่ผิดได้)"""
         if self._status not in _RED_NUMBER_ALLOWED_FROM:
             raise InvalidStatusTransition(
                 "ออกหมายเลขคดีแดงได้เฉพาะตอนสถานะถึงตัดสินแล้ว (BR-8)"
             )
-        self.red_case_no = red_case_no
+        if not red_case_no or not red_case_no.strip():
+            raise ValueError("ต้องระบุหมายเลขคดีแดง")
+        self.red_case_no = red_case_no.strip()
+
+    def assign_black_number(self, black_case_no: str) -> None:
+        """ใส่เลขคดีดำได้ตั้งแต่ยื่นฟ้อง (ศาลออกเลขตอนรับฟ้อง) — เรียกซ้ำเพื่อแก้เลขที่ใส่ผิดได้"""
+        if self._status not in _BLACK_NUMBER_ALLOWED_FROM:
+            raise InvalidStatusTransition("ใส่หมายเลขคดีดำได้ตั้งแต่สถานะยื่นฟ้องเป็นต้นไป")
+        if not black_case_no or not black_case_no.strip():
+            raise ValueError("ต้องระบุหมายเลขคดีดำ")
+        self.black_case_no = black_case_no.strip()
 
     def cancel(self, reason: str) -> None:
         """ยกเลิกได้จากทุกสถานะยกเว้นปิดคดี/ยกเลิกแล้ว บังคับมีเหตุผล"""
@@ -122,3 +142,35 @@ class Case:
     def can_close(self, has_future_appointments: bool, has_pending_filing_deadlines: bool) -> bool:
         """เท็จถ้ายังมีนัดในอนาคตหรือกำหนดยื่นที่ยังไม่ทำ — BR-9"""
         return not (has_future_appointments or has_pending_filing_deadlines)
+
+
+@dataclass
+class CaseNote:
+    """โน้ตข้อความของคดี — ทนายที่ตอบรับทุกคนเขียนได้ แก้/ลบได้เฉพาะของตัวเอง"""
+
+    case_id: int
+    author: Lawyer
+    text: str
+    created_at: datetime
+    id: int | None = field(default=None, kw_only=True)
+
+    def can_modify(self, user) -> bool:
+        return self.author.id is not None and self.author.id == user.id
+
+    @staticmethod
+    def validate_text(text: str) -> str:
+        if not text or not text.strip():
+            raise ValueError("โน้ตต้องไม่ว่าง")
+        return text.strip()
+
+
+@dataclass
+class CaseEvent:
+    """แถว timeline ของคดี — ใครทำอะไรเมื่อไร (เลื่อนสถานะ, เลขคดี, ถอนตัว)"""
+
+    case_id: int
+    actor: "SystemUser"
+    kind: str
+    detail: str
+    created_at: datetime
+    id: int | None = field(default=None, kw_only=True)

@@ -112,3 +112,42 @@ def test_can_close_false_when_future_items_pending():
     assert case.can_close(has_future_appointments=True, has_pending_filing_deadlines=False) is False
     assert case.can_close(has_future_appointments=False, has_pending_filing_deadlines=True) is False
     assert case.can_close(has_future_appointments=False, has_pending_filing_deadlines=False) is True
+
+
+def test_black_number_only_from_filed():
+    case = make_case()
+    with pytest.raises(InvalidStatusTransition):
+        case.assign_black_number("ผ.1/2569")
+    give_case_an_accepted_lawyer(case)
+    case.advance_status(CaseStatus.FILED)
+    case.assign_black_number(" ผ.1/2569 ")
+    assert case.black_case_no == "ผ.1/2569"
+    case.assign_black_number("ผ.2/2569")  # แก้เลขที่ใส่ผิดได้
+    assert case.black_case_no == "ผ.2/2569"
+
+
+def test_black_and_red_number_reject_blank():
+    case = make_case(_status=CaseStatus.JUDGED)
+    with pytest.raises(ValueError):
+        case.assign_black_number(" ")
+    with pytest.raises(ValueError):
+        case.assign_red_number("")
+
+
+def test_case_note_only_author_can_modify():
+    from domain.case import CaseNote
+    author = Lawyer(name="ก", citizen_id="1", phone="0", license_no="L", id=1)
+    other = Lawyer(name="ข", citizen_id="2", phone="0", license_no="L", id=2)
+    note = CaseNote(case_id=1, author=author, text="x", created_at=datetime.now())
+    assert note.can_modify(author) and not note.can_modify(other)
+    with pytest.raises(ValueError):
+        CaseNote.validate_text("  ")
+
+
+def test_next_status_follows_order_and_stops():
+    case = make_case()
+    assert case.next_status() == CaseStatus.FILED
+    case._status = CaseStatus.CLOSED
+    assert case.next_status() is None
+    case._status = CaseStatus.CANCELLED
+    assert case.next_status() is None
