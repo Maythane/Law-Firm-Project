@@ -1,0 +1,82 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<p class="back"><a href="/manager/dashboard#notify-withdraw">← หน้าแรก</a></p>
+<div class="page-head">
+  <div>
+    <h2>คำขอถอนตัว</h2>
+    <p class="sub">{{ case.display_black_no() }} — {{ case.title }}</p>
+  </div>
+</div>
+{% if error %}<p class="banner-warn" role="alert"><strong>{{ error }}</strong></p>{% endif %}
+{% if warning %}
+<div class="banner-warn">
+  <strong>⚠ {{ warning }}</strong>
+  <p style="margin:0.3rem 0 0">กด “อนุมัติ” อีกครั้งพร้อมติ๊กยืนยันด้านล่างเพื่อดำเนินการต่อ</p>
+</div>
+{% endif %}
+<div class="panel">
+  <p>
+    <strong>{{ assignment.lawyer.display_name() }}</strong>{% if assignment.is_lead %} (ทนายหลัก){% endif %}
+    ขอถอนตัวเมื่อ {{ assignment.withdraw_requested_at|thaidate('datetime') }}<br>
+    เหตุผล: {{ WITHDRAW_REASONS[assignment.withdraw_reason_code] }}{% if assignment.withdraw_note %} — {{ assignment.withdraw_note }}{% endif %}<br>
+    สถานะคดี: {{ case.status|case_status_th }} · <a href="/cases/{{ case.id }}">ดูหน้าคดี</a>
+  </p>
+</div>
+
+<form method="post" action="/manager/withdrawals/{{ assignment.id }}/approve">
+  <div class="panel">
+    <h3>1. เลือกทนายคนใหม่ (เว้นได้ถ้าจะมอบหมายภายหลัง)</h3>
+    <table>
+      <thead><tr><th></th><th>ทนาย (เรียงจากว่างที่สุด)</th><th>ภาระงาน</th></tr></thead>
+      <tbody>
+        <tr><td><input type="radio" name="new_lawyer_id" value="" {{ 'checked' if not form.get('new_lawyer_id') }} aria-label="ยังไม่เลือกทนายคนใหม่"></td><td colspan="2">อนุมัติเฉย ๆ ยังไม่มอบหมาย (คดีจะขึ้นในกล่อง “คดีที่ยังไม่มีทนาย” ถ้าไม่เหลือทนายตอบรับ)</td></tr>
+        {% for lawyer, workload in workloads %}
+        <tr>
+          <td><input type="radio" name="new_lawyer_id" value="{{ lawyer.id }}" {{ 'checked' if form.get('new_lawyer_id')|string == lawyer.id|string }} aria-label="เลือก {{ lawyer.display_name() }}"></td>
+          <td>{{ lawyer.display_name() }}</td>
+          <td>{{ workload }}{% if workload >= threshold %} <span class="chip d">เกินเกณฑ์</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if assignment.is_lead %}<p><small>ทนายที่เลือกจะรับตำแหน่งทนายหลักต่อ และต้องกดรับคดีเองตามปกติ</small></p>{% endif %}
+    {% if warning %}<label><input type="checkbox" name="confirm_overload" value="true"> ยืนยันมอบหมายแม้ภาระงานเกิน</label>{% endif %}
+  </div>
+
+  <div class="panel">
+    <h3>2. นัดที่ยังไม่ถึงของ{{ assignment.lawyer.display_name() }}ในคดีนี้</h3>
+    {% if appointments %}
+    <table>
+      <thead><tr><th>วันเวลา</th><th>ชนิด</th><th>จัดการ</th></tr></thead>
+      <tbody>
+      {% for a in appointments %}
+        {% set choice = form.get('appt_' ~ a.id, 'keep') %}
+        <tr>
+          <td>{{ a.starts_at|thaidate('datetime') }}</td>
+          <td>{{ a.kind_label() }} {{ a.location }}</td>
+          <td>
+            <select name="appt_{{ a.id }}" aria-label="จัดการนัด {{ a.kind_label() }}">
+              <option value="keep" {{ 'selected' if choice == 'keep' }}>คงไว้กับทนายเดิม (จัดการภายหลัง)</option>
+              <option value="transfer" {{ 'selected' if choice == 'transfer' }}>ย้ายให้ทนายคนใหม่</option>
+              <option value="cancel" {{ 'selected' if choice == 'cancel' }}>ยกเลิกนัด</option>
+            </select>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>ไม่มีนัดค้าง</p>
+    {% endif %}
+  </div>
+  <button type="submit">อนุมัติคำขอถอนตัว</button>
+</form>
+
+<div class="panel" style="margin-top:1.5rem">
+  <h3>ไม่อนุมัติ</h3>
+  <form method="post" action="/manager/withdrawals/{{ assignment.id }}/reject">
+    <label>เหตุผลที่ไม่อนุมัติ (ทนายจะเห็นข้อความนี้) <textarea name="reason" maxlength="255" required></textarea></label>
+    <button type="submit" class="secondary">ไม่อนุมัติ</button>
+  </form>
+</div>
+{% endblock %}

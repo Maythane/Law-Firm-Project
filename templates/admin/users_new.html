@@ -1,0 +1,40 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<div class="admin-page">
+<div class="form-page">
+<div class="page-head">
+  <div>
+    <h2>เพิ่มผู้ใช้ใหม่</h2>
+    <p class="sub">{{ admin.display_name() }}</p>
+  </div>
+</div>
+{% if error %}<p class="banner-warn" role="alert"><strong>{{ error }}</strong></p>{% endif %}
+
+<form method="post" action="/admin/users/new">
+  <div class="grid">
+    <label>ชื่อ-นามสกุล <input type="text" name="name" value="{{ values.name or '' }}" required></label>
+    <label>เลขบัตรประชาชน <input type="text" name="citizen_id" value="{{ values.citizen_id or '' }}" required></label>
+  </div>
+  <div class="grid">
+    <label>เบอร์โทร <input type="text" name="phone" value="{{ values.phone or '' }}"></label>
+    <label>ชื่อผู้ใช้ (สำหรับล็อกอิน) <input type="text" name="username" value="{{ values.username or '' }}" required></label>
+  </div>
+  <div class="grid">
+    <label>รหัสผ่านเริ่มต้น <input type="password" name="password" required minlength="8"></label>
+    <label>บทบาท
+      <select name="role" required>
+        <option value="lawyer" {{ 'selected' if values.role == 'lawyer' }}>ทนาย</option>
+        <option value="manager" {{ 'selected' if values.role == 'manager' }}>ผู้จัดการ</option>
+        <option value="admin" {{ 'selected' if values.role == 'admin' }}>แอดมิน</option>
+      </select>
+    </label>
+  </div>
+  <label>เลขใบอนุญาตทนาย (กรอกเฉพาะบทบาททนาย) <input type="text" name="license_no" value="{{ values.license_no or '' }}"></label>
+  <div class="form-actions">
+    <button type="submit">เพิ่มผู้ใช้</button>
+    <a href="/admin/users" class="cancel">ยกเลิก</a>
+  </div>
+</form>
+</div>
+</div>
+{% endblock %}

@@ -1,11 +1,86 @@
 {% extends "base/layout.html" %}
 {% block content %}
-{% include "schedule/_pending_box.html" %}
-<h2>ตารางวันนี้ ({{ today|thaidate }}) — {{ lawyer.display_name() }}</h2>
-<p>
-  <a href="/schedule/new" role="button">+ เพิ่มนัด</a>
-  <a href="/reminders" role="button" class="secondary">รายการเตือน</a>
-  <a href="/schedule/month" role="button" class="secondary">ปฏิทินรายเดือน</a>
-</p>
-{% include "schedule/_appointments_table.html" %}
+<div class="cols-2">
+  <div>
+    <div class="page-head">
+      <div>
+        <h2>หน้าแรก</h2>
+        <p class="sub">{{ lawyer.display_name() }} · วันนี้ {{ today|thaidate }}</p>
+      </div>
+      <div class="actions"><a href="/schedule/new" role="button">+ เพิ่มนัด</a></div>
+    </div>
+
+    <div class="panel">
+    <div class="cal-head">
+      <h3>{{ month|thai_month }} {{ year + 543 }}</h3>
+      <a href="/schedule/today?year={{ prev_year }}&month={{ prev_month }}" role="button" class="secondary" aria-label="เดือนก่อน">←</a>
+      <a href="/schedule/today" role="button" class="secondary">เดือนนี้</a>
+      <a href="/schedule/today?year={{ next_year }}&month={{ next_month }}" role="button" class="secondary" aria-label="เดือนถัดไป">→</a>
+    </div>
+    <table class="bl32-calendar">
+      <thead><tr><th>จ</th><th>อ</th><th>พ</th><th>พฤ</th><th>ศ</th><th>ส</th><th>อา</th></tr></thead>
+      <tbody>
+      {% for week in calendar_weeks %}
+        <tr>
+        {% for cell in week %}
+          {% if cell is none %}
+          <td></td>
+          {% else %}
+          <td{% if year == today.year and month == today.month and cell.day == today.day %} class="today"{% endif %}>
+            <strong>{{ cell.day }}</strong>
+            {% for a in cell.shown %}
+            <button type="button" class="appt-btn secondary outline" onclick="document.getElementById('case-popup-{{ a.id }}').showModal()">
+              {{ a.case.display_black_no() }}<span class="loc"> · {{ a.location }}</span>
+            </button>
+            <dialog id="case-popup-{{ a.id }}" aria-labelledby="case-popup-{{ a.id }}-title">
+              <article>
+                <h3 id="case-popup-{{ a.id }}-title">{{ a.case.display_black_no() }} — {{ a.case.title }}</h3>
+                <p>
+                  สถานะ: {{ a.case.status|case_status_th }}<br>
+                  คู่ความ: {{ a.case.client.display_name() }} ({{ a.case.client_role }})<br>
+                  คู่ความอีกฝ่าย: {{ a.case.opposing_party }}<br>
+                  ศาล: {{ a.case.court_name }}
+                </p>
+                <footer>
+                  <a href="/schedule/new?case_id={{ a.case.id }}" role="button">+ ลงนัดถัดไปของคดีนี้</a>
+                  <form method="dialog"><button class="secondary">ปิด</button></form>
+                </footer>
+              </article>
+            </dialog>
+            {% endfor %}
+            {% if cell.more %}<div class="more">+{{ cell.more }} อื่นๆ</div>{% endif %}
+          </td>
+          {% endif %}
+        {% endfor %}
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+
+    <h3 class="section-title">ตารางวันนี้ <small>{{ today|thaidate }}</small></h3>
+    {% include "schedule/_appointments_table.html" %}
+  </div>
+
+  <div>
+    <div class="panel">
+      <h3>ใกล้ครบกำหนด</h3>
+      {% if reminders %}
+      {% for a in reminders %}
+      {% set d = a.starts_at.date()|days_until %}
+      <div class="reminder-row">
+        <span class="reminder-badge{{ '' if d <= 1 else ' amber' }}">{{ a.kind_label() }} · {{ 'เลยกำหนด ' ~ -d if d < 0 else d }} วัน</span>
+        <div style="flex:1">
+          <div class="t2">{{ a.case.display_black_no() }} — {{ a.case.title }}</div>
+          <div class="m2">ครบกำหนด {{ a.starts_at|thaidate('datetime') }}</div>
+        </div>
+      </div>
+      {% endfor %}
+      <p style="margin:0.6rem 0 0"><a href="/reminders">ดูทั้งหมด →</a></p>
+      {% else %}
+      <p class="empty">ไม่มีรายการใกล้ครบกำหนด</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
 {% endblock %}

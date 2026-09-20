@@ -1,0 +1,49 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<div class="form-page">
+<div class="page-head">
+  <div>
+    <h2>เพิ่มคดีใหม่</h2>
+    <p class="sub">เลือกลูกความเดิมหรือเพิ่มลูกความใหม่ในฟอร์มเดียว</p>
+  </div>
+</div>
+{% if error %}<p class="banner-warn" role="alert"><strong>{{ error }}</strong></p>{% endif %}
+<form method="post" action="/manager/cases/new">
+  <label>ลูกความเดิม
+    <select name="client_id">
+      <option value="">— เลือกลูกความเดิม หรือเพิ่มลูกความใหม่ด้านล่าง —</option>
+      {% for c in clients %}
+      <option value="{{ c.id }}">{{ c.display_name() }} ({{ c.citizen_id }})</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <details>
+    <summary role="button" class="secondary">หรือเพิ่มลูกความใหม่</summary>
+    <label>ชื่อ-นามสกุล / ชื่อนิติบุคคล <input type="text" name="new_client_name" value="{{ values.get('new_client_name', '') }}"></label>
+    <div class="grid">
+      <label>เลขบัตรประชาชน / เลขทะเบียนนิติบุคคล <input type="text" name="new_client_citizen_id" value="{{ values.get('new_client_citizen_id', '') }}"></label>
+      <label>เบอร์โทร <input type="text" name="new_client_phone" value="{{ values.get('new_client_phone', '') }}"></label>
+    </div>
+    <label>ชื่อบริษัท (ถ้าเป็นนิติบุคคล) <input type="text" name="new_client_company" value="{{ values.get('new_client_company', '') }}"></label>
+  </details>
+
+  <label>ชื่อคดี <input type="text" name="title" value="{{ values.get('title', '') }}" required></label>
+  <div class="grid">
+    <label>สถานะลูกความในคดี
+      <select name="client_role" required>
+        <option value="โจทก์" {% if values.get('client_role') == 'โจทก์' %}selected{% endif %}>โจทก์</option>
+        <option value="จำเลย" {% if values.get('client_role') == 'จำเลย' %}selected{% endif %}>จำเลย</option>
+      </select>
+    </label>
+    <label>วันที่เปิดคดี <input type="date" name="opened_date" value="{{ values.get('opened_date', today) }}" required></label>
+  </div>
+  <label>คู่ความอีกฝ่าย <input type="text" name="opposing_party" value="{{ values.get('opposing_party', '') }}" required></label>
+  <label>ศาลที่เกี่ยวข้อง <input type="text" name="court_name" value="{{ values.get('court_name', '') }}" required></label>
+  <div class="form-actions">
+    <button type="submit">เพิ่มคดีใหม่</button>
+    <a href="/manager/dashboard" class="cancel">ยกเลิก</a>
+  </div>
+</form>
+</div>
+{% endblock %}

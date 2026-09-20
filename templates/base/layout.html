@@ -4,22 +4,87 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}ระบบผู้ช่วยจัดการคดี{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="/static/theme.css?v={{ css_version() }}">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.12/htmx.min.js"></script>
 </head>
 <body>
-  <main class="container">
-    <nav>
-      <ul><li><strong>ระบบผู้ช่วยจัดการคดีและตารางนัดหมาย</strong></li></ul>
-      <ul><li>
-        {% if request.cookies.get('session') %}
-        <form method="post" action="/logout" style="display:inline">
-          <button type="submit" class="secondary">ออกจากระบบ</button>
-        </form>
-        {% endif %}
-      </li></ul>
-    </nav>
-    {% block content %}{% endblock %}
-  </main>
+{% set su = sidebar_user(request) %}
+{% set pending = lawyer_pending(su) %}
+{% set workload = lawyer_workload(su) %}
+<div class="app-shell">
+  {% if su %}
+  <aside class="sidebar">
+    <div class="brand">
+      {% include "base/_brand_icon.html" %}
+      <div><b>สำนวน</b><span>LAW FIRM SYSTEM</span></div>
+    </div>
+    <nav>{% include "base/_nav.html" %}</nav>
+    <div class="foot">
+      <div class="av">{{ su.display_name()[:2] }}</div>
+      <div class="who">
+        {{ su.display_name() }}
+        <button type="button" class="secondary" onclick="document.getElementById('account-edit-dialog').showModal()">แก้ไขผู้ใช้</button>
+        <form method="post" action="/logout"><button type="submit" class="secondary">ออกจากระบบ</button></form>
+      </div>
+    </div>
+  </aside>
+  {% endif %}
+
+  <div class="app-main">
+    {% if su %}
+    <div class="mobile-topbar">
+      <div class="m-brand">{% include "base/_brand_icon.html" %}<strong>สำนวน</strong></div>
+      <details class="m-menu">
+        <summary role="button" class="secondary">เมนู</summary>
+        <div class="m-panel">
+          <nav>{% with mobile=true %}{% include "base/_nav.html" %}{% endwith %}</nav>
+          <div class="m-foot">
+            <span>{{ su.display_name() }}</span>
+            <button type="button" class="secondary" onclick="document.getElementById('account-edit-dialog').showModal()">แก้ไขผู้ใช้</button>
+            <form method="post" action="/logout"><button type="submit" class="secondary">ออกจากระบบ</button></form>
+          </div>
+        </div>
+      </details>
+    </div>
+    {% endif %}
+    <main class="container">
+      <h1 class="sr-only">{{ self.title() }}</h1>
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+{#- dialog อยู่นอก sidebar: sidebar ถูกซ่อนบนมือถือ dialog ที่อยู่ข้างในจะเปิดไม่ขึ้น -#}
+{% if su %}
+{% if su.__class__.__name__ == 'Lawyer' %}
+<dialog id="pending-dialog" aria-labelledby="pending-dialog-title">
+  <article>
+    <h3 id="pending-dialog-title">คดีรอการตอบรับ</h3>
+    <div id="pending-list">{% include "schedule/_pending_rows.html" %}</div>
+    <footer><form method="dialog"><button class="secondary">ปิด</button></form></footer>
+  </article>
+</dialog>
+{% endif %}
+{% set account_error = request.query_params.get('account_error') %}
+<dialog id="account-edit-dialog" aria-labelledby="account-edit-title">
+  <article>
+    <h3 id="account-edit-title">แก้ไขผู้ใช้</h3>
+    {% if account_error %}<p class="banner-warn" role="alert"><strong>{{ account_error }}</strong></p>{% endif %}
+    <form method="post" action="/account/edit">
+      <label>ชื่อที่ใช้แสดง <input type="text" name="name" value="{{ su.name }}" required></label>
+      <label>ชื่อผู้ใช้ <input type="text" name="username" value="{{ su.username }}" required></label>
+      <label>รหัสผ่านเดิม (กรอกเฉพาะตอนต้องการเปลี่ยนรหัสผ่านใหม่) <input type="password" name="current_password"></label>
+      <label>รหัสผ่านใหม่ (เว้นว่างถ้าไม่ต้องการเปลี่ยน) <input type="password" name="new_password" minlength="8"></label>
+      <button type="submit">บันทึก</button>
+    </form>
+    <footer><form method="dialog"><button class="secondary">ปิด</button></form></footer>
+  </article>
+</dialog>
+{% if account_error %}<script>document.getElementById('account-edit-dialog').showModal()</script>{% endif %}
+{% endif %}
 </body>
 </html>

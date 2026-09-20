@@ -1,17 +1,24 @@
 {% extends "base/layout.html" %}
 {% block content %}
-<h2>มอบหมายทนาย — {{ case.display_black_no() }} {{ case.title }}</h2>
-{% if error %}<p style="color:var(--pico-del-color)"><strong>{{ error }}</strong></p>{% endif %}
+<p class="back"><a href="/manager/dashboard#notify-{{ back }}">← หน้าแรก</a></p>
+<div class="page-head">
+  <div>
+    <h2>มอบหมายทนาย</h2>
+    <p class="sub">{{ case.display_black_no() }} — {{ case.title }}</p>
+  </div>
+</div>
+{% if error %}<p class="banner-warn" role="alert"><strong>{{ error }}</strong></p>{% endif %}
 {% if warning %}
-<article>
+<div class="banner-warn">
   <strong>⚠ {{ warning }}</strong>
   <form method="post" action="/manager/cases/{{ case.id }}/assign">
     <input type="hidden" name="lawyer_id" value="{{ pending_lawyer_id }}">
     <input type="hidden" name="is_lead" value="{{ 'true' if pending_is_lead else '' }}">
     <input type="hidden" name="confirm_overload" value="true">
+    <input type="hidden" name="back" value="{{ back }}">
     <button type="submit">ยืนยันมอบหมายแม้ภาระงานเกิน</button>
   </form>
-</article>
+</div>
 {% endif %}
 <p>
   ทนายที่ตอบรับแล้วในคดีนี้:
@@ -23,10 +30,11 @@
   {% for lawyer, workload in workloads %}
     <tr>
       <td>{{ lawyer.display_name() }}</td>
-      <td>{{ workload }}{% if workload >= threshold %} ⚠ เกินเกณฑ์{% endif %}</td>
-      <td>
+      <td>{{ workload }}{% if workload >= threshold %} <span class="chip d">เกินเกณฑ์</span>{% endif %}</td>
+      <td class="row-action">
         <form method="post" action="/manager/cases/{{ case.id }}/assign">
           <input type="hidden" name="lawyer_id" value="{{ lawyer.id }}">
+          <input type="hidden" name="back" value="{{ back }}">
           <label><input type="checkbox" name="is_lead" value="true"> ให้เป็นทนายหลัก</label>
           <button type="submit">มอบหมาย</button>
         </form>

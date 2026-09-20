@@ -1,0 +1,24 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<div class="admin-page">
+<div class="page-head">
+  <div>
+    <h2>แดชบอร์ด</h2>
+    <p class="sub">{{ admin.display_name() }}</p>
+  </div>
+  <div class="actions"><a href="/admin/users/new" role="button">+ เพิ่มผู้ใช้ใหม่</a></div>
+</div>
+
+<h3 class="section-title" style="margin-top:0">จำนวนผู้ใช้ในระบบ</h3>
+<div class="panel">
+  {% for role, label in [('lawyer', 'ทนาย'), ('manager', 'ผู้จัดการ'), ('admin', 'แอดมิน')] %}
+  <div class="item-card">
+    <div>
+      <div class="t2">{{ label }}</div>
+      <div class="m2">ทั้งหมด {{ counts[role].total }} คน · เปิดใช้งาน {{ counts[role].active }} คน · ปิดใช้งาน {{ counts[role].total - counts[role].active }} คน</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+</div>
+{% endblock %}

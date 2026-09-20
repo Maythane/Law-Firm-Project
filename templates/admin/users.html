@@ -1,9 +1,15 @@
 {% extends "base/layout.html" %}
 {% block content %}
-<h2>จัดการผู้ใช้ — {{ admin.display_name() }}</h2>
-{% if error %}<p style="color:var(--pico-del-color)"><strong>{{ error }}</strong></p>{% endif %}
+<div class="admin-page">
+<div class="page-head">
+  <div>
+    <h2>รายชื่อผู้ใช้ทั้งหมด</h2>
+    <p class="sub">{{ admin.display_name() }} · {{ users|length }} บัญชี</p>
+  </div>
+  <div class="actions"><a href="/admin/users/new" role="button">+ เพิ่มผู้ใช้ใหม่</a></div>
+</div>
+{% if error %}<p class="banner-warn" role="alert"><strong>{{ error }}</strong></p>{% endif %}
 
-<h3>รายชื่อผู้ใช้ทั้งหมด</h3>
 <table>
   <thead><tr><th>บทบาท</th><th>ชื่อ</th><th>ชื่อผู้ใช้</th><th>สถานะ</th><th></th></tr></thead>
   <tbody>
@@ -16,7 +22,7 @@
       </td>
       <td>{{ u.display_name() }}</td>
       <td>{{ u.username }}</td>
-      <td>{% if u.is_active %}เปิดใช้งาน{% else %}ปิดใช้งาน{% endif %}</td>
+      <td>{% if u.is_active %}<span class="chip">เปิดใช้งาน</span>{% else %}<span class="chip l">ปิดใช้งาน</span>{% endif %}</td>
       <td>
         <form method="post" action="/admin/users/{{ u.id }}/toggle-active" style="display:inline">
           <button type="submit" class="{{ 'secondary' if u.is_active else '' }}">
@@ -24,9 +30,11 @@
           </button>
         </form>
         <details style="display:inline-block">
-          <summary role="button" class="secondary">รีเซ็ตรหัสผ่าน</summary>
-          <form method="post" action="/admin/users/{{ u.id }}/reset-password">
-            <input type="password" name="new_password" placeholder="รหัสผ่านใหม่ (อย่างน้อย 8 ตัว)" required minlength="8">
+          <summary role="button" class="secondary">แก้ไข</summary>
+          <form method="post" action="/admin/users/{{ u.id }}/edit">
+            <label>ชื่อที่ใช้แสดง <input type="text" name="name" value="{{ u.name }}" required></label>
+            <label>ชื่อผู้ใช้ <input type="text" name="username" value="{{ u.username }}" required></label>
+            <label>รหัสผ่านใหม่ (เว้นว่างถ้าไม่ต้องการเปลี่ยน) <input type="password" name="new_password" minlength="8"></label>
             <button type="submit">บันทึก</button>
           </form>
         </details>
@@ -35,28 +43,5 @@
   {% endfor %}
   </tbody>
 </table>
-
-<h3>เพิ่มผู้ใช้ใหม่</h3>
-<form method="post" action="/admin/users">
-  <div class="grid">
-    <label>ชื่อ-นามสกุล <input type="text" name="name" required></label>
-    <label>เลขบัตรประชาชน <input type="text" name="citizen_id" required></label>
-  </div>
-  <div class="grid">
-    <label>เบอร์โทร <input type="text" name="phone"></label>
-    <label>ชื่อผู้ใช้ (สำหรับล็อกอิน) <input type="text" name="username" required></label>
-  </div>
-  <div class="grid">
-    <label>รหัสผ่านเริ่มต้น <input type="password" name="password" required minlength="8"></label>
-    <label>บทบาท
-      <select name="role" required>
-        <option value="lawyer">ทนาย</option>
-        <option value="manager">ผู้จัดการ</option>
-        <option value="admin">แอดมิน</option>
-      </select>
-    </label>
-  </div>
-  <label>เลขใบอนุญาตทนาย (กรอกเฉพาะบทบาททนาย) <input type="text" name="license_no"></label>
-  <button type="submit">เพิ่มผู้ใช้</button>
-</form>
+</div>
 {% endblock %}

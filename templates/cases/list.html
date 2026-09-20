@@ -1,0 +1,49 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h2>คดีของฉัน</h2>
+    <p class="sub">{{ rows|length }} คดี{{ ' ตามเงื่อนไขที่ค้นหา' if (q or status) }}</p>
+  </div>
+</div>
+<nav class="tabs" aria-label="กลุ่มคดี">
+  <a href="/cases?tab=active" class="{{ 'on' if tab != 'closed' }}">กำลังดำเนินการ</a>
+  <a href="/cases?tab=closed" class="{{ 'on' if tab == 'closed' }}">ปิดแล้ว / ยกเลิก</a>
+</nav>
+<form method="get" action="/cases" class="filter-row">
+  <input type="hidden" name="tab" value="{{ tab }}">
+  <label>ค้นหา (ชื่อคดี / เลขคดี / ลูกความ / คู่ความ)
+    <input type="search" name="q" value="{{ q }}">
+  </label>
+  <label>สถานะ
+    <select name="status">
+      <option value="">ทั้งหมด</option>
+      {% for s in statuses %}<option value="{{ s.value }}" {{ 'selected' if status == s.value }}>{{ s|case_status_th }}</option>{% endfor %}
+    </select>
+  </label>
+  <button type="submit">ค้นหา</button>
+</form>
+{% if rows %}
+<table>
+  <thead>
+    <tr><th>คดี</th><th>เลขดำ / แดง</th><th>ศาล</th><th>ลูกความ</th><th>สถานะ</th><th>บทบาท</th><th>นัดถัดไป</th></tr>
+  </thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td><a href="/cases/{{ r.case.id }}">{{ r.case.title }}</a>
+        {% if r.assignment.is_withdraw_requested() %}<br><span class="chip d">ขอถอนตัว รออนุมัติ</span>{% endif %}</td>
+      <td>{{ r.case.display_black_no() }} / {{ r.case.display_red_no() }}</td>
+      <td>{{ r.case.court_name }}</td>
+      <td>{{ r.case.client.display_name() }}</td>
+      <td><span class="chip l">{{ r.case.status|case_status_th }}</span></td>
+      <td>{{ 'ทนายหลัก' if r.assignment.is_lead else 'ทนายร่วม' }}</td>
+      <td>{% if r.next %}{{ r.next.starts_at|thaidate('datetime') }}<br><small>{{ r.next.kind_label() }}</small>{% else %}-{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">{{ 'ไม่พบคดีตามเงื่อนไขที่ค้นหา' if (q or status) else 'ยังไม่มีคดีในกลุ่มนี้' }}{% if tab != 'closed' and not (q or status) %} — คดีที่รับแล้วจะแสดงที่นี่ · ดูคดีรอตอบรับที่เมนูซ้าย{% endif %}</p>
+{% endif %}
+{% endblock %}

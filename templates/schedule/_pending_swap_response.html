@@ -1,0 +1,2 @@
+{% include "schedule/_pending_rows.html" %}
+<span id="pending-badge" class="pending-badge{{ '' if pending else ' muted' }}" hx-swap-oob="true">{{ pending|length }}</span>

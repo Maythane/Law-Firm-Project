@@ -1,0 +1,50 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<p class="back"><a href="/manager/dashboard">← หน้าแรก</a></p>
+<div class="page-head">
+  <div>
+    <h2>{{ lawyer.display_name() }}</h2>
+    <p class="sub">ภาระงาน {{ lawyer_load }} (คดีที่ตอบรับ + นัด 30 วันข้างหน้า) · ดูแล {{ total }} คดี</p>
+  </div>
+</div>
+{% if status_counts %}
+<p class="status-summary">
+  {% for s, n in status_counts %}<span class="chip l">{{ s|case_status_th }} {{ n }}</span> {% endfor %}
+</p>
+{% endif %}
+
+<nav class="tabs" aria-label="กลุ่มคดี">
+  <a href="/manager/lawyers/{{ lawyer.id }}?tab=active" class="{{ 'on' if tab != 'closed' }}">กำลังดำเนินการ</a>
+  <a href="/manager/lawyers/{{ lawyer.id }}?tab=closed" class="{{ 'on' if tab == 'closed' }}">ปิดแล้ว / ยกเลิก</a>
+</nav>
+
+{% if rows %}
+<table>
+  <thead>
+    <tr><th>คดี</th><th>เลขดำ / แดง</th><th>ลูกความ</th><th>ศาล</th><th>ความคืบหน้า</th><th>นัดถัดไป</th><th>อัปเดตล่าสุด</th><th>บทบาท</th></tr>
+  </thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td><a href="/cases/{{ r.case.id }}">{{ r.case.title }}</a>
+        {% if r.assignment.is_withdraw_requested() %}<br><span class="chip d">ขอถอนตัว รออนุมัติ</span>{% endif %}</td>
+      <td class="nowrap">{{ r.case.display_black_no() }} / {{ r.case.display_red_no() }}</td>
+      <td>{{ r.case.client.display_name() }}</td>
+      <td>{{ r.case.court_name }}</td>
+      <td>
+        {% if r.progress %}
+        <div class="progress" role="img" aria-label="ขั้น {{ r.progress.step }} จาก {{ r.progress.total }}"><span style="width: {{ r.progress.pct }}%"></span></div>
+        <small>ขั้น {{ r.progress.step }}/{{ r.progress.total }} · {{ r.case.status|case_status_th }}</small>
+        {% else %}<span class="chip d">{{ r.case.status|case_status_th }}</span>{% endif %}
+      </td>
+      <td>{% if r.next %}{{ r.next.starts_at|thaidate('datetime') }}<br><small>{{ r.next.kind_label() }}</small>{% else %}-{% endif %}</td>
+      <td>{{ r.updated[0] }}<br><small>{{ r.updated[1]|thaidate }}</small></td>
+      <td class="nowrap">{{ 'ทนายหลัก' if r.assignment.is_lead else 'ทนายร่วม' }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">ยังไม่มีคดีในกลุ่มนี้</p>
+{% endif %}
+{% endblock %}

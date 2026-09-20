@@ -1,6 +1,12 @@
 {% extends "base/layout.html" %}
 {% block content %}
-<h2>ตาราง {{ day|thaidate }} — {{ lawyer.display_name() }}</h2>
-<p><a href="/schedule/month?year={{ day.year }}&month={{ day.month }}" role="button" class="secondary">← กลับปฏิทินเดือน</a></p>
+<p class="back"><a href="/schedule/month?year={{ day.year }}&month={{ day.month }}">← ปฏิทินรายเดือน</a></p>
+<div class="page-head">
+  <div>
+    <h2>ตาราง {{ day|thaidate }}</h2>
+    <p class="sub">{{ lawyer.display_name() }}</p>
+  </div>
+  <div class="actions"><a href="/schedule/new" role="button">+ เพิ่มนัด</a></div>
+</div>
 {% include "schedule/_appointments_table.html" %}
 {% endblock %}

@@ -1,0 +1,30 @@
+{#- เมนูตามบทบาท ใช้ร่วมกันระหว่าง sidebar (จอกว้าง) และเมนู <details> บนแถบบน (มือถือ) — mobile=true ตัด id ซ้ำของ badge ที่ HTMX out-of-band swap อ้างอิงอยู่ -#}
+{% if su.__class__.__name__ == 'Lawyer' %}
+  {% set on_home = request.url.path.startswith('/schedule/today') or request.url.path == '/schedule/day' %}
+  {% set on_cases = request.url.path.startswith('/cases') %}
+  {% set on_month = request.url.path.startswith('/schedule/month') %}
+  {% set on_reminders = request.url.path.startswith('/reminders') %}
+  <a href="/schedule/today" class="{{ 'on' if on_home }}" {{ ('aria-current="page"' if on_home else '') | safe }}>หน้าแรก</a>
+  <a href="/cases" class="{{ 'on' if on_cases }}" {{ ('aria-current="page"' if on_cases else '') | safe }}>คดีของฉัน</a>
+  <a href="/schedule/month" class="{{ 'on' if on_month }}" {{ ('aria-current="page"' if on_month else '') | safe }}>ปฏิทินรายเดือน</a>
+  <a href="/reminders" class="{{ 'on' if on_reminders }}" {{ ('aria-current="page"' if on_reminders else '') | safe }}>รายการเตือน</a>
+  <button type="button" class="pending-trigger" onclick="document.getElementById('pending-dialog').showModal()">
+    คดีรอตอบรับ
+    <span {% if not mobile %}id="pending-badge" {% endif %}class="pending-badge{{ '' if pending else ' muted' }}">{{ pending|length }}</span>
+  </button>
+{% elif su.__class__.__name__ == 'Manager' %}
+  {% set on_dashboard = request.url.path == '/manager/dashboard' %}
+  {% set on_new_case = request.url.path == '/manager/cases/new' %}
+  {% set withdraw_count = withdraw_request_count(su) %}
+  <a href="/manager/dashboard" class="{{ 'on' if on_dashboard }}" {{ ('aria-current="page"' if on_dashboard else '') | safe }}>หน้าแรก</a>
+  <a href="/manager/dashboard#notify-withdraw">คำขอถอนตัว
+    <span class="pending-badge{{ '' if withdraw_count else ' muted' }}">{{ withdraw_count }}</span></a>
+  <a href="/manager/cases/new" class="{{ 'on' if on_new_case }}" {{ ('aria-current="page"' if on_new_case else '') | safe }}>เพิ่มคดีใหม่</a>
+{% else %}
+  {% set on_dashboard = request.url.path == '/admin/dashboard' %}
+  {% set on_new_user = request.url.path == '/admin/users/new' %}
+  {% set on_users = request.url.path == '/admin/users' %}
+  <a href="/admin/dashboard" class="{{ 'on' if on_dashboard }}" {{ ('aria-current="page"' if on_dashboard else '') | safe }}>แดชบอร์ด</a>
+  <a href="/admin/users/new" class="{{ 'on' if on_new_user }}" {{ ('aria-current="page"' if on_new_user else '') | safe }}>เพิ่มผู้ใช้ใหม่</a>
+  <a href="/admin/users" class="{{ 'on' if on_users }}" {{ ('aria-current="page"' if on_users else '') | safe }}>รายชื่อผู้ใช้ทั้งหมด</a>
+{% endif %}

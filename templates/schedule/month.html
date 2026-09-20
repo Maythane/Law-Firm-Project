@@ -1,12 +1,20 @@
 {% extends "base/layout.html" %}
 {% block content %}
-<h2>ปฏิทิน {{ month }}/{{ year + 543 }} — {{ lawyer.display_name() }}</h2>
-<p>
-  <a href="/schedule/month?year={{ prev_year }}&month={{ prev_month }}" role="button" class="secondary">← เดือนก่อน</a>
-  <a href="/schedule/today" role="button" class="secondary">วันนี้</a>
-  <a href="/schedule/month?year={{ next_year }}&month={{ next_month }}" role="button" class="secondary">เดือนถัดไป →</a>
-</p>
-<table>
+<div class="page-head">
+  <div>
+    <h2>ปฏิทินรายเดือน</h2>
+    <p class="sub">{{ lawyer.display_name() }}</p>
+  </div>
+  <div class="actions"><a href="/schedule/new" role="button">+ เพิ่มนัด</a></div>
+</div>
+<div class="panel">
+<div class="cal-head">
+  <h3>{{ month|thai_month }} {{ year + 543 }}</h3>
+  <a href="/schedule/month?year={{ prev_year }}&month={{ prev_month }}" role="button" class="secondary" aria-label="เดือนก่อน">←</a>
+  <a href="/schedule/month" role="button" class="secondary">เดือนนี้</a>
+  <a href="/schedule/month?year={{ next_year }}&month={{ next_month }}" role="button" class="secondary" aria-label="เดือนถัดไป">→</a>
+</div>
+<table class="bl32-calendar">
   <thead><tr><th>จ</th><th>อ</th><th>พ</th><th>พฤ</th><th>ศ</th><th>ส</th><th>อา</th></tr></thead>
   <tbody>
   {% for week in calendar_weeks %}
@@ -15,7 +23,7 @@
       {% if cell is none %}
       <td></td>
       {% else %}
-      <td>
+      <td{% if year == today.year and month == today.month and cell.day == today.day %} class="today"{% endif %}>
         <a href="/schedule/day?d={{ '%04d-%02d-%02d'|format(year, month, cell.day) }}">
           <strong>{{ cell.day }}</strong>
           {% if cell.count %}<br><small>{{ cell.count }} นัด · {{ cell.kinds|join(', ') }}</small>{% endif %}
@@ -27,4 +35,5 @@
   {% endfor %}
   </tbody>
 </table>
+</div>
 {% endblock %}

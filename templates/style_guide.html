@@ -1,0 +1,83 @@
+{% extends "base/layout.html" %}
+{% block title %}Style Guide{% endblock %}
+{% block content %}
+<style>
+  .sg-swatch { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem; }
+  .sg-swatch .box { width: 44px; height: 44px; border-radius: var(--pico-border-radius); border: 1px solid var(--pico-muted-border-color); flex: none; }
+  .sg-swatch code { font-size: 0.8rem; }
+  .sg-row { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
+  .sg-bar { height: 1.4rem; background: var(--pico-primary); border-radius: 3px; }
+</style>
+
+<div class="page-head"><div><h2>Style Guide</h2><p class="sub">อ้างอิงสดจาก <code>static/theme.css</code> ตรงตาม <code>DESIGN.md</code></p></div></div>
+
+<h3>สี</h3>
+<div class="panel">
+  <div class="sg-swatch"><div class="box" style="background:var(--pico-primary)"></div><code>--pico-primary</code> — Chambers Purple ปุ่มหลัก/active</div>
+  <div class="sg-swatch"><div class="box" style="background:var(--pico-primary-hover)"></div><code>--pico-primary-hover</code> — hover ของทุกอย่างที่เป็น Chambers Purple</div>
+  <div class="sg-swatch"><div class="box" style="background:var(--pico-secondary-background)"></div><code>--pico-secondary-background</code> — Soft Chambers พื้นผิวรอง</div>
+  <div class="sg-swatch"><div class="box" style="background:var(--lawfirm-lav2)"></div><code>--lawfirm-lav2</code> — Chambers Lavender</div>
+  <div class="sg-swatch"><div class="box" style="background:var(--lawfirm-neutral-surface)"></div><code>--lawfirm-neutral-surface</code> — พื้น chip นัดพบลูกความ/เลขคดี</div>
+  <div class="sg-swatch"><div class="box" style="background:var(--pico-background-color)"></div><code>--pico-background-color</code> — Paper Lavender พื้นหลังหน้า</div>
+  <div class="sg-swatch"><div class="box" style="background:var(--pico-card-background-color)"></div><code>--pico-card-background-color</code> — Case Surface พื้นการ์ด</div>
+  <div class="sg-swatch"><div class="box" style="background:var(--pico-color)"></div><code>--pico-color</code> — Ink Plum ตัวอักษรหลัก</div>
+  <div class="sg-swatch"><div class="box" style="background:var(--pico-muted-color)"></div><code>--pico-muted-color</code> — Filing Muted ตัวอักษรรอง</div>
+  <div class="sg-swatch"><div class="box" style="background:var(--pico-muted-border-color)"></div><code>--pico-muted-border-color</code> — Folder Line เส้นขอบ</div>
+  <div class="sg-swatch"><div class="box" style="background:var(--lawfirm-warn)"></div><code>--lawfirm-warn</code> — Filing Red</div>
+  <div class="sg-swatch"><div class="box" style="background:var(--lawfirm-warn-surface)"></div><code>--lawfirm-warn-surface</code></div>
+  <div class="sg-swatch"><div class="box" style="background:var(--lawfirm-amber)"></div><code>--lawfirm-amber</code> — Caution Amber</div>
+  <div class="sg-swatch"><div class="box" style="background:var(--lawfirm-amber-surface)"></div><code>--lawfirm-amber-surface</code></div>
+</div>
+
+<h3>ตัวอักษร</h3>
+<div class="panel">
+  <h2 style="margin-bottom:0.4rem">Title (600) — หัวข้อหน้า</h2>
+  <p style="margin-bottom:0.4rem">Body (400, 1rem = 15px) — เนื้อหาทั่วไป</p>
+  <p style="font-size:0.78rem; color:var(--pico-muted-color); margin-bottom:0.4rem">Meta (400, ~0.78rem, Filing Muted) — ข้อความรองใต้หัวข้อการ์ด</p>
+  <span class="chip">Label (600, 0.72rem)</span>
+</div>
+
+<h3>Spacing scale ที่ใช้จริง</h3>
+<div class="panel">
+  <div class="sg-row"><div class="sg-bar" style="width:0.35rem"></div><code>0.2–0.4rem</code> — ช่องไฟใน label/chip</div>
+  <div class="sg-row"><div class="sg-bar" style="width:0.75rem"></div><code>0.6–0.9rem</code> — ช่องไฟในการ์ด/ปุ่ม</div>
+  <div class="sg-row"><div class="sg-bar" style="width:1.2rem"></div><code>1–1.3rem</code> — ระยะห่างระหว่างกล่อง/section</div>
+</div>
+
+<h3>ปุ่ม</h3>
+<div class="panel sg-row">
+  <button type="button">Primary</button>
+  <button type="button" class="secondary">Secondary (outline)</button>
+</div>
+
+<h3>Chip</h3>
+<div class="panel sg-row">
+  <span class="chip">นัดศาล / ทนายหลัก</span>
+  <span class="chip l">นัดพบลูกความ / สถานะคดี</span>
+  <span class="chip d">กำหนดยื่นเอกสาร / ขอถอนตัว</span>
+</div>
+
+<h3>Badge (signature component)</h3>
+<div class="panel sg-row">
+  <span class="pending-badge">3</span>
+  <span class="pending-badge muted">0</span>
+  <span style="font-size:0.8rem; color:var(--pico-muted-color)">แสดงตัวเลขเสมอทั้งสองสถานะ ไม่ซ่อนตอนไม่มีรายการ</span>
+</div>
+
+<h3>การ์ดนัด (ชนิดนัดสื่อด้วย chip ไม่มีแถบสีซ้าย)</h3>
+<div class="panel">
+  <div class="appt-card"><div class="appt-time">09:00<small>–10:00</small></div><div class="appt-body"><div class="appt-row1"><span class="chip">นัดศาล</span><span class="no-badge">35/2568</span></div><div class="t">ตัวอย่างชื่อคดี</div><div class="m">ศาลแพ่งกรุงเทพใต้</div></div></div>
+  <div class="appt-card"><div class="appt-time">13:30<small>–14:30</small></div><div class="appt-body"><div class="appt-row1"><span class="chip l">นัดพบลูกความ</span></div><div class="t">ตัวอย่างชื่อคดี</div><div class="m">สำนักงาน</div></div></div>
+</div>
+
+<h3>การ์ดตัวเลข (dashboard manager)</h3>
+<div class="stat-row">
+  <a class="stat-card" href="#"><span class="n">3</span><span class="l">มีรายการค้าง</span></a>
+  <a class="stat-card zero" href="#"><span class="n">0</span><span class="l">ไม่มีรายการ</span></a>
+</div>
+
+<h3>Elevation</h3>
+<div class="panel">
+  <p style="margin:0">ไม่มี <code>box-shadow</code> แม้แต่จุดเดียว — ความลึกสื่อผ่านสีพื้นหลัง (Paper Lavender) ตัดกับพื้นผิวการ์ด (Case Surface) และเส้นขอบ 1px เท่านั้น (The Flat Ledger Rule)</p>
+</div>
+{% endblock %}

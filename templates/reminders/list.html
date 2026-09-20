@@ -1,25 +1,28 @@
 {% extends "base/layout.html" %}
 {% block content %}
-<h2>รายการเตือน — {{ lawyer.display_name() }}</h2>
+<div class="page-head">
+  <div>
+    <h2>รายการเตือน</h2>
+    <p class="sub">{{ lawyer.display_name() }} · {{ items|length }} รายการใกล้ครบกำหนด</p>
+  </div>
+</div>
 {% if items %}
-<table>
-  <thead><tr><th>กำหนด</th><th>ชนิด</th><th>คดี</th><th></th></tr></thead>
-  <tbody>
-  {% for a in items %}
-    <tr>
-      <td>{{ a.starts_at|thaidate('datetime') }}</td>
-      <td>{{ a.kind_label() }}</td>
-      <td><a href="/cases/{{ a.case.id }}">{{ a.case.display_black_no() }} — {{ a.case.title }}</a></td>
-      <td>
-        <form method="post" action="/reminders/{{ a.id }}/done" style="display:inline">
-          <button type="submit">ทำแล้ว</button>
-        </form>
-      </td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
+<div class="panel">
+{% for a in items %}
+{% set d = a.starts_at.date()|days_until %}
+<div class="reminder-row">
+  <span class="reminder-badge{{ '' if d <= 1 else ' amber' }}">{{ a.kind_label() }} · {{ 'เลยกำหนด ' ~ -d if d < 0 else d }} วัน</span>
+  <div style="flex:1">
+    <div class="t2"><a href="/cases/{{ a.case.id }}">{{ a.case.display_black_no() }} — {{ a.case.title }}</a></div>
+    <div class="m2">ครบกำหนด {{ a.starts_at|thaidate('datetime') }}</div>
+  </div>
+  <form method="post" action="/reminders/{{ a.id }}/done" style="display:inline;margin:0">
+    <button type="submit" class="secondary" style="width:auto;margin:0">ทำแล้ว</button>
+  </form>
+</div>
+{% endfor %}
+</div>
 {% else %}
-<p>ไม่มีรายการเตือนตอนนี้</p>
+<p class="empty">ไม่มีรายการเตือนตอนนี้</p>
 {% endif %}
 {% endblock %}

@@ -1,32 +1,153 @@
 {% extends "base/layout.html" %}
 {% block content %}
-<h2>{{ case.title }}</h2>
-<p>
-  หมายเลขคดีดำ: {{ case.display_black_no() }} · หมายเลขคดีแดง: {{ case.display_red_no() }}<br>
-  สถานะ: {{ case.status.value }}<br>
-  ศาล: {{ case.court_name }}<br>
-  ลูกความ: {{ case.client.display_name() }} ({{ case.client_role }})<br>
-  คู่ความอีกฝ่าย: {{ case.opposing_party }}<br>
-  ทนายที่รับผิดชอบ:
-  {% for l in case.lawyers() %}{{ l.display_name() }}{% if not loop.last %}, {% endif %}{% else %}ยังไม่มี{% endfor %}
-</p>
-<h3>นัดหมายทั้งหมด</h3>
-{% if appointments %}
-<table>
-  <thead><tr><th>วันเวลา</th><th>ชนิด</th><th>ทนาย</th><th>สถานที่</th><th>สถานะ</th></tr></thead>
-  <tbody>
-  {% for a in appointments %}
-    <tr>
-      <td>{{ a.starts_at|thaidate('datetime') }}</td>
-      <td>{{ a.kind_label() }}</td>
-      <td>{{ a.lawyer.display_name() }}</td>
-      <td>{{ a.location }}</td>
-      <td>{% if a.is_cancelled %}ยกเลิก{% elif a.is_done %}เสร็จแล้ว{% else %}-{% endif %}</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<p>ยังไม่มีนัดหมาย</p>
+<div class="page-head">
+  <div>
+    <h2>{{ case.title }}</h2>
+    <p class="sub"><span class="chip l">{{ case.status|case_status_th }}</span> · เลขดำ {{ case.display_black_no() }} · เลขแดง {{ case.display_red_no() }}</p>
+  </div>
+  {% if my_assignment %}
+  <div class="actions"><a href="/schedule/new?case_id={{ case.id }}" role="button">+ เพิ่มนัดหมาย</a></div>
+  {% endif %}
+</div>
+{% if error %}<p class="banner-warn" role="alert"><strong>{{ error }}</strong></p>{% endif %}
+{% if my_assignment %}
+{% if my_assignment.is_withdraw_requested() %}
+<p class="banner-warn">ขอถอนตัว รออนุมัติจากผู้จัดการ ({{ WITHDRAW_REASONS[my_assignment.withdraw_reason_code] }}) — ระหว่างนี้ยังทำงานในคดีได้ตามปกติ</p>
+{% elif my_assignment.withdraw_reject_reason %}
+<p class="banner-warn">ผู้จัดการไม่อนุมัติคำขอถอนตัวล่าสุด: {{ my_assignment.withdraw_reject_reason }}</p>
 {% endif %}
+{% endif %}
+
+<div class="case-layout">
+  <div class="case-main">
+    <div class="panel">
+      <dl class="facts">
+        <dt>ศาล</dt><dd>{{ case.court_name }}</dd>
+        <dt>ลูกความ</dt><dd>{{ case.client.display_name() }} ({{ case.client_role }})</dd>
+        <dt>คู่ความอีกฝ่าย</dt><dd>{{ case.opposing_party }}</dd>
+        <dt>เปิดคดี</dt><dd>{{ case.opened_date|thaidate }}</dd>
+      </dl>
+    </div>
+
+    <h3 class="section-title">นัดหมาย</h3>
+    {% if appointments %}
+    <table>
+      <thead><tr><th>วันเวลา</th><th>ชนิด</th><th>ทนาย</th><th>สถานที่</th><th>สถานะ</th></tr></thead>
+      <tbody>
+      {% for a in appointments %}
+        <tr>
+          <td class="nowrap">{{ a.starts_at|thaidate('datetime') }}</td>
+          <td>{{ a.kind_label() }}</td>
+          <td>{{ a.lawyer.display_name() }}</td>
+          <td>{{ a.location }}</td>
+          <td>{% if a.is_cancelled %}ยกเลิก{% elif a.is_done %}เสร็จแล้ว{% else %}-{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty">ยังไม่มีนัดหมาย</p>
+    {% endif %}
+
+    <h3 class="section-title">โน้ตคดี</h3>
+    <div class="panel">
+      {% if my_assignment %}
+      <form method="post" action="/cases/{{ case.id }}/notes">
+        <label>เพิ่มโน้ต <textarea name="text" required></textarea></label>
+        <div class="form-actions"><button type="submit">บันทึกโน้ต</button></div>
+      </form>
+      {% endif %}
+      {% for n in notes %}
+      <div class="note">
+        <div style="white-space:pre-wrap">{{ n.text }}</div>
+        <small>{{ n.author.display_name() }} · {{ n.created_at|thaidate('datetime') }}</small>
+        {% if n.can_modify(user) %}
+        <div class="note-actions">
+          <details>
+            <summary role="button" class="secondary">แก้ไข</summary>
+            <form method="post" action="/cases/{{ case.id }}/notes/{{ n.id }}/edit">
+              <textarea name="text" required>{{ n.text }}</textarea>
+              <button type="submit">บันทึก</button>
+            </form>
+          </details>
+          <form method="post" action="/cases/{{ case.id }}/notes/{{ n.id }}/delete" onsubmit="return confirm('ลบโน้ตนี้?');">
+            <button type="submit" class="secondary">ลบ</button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+      {% else %}
+      <p class="empty" style="margin:0">ยังไม่มีโน้ต</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <aside class="case-side">
+    {% if my_assignment %}
+    <div class="panel">
+      <h3>จัดการคดี</h3>
+      {% if next_status %}
+      <form method="post" action="/cases/{{ case.id }}/advance"
+            onsubmit="return confirm('เลื่อนสถานะเป็น “{{ next_status|case_status_th }}”?\nย้อนกลับไม่ได้');">
+        <button type="submit">เลื่อนสถานะเป็น “{{ next_status|case_status_th }}”</button>
+      </form>
+      {% endif %}
+      {% if can_set_black %}
+      <form method="post" action="/cases/{{ case.id }}/case-no">
+        <input type="hidden" name="kind" value="black">
+        <label>หมายเลขคดีดำ <input type="text" name="value" value="{{ case.black_case_no or '' }}" maxlength="20" required></label>
+        <button type="submit" class="secondary">{{ 'แก้เลขคดีดำ' if case.black_case_no else 'บันทึกเลขคดีดำ' }}</button>
+      </form>
+      {% endif %}
+      {% if can_set_red %}
+      <form method="post" action="/cases/{{ case.id }}/case-no">
+        <input type="hidden" name="kind" value="red">
+        <label>หมายเลขคดีแดง <input type="text" name="value" value="{{ case.red_case_no or '' }}" maxlength="20" required></label>
+        <button type="submit" class="secondary">{{ 'แก้เลขคดีแดง' if case.red_case_no else 'บันทึกเลขคดีแดง' }}</button>
+      </form>
+      {% endif %}
+      {% if not can_set_black %}<p><small>ใส่เลขคดีดำได้ตั้งแต่สถานะยื่นฟ้อง · เลขคดีแดงตั้งแต่สถานะตัดสิน</small></p>{% endif %}
+
+      {% if not my_assignment.is_withdraw_requested() and case.status.value not in ('closed', 'cancelled') %}
+      <details>
+        <summary role="button" class="secondary">ขอถอนตัวจากคดีนี้</summary>
+        <form method="post" action="/cases/{{ case.id }}/withdraw">
+          <label>เหตุผล
+            <select name="reason_code" required>
+              {% for code, label in WITHDRAW_REASONS.items() %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+            </select>
+          </label>
+          <label>รายละเอียด (บังคับเมื่อเลือก “ไม่ไหว-ติดขัดอื่น”) <textarea name="note" maxlength="255"></textarea></label>
+          <button type="submit" onclick="return confirm('ส่งคำขอถอนตัวให้ผู้จัดการพิจารณา?')">ส่งคำขอถอนตัว</button>
+        </form>
+      </details>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="panel">
+      <h3>ทนายที่รับผิดชอบ</h3>
+      <ul class="lawyer-list">
+        {% for l in case.lawyers() %}
+        <li>{{ l.display_name() }}{% if l == case.lead_lawyer() %} <span class="chip">ทนายหลัก</span>{% endif %}</li>
+        {% else %}
+        <li>ยังไม่มี</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <details class="panel">
+      <summary>ประวัติการเปลี่ยนแปลง ({{ events|length }})</summary>
+      {% if events %}
+      <ul class="timeline">
+        {% for e in events %}
+        <li>{{ e.detail }}<small>{{ e.actor.display_name() }} · {{ e.created_at|thaidate('datetime') }}</small></li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="empty" style="margin:0">ยังไม่มีประวัติ</p>
+      {% endif %}
+    </details>
+  </aside>
+</div>
 {% endblock %}
