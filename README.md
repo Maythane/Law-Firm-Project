@@ -15,6 +15,7 @@ tools/        generate_seed.py — สร้าง seed.sql (อยู่นอ�
 tests/        pytest — ส่วนใหญ่ไม่ต้องต่อฐานข้อมูล ยกเว้น test_repository.py
 schema.sql    โครงตาราง MariaDB (6 ตาราง)
 seed.sql      ข้อมูลตัวอย่าง (สร้างจาก tools/generate_seed.py)
+Dockerfile, docker-compose.yml   รันทั้งเว็บ + MariaDB + phpMyAdmin ด้วย Docker (ทางเลือกแทน XAMPP)
 ```
 
 ## ติดตั้ง
@@ -64,6 +65,32 @@ uvicorn api.main:app --reload
 
 เปิดเบราว์เซอร์ที่ `http://127.0.0.1:8000/` → เจอหน้าล็อกอิน
 
+## รันด้วย Docker (ทางเลือกแทน XAMPP)
+
+รันทั้งเว็บ (FastAPI + uvicorn), ฐานข้อมูล (MariaDB 10.4) และ phpMyAdmin พร้อมกันด้วยคำสั่งเดียว โดยไม่ต้องติดตั้ง Python/MariaDB/XAMPP บนเครื่องเลย — ต้องมีแค่ [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+
+**ต้องปิด XAMPP ก่อน** (หรือแก้พอร์ตในไฟล์ `docker-compose.yml`) เพราะทั้งคู่แย่งพอร์ต 3306 กัน
+
+```bash
+docker compose up --build
+```
+
+- เว็บแอป: `http://localhost:8000`
+- phpMyAdmin: `http://localhost:8080` (เซิร์ฟเวอร์ = `db`, user `root`, รหัสผ่านว่าง)
+
+ครั้งแรกที่รัน container ของ `db` จะสร้างฐานข้อมูล `lawfirm-db` และนำเข้า `schema.sql` + `seed.sql` ให้อัตโนมัติ (ผ่าน `docker-entrypoint-initdb.d`) ไม่ต้องทำตามขั้นตอน phpMyAdmin manual ด้านบนอีก
+
+หยุดการทำงาน: กด `Ctrl+C` แล้วรัน `docker compose down` (ข้อมูลใน MariaDB จะยังอยู่ในเครื่องผ่าน Docker volume ครั้งหน้ารันใหม่ไม่ต้อง seed ซ้ำ)
+
+ถ้าแก้ `schema.sql`/`seed.sql` แล้วอยากให้ import ใหม่ทั้งหมด (init script รันแค่ตอน volume ว่างเปล่าเท่านั้น) ให้ลบข้อมูลเดิมก่อน:
+
+```bash
+docker compose down -v   # ลบ volume ของ db ด้วย — ข้อมูลทั้งหมดในนั้นหายถาวร
+docker compose up --build
+```
+
+โค้ดในโปรเจกต์ถูก mount เข้า container ของ `web` โดยตรง (`--reload` เปิดอยู่) แก้ไฟล์แล้วเว็บ reload เองเหมือนรันแบบ local ปกติ ไม่ต้อง build ใหม่ทุกครั้ง (build ใหม่เฉพาะตอนแก้ `requirements.txt`)
+
 ## บัญชีตัวอย่างสำหรับตรวจงาน
 
 รหัสผ่านเดียวกันทุกบัญชี: **`password123`**
@@ -74,7 +101,7 @@ uvicorn api.main:app --reload
 | manager | `manager1` |
 | lawyer | `lawyer1` ถึง `lawyer8` |
 
-ล็อกอินด้วย `lawyer1` แล้วเห็นตารางวันนี้ทันที (มีนัดของวันที่เปิดใช้งานจริงเสมอ เพราะ seed อิงจากวันที่รันสคริปต์) · ล็อกอินด้วย `manager1` เห็นคดีที่ยังไม่มีทนายตอบรับ + ภาระงานทนาย · ล็อกอินด้วย `admin` เห็นหน้าจัดการผู้ใช้
+ล็อกอินด้วย `lawyer1` แล้วเห็น sidebar ซ้าย (BL-34) พร้อมแถวเมนู "คดีรอตอบรับ" ที่มี badge ตัวเลขเสมอ (BL-36 — กดเปิด popup รับ/ไม่รับคดี ไม่บังปฏิทินอีกต่อไป) และปฏิทินเดือนขึ้นบนสุดทันที (BL-32) — คลิกนัดในปฏิทินเปิด popup ข้อมูลคดี (เลขคดี/สถานะ/คู่ความ/ศาล) พร้อมปุ่มลงนัดถัดไป ถัดมาเป็นตารางวันนี้แบบการ์ด (มีนัดของวันที่เปิดใช้งานจริงเสมอ เพราะ seed อิงจากวันที่รันสคริปต์) และแผง "ใกล้ครบกำหนด" ทางขวา (BL-35) · ล็อกอินด้วย `manager1` เห็นคดีที่ยังไม่มีทนายตอบรับ + ภาระงานทนาย + ปุ่ม "เพิ่มคดีใหม่" (`/manager/cases/new`, BL-31) เลือกลูกความเดิมหรือเพิ่มลูกความใหม่ในฟอร์มเดียวกันได้ · ล็อกอินด้วย `admin` เห็นหน้าจัดการผู้ใช้ · ทุกหน้าเป็นโทนสีม่วง/ลาเวนเดอร์ + การ์ด/chip ตาม `mockup/dashboard.html` แล้ว (BL-33 ถึง BL-36, `static/theme.css`) — ย่อหน้าต่างแคบกว่ามือถือแล้ว sidebar สลับกลับเป็นแถบบนอัตโนมัติ
 
 ## รัน Unit Test
 

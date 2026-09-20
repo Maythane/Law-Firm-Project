@@ -26,24 +26,21 @@ classDiagram
         -is_active
         +can_view_case(case)*
         +dashboard_cards()*
-        +check_password(raw)
     }
     class Lawyer {
         -license_no
         +display_name()
         +can_view_case(case)
         +dashboard_cards()
-        +workload()
+        +workload(cases, appts)
     }
     class Manager {
         +can_view_case(case)
         +dashboard_cards()
-        +assign(case, lawyer)
     }
     class Admin {
         +can_view_case(case)
         +dashboard_cards()
-        +deactivate(user)
     }
     class Client {
         -company
@@ -76,6 +73,8 @@ classDiagram
     CaseAssignment --> AssignmentStatus
     CaseAssignment "*" --> "1" Case : คดีที่มอบหมาย
 ```
+
+**หมายเหตุ** — การมอบหมายคดีเป็นเมธอด `LawFirm.assign_lawyer(case, lawyer, assigned_by, is_lead)` ไม่ใช่เมธอดของ `Manager` เอง เช่นเดียวกับ `Admin` ที่ไม่มีเมธอดสร้าง/ปิดผู้ใช้ในชั้น domain — การเปิด/ปิดบัญชีและรีเซ็ตรหัสผ่านทำผ่าน `repository/user_repo.py` + route ของ `api/main.py` (BL-29) เพราะเป็นการเขียนฐานข้อมูลตรงๆ ไม่ใช่กติกาธุรกิจ
 
 ---
 
@@ -157,6 +156,7 @@ classDiagram
         +month_view(lawyer, y, m)
         +find_conflicts(appointment)
         +upcoming_reminders(today)
+        +mark_done(appointment)
     }
     class LawFirm {
         +open_case()

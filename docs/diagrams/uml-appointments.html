@@ -50,7 +50,7 @@
       font-size: 0.82rem;
       line-height: 1.6;
       color: var(--color-muted);
-      max-width: 62ch;
+      max-width: 66ch;
       margin-bottom: 1.5rem;
     }
     svg { width: 100%; min-width: 900px; display: block; }
@@ -58,13 +58,13 @@
 </head>
 <body>
   <div class="frame">
-    <p class="eyebrow">UML class · BL-03, BL-04, BL-06</p>
-    <h1>ตระกูลนัดหมาย และตารางของทนาย</h1>
-    <p class="sub">คลาสลูกทั้งสามใช้ชื่อเมธอดเดียวกันแต่คืนค่าต่างกัน — ระยะเตือน 3 / 1 / 15 วัน และสิทธิ์ในการเลื่อนนัด · <strong>FilingDeadline ไม่เข้าการตรวจนัดชน</strong> เพราะเป็นกำหนดทั้งวัน ไม่ใช่ช่วงเวลาที่ทนายติดพัน</p>
+    <p class="eyebrow">UML class · BL-03, BL-04, BL-05, BL-06, BL-12</p>
+    <h1>ตระกูลนัดหมาย ประวัติการเลื่อน และตารางของทนาย</h1>
+    <p class="sub">คลาสลูกทั้งสามใช้ชื่อเมธอดเดียวกันแต่คืนค่าต่างกัน — ระยะเตือน 3 / 1 / 15 วัน และสิทธิ์ในการเลื่อนนัด · <strong>FilingDeadline ไม่เข้าการตรวจนัดชน</strong> เพราะเป็นกำหนดทั้งวัน ไม่ใช่ช่วงเวลาที่ทนายติดพัน · ทุกครั้งที่ <code>reschedule()</code> ระบบเก็บ <code>AppointmentChange</code> ต่อท้ายไว้ ไม่ทับของเดิม</p>
 
-    <svg viewBox="0 0 1000 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="uml-appointments-title uml-appointments-desc">
+    <svg viewBox="0 0 1000 780" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="uml-appointments-title uml-appointments-desc">
       <title id="uml-appointments-title">ตระกูลนัดหมาย · ผังคลาส</title>
-      <desc id="uml-appointments-desc">ผังคลาสแสดงคลาสนามธรรม Appointment ที่มีคลาสลูกสามตัวคือ CourtHearing, ClientMeeting และ FilingDeadline ซึ่งนิยามระยะเตือนและกฎการเลื่อนนัดของตัวเอง โดยมี Schedule ถือรายการนัดไว้เพื่อตรวจนัดชนและสร้างมุมมองรายวันรายสัปดาห์</desc>
+      <desc id="uml-appointments-desc">ผังคลาสแสดงคลาสนามธรรม Appointment ที่มีคลาสลูกสามตัวคือ CourtHearing, ClientMeeting และ FilingDeadline ซึ่งนิยามระยะเตือนและกฎการเลื่อนนัดของตัวเอง มีความสัมพันธ์แบบ composition ไปยัง AppointmentChange สำหรับเก็บประวัติการเลื่อน โดยมี Schedule ถือรายการนัดไว้เพื่อตรวจนัดชนและสร้างมุมมองรายวันรายสัปดาห์รายเดือน</desc>
       <defs>
         <marker id="uml-triangle" markerWidth="16" markerHeight="12" refX="15" refY="6" orient="auto" markerUnits="userSpaceOnUse">
           <polygon points="0 0, 16 6, 0 12" fill="#f5eafa" stroke="#2e1f3d" stroke-width="1"/>
@@ -88,102 +88,128 @@
       <!-- Relationships (drawn before boxes) -->
       <!-- Schedule aggregates Appointment -->
       <line x1="300" y1="120" x2="380" y2="120" stroke="#6b5b7b" stroke-width="1" marker-start="url(#uml-diamond-hollow)"/>
+      <!-- Appointment composes AppointmentChange (reschedule_history) -->
+      <line x1="700" y1="88" x2="800" y2="88" stroke="#2e1f3d" stroke-width="1" marker-start="url(#uml-diamond-filled)"/>
       <!-- CourtHearing extends Appointment -->
-      <path d="M 260,360 V 332 Q 260,324 268,324 H 452 Q 460,324 460,316 V 284" fill="none" stroke="#b35cdb" stroke-width="1" marker-end="url(#uml-triangle-accent)"/>
+      <path d="M 260,452 V 428 Q 260,420 270,420 H 450 Q 460,420 460,412 V 392" fill="none" stroke="#b35cdb" stroke-width="1" marker-end="url(#uml-triangle-accent)"/>
       <!-- ClientMeeting extends Appointment -->
-      <line x1="540" y1="360" x2="540" y2="284" stroke="#b35cdb" stroke-width="1" marker-end="url(#uml-triangle-accent)"/>
+      <line x1="540" y1="452" x2="540" y2="392" stroke="#b35cdb" stroke-width="1" marker-end="url(#uml-triangle-accent)"/>
       <!-- FilingDeadline extends Appointment -->
-      <path d="M 820,360 V 332 Q 820,324 812,324 H 628 Q 620,324 620,316 V 284" fill="none" stroke="#b35cdb" stroke-width="1" marker-end="url(#uml-triangle-accent)"/>
+      <path d="M 820,452 V 428 Q 820,420 810,420 H 630 Q 620,420 620,412 V 392" fill="none" stroke="#b35cdb" stroke-width="1" marker-end="url(#uml-triangle-accent)"/>
 
-      <!-- Aggregation multiplicities -->
+      <!-- Aggregation multiplicities (Schedule <-> Appointment) -->
       <rect x="306" y="100" width="14" height="12" rx="2" fill="#f5eafa"/>
       <text x="313" y="110" fill="#2e1f3d" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">1</text>
       <rect x="348" y="100" width="24" height="12" rx="2" fill="#f5eafa"/>
       <text x="360" y="110" fill="#2e1f3d" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">0..*</text>
 
+      <!-- Composition multiplicities (Appointment <-> AppointmentChange) -->
+      <rect x="718" y="82" width="14" height="12" rx="2" fill="#f5eafa"/>
+      <text x="725" y="92" fill="#2e1f3d" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">1</text>
+      <rect x="758" y="82" width="24" height="12" rx="2" fill="#f5eafa"/>
+      <text x="770" y="92" fill="#2e1f3d" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">0..*</text>
+
       <!-- Class: Schedule -->
-      <rect x="40" y="40" width="260" height="148" rx="6" fill="#ffffff"/>
-      <rect x="40" y="40" width="260" height="148" rx="6" fill="#ffffff" stroke="#2e1f3d" stroke-width="1"/>
+      <rect x="40" y="40" width="260" height="196" rx="6" fill="#ffffff"/>
+      <rect x="40" y="40" width="260" height="196" rx="6" fill="#ffffff" stroke="#2e1f3d" stroke-width="1"/>
       <line x1="40" y1="76" x2="300" y2="76" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
       <text x="170" y="64" fill="#2e1f3d" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Schedule</text>
       <text x="56" y="96"  fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ add(appt): None</text>
       <text x="56" y="116" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ find_conflicts(appt): list</text>
       <text x="56" y="136" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ day_view(lawyer, day): list</text>
       <text x="56" y="156" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ week_view(lawyer, wk): list</text>
-      <text x="56" y="176" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ upcoming_reminders(today)</text>
+      <text x="56" y="176" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ upcoming_reminders(lawyer, today)</text>
+      <text x="56" y="196" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ mark_done(appt): None</text>
+      <text x="56" y="216" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ month_view(lawyer, y, m): dict</text>
 
       <!-- Class: Appointment (abstract, focal) -->
-      <rect x="380" y="40" width="320" height="244" rx="6" fill="#f5eafa"/>
-      <rect x="380" y="40" width="320" height="244" rx="6" fill="rgba(179,92,219,0.06)" stroke="#b35cdb" stroke-width="1"/>
+      <rect x="380" y="40" width="320" height="352" rx="6" fill="#f5eafa"/>
+      <rect x="380" y="40" width="320" height="352" rx="6" fill="rgba(179,92,219,0.06)" stroke="#b35cdb" stroke-width="1"/>
       <rect x="380" y="46" width="320" height="34" fill="rgba(179,92,219,0.10)"/>
       <line x1="380" y1="80" x2="700" y2="80" stroke="rgba(179,92,219,0.40)" stroke-width="1"/>
-      <line x1="380" y1="192" x2="700" y2="192" stroke="rgba(179,92,219,0.40)" stroke-width="1"/>
+      <line x1="380" y1="232" x2="700" y2="232" stroke="rgba(179,92,219,0.40)" stroke-width="1"/>
       <text x="540" y="58" fill="#b35cdb" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">«abstract»</text>
       <text x="540" y="74" fill="#2e1f3d" font-size="12" font-weight="600" font-style="italic" font-family="'Geist', sans-serif" text-anchor="middle">Appointment</text>
       <text x="396" y="100" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- case: Case</text>
       <text x="396" y="120" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- lawyer: Lawyer</text>
       <text x="396" y="140" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- starts_at: datetime</text>
       <text x="396" y="160" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- ends_at: datetime</text>
-      <text x="396" y="180" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- is_done: bool</text>
-      <text x="396" y="212" fill="#2e1f3d" font-size="9" font-style="italic" font-family="'Geist Mono', monospace">+ reminder_lead_days(): int</text>
-      <text x="396" y="232" fill="#2e1f3d" font-size="9" font-style="italic" font-family="'Geist Mono', monospace">+ can_reschedule(reason): bool</text>
-      <text x="396" y="252" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ overlaps(other): bool</text>
-      <text x="396" y="272" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ is_due_soon(today): bool</text>
+      <text x="396" y="180" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- location: str</text>
+      <text x="396" y="200" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- is_done: bool</text>
+      <text x="396" y="220" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- is_cancelled: bool</text>
+      <text x="396" y="252" fill="#2e1f3d" font-size="9" font-style="italic" font-family="'Geist Mono', monospace">+ reminder_lead_days(): int</text>
+      <text x="396" y="272" fill="#2e1f3d" font-size="9" font-style="italic" font-family="'Geist Mono', monospace">+ can_reschedule(reason): bool</text>
+      <text x="396" y="292" fill="#2e1f3d" font-size="9" font-style="italic" font-family="'Geist Mono', monospace">+ kind_label(): str</text>
+      <text x="396" y="312" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ overlaps(other): bool</text>
+      <text x="396" y="332" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ is_due_soon(today): bool</text>
+      <text x="396" y="352" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ reschedule(new_time, reason)</text>
+      <text x="396" y="372" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ cancel(reason)</text>
+
+      <!-- Class: AppointmentChange (record) -->
+      <rect x="800" y="40" width="180" height="140" rx="6" fill="#ffffff"/>
+      <rect x="800" y="40" width="180" height="140" rx="6" fill="#ffffff" stroke="#2e1f3d" stroke-width="1"/>
+      <line x1="800" y1="76" x2="980" y2="76" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
+      <text x="890" y="64" fill="#2e1f3d" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">AppointmentChange</text>
+      <text x="812" y="96"  fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- old_starts_at: datetime</text>
+      <text x="812" y="116" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- new_starts_at: datetime</text>
+      <text x="812" y="136" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- reason: str | None</text>
+      <text x="812" y="156" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- changed_at: datetime</text>
 
       <!-- Class: CourtHearing -->
-      <rect x="140" y="360" width="240" height="140" rx="6" fill="#ffffff"/>
-      <rect x="140" y="360" width="240" height="140" rx="6" fill="#ffffff" stroke="#2e1f3d" stroke-width="1"/>
-      <line x1="140" y1="396" x2="380" y2="396" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
-      <line x1="140" y1="448" x2="380" y2="448" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
-      <text x="260" y="384" fill="#2e1f3d" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">CourtHearing</text>
-      <text x="156" y="416" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- court_name: str</text>
-      <text x="156" y="436" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- room_no: str</text>
-      <text x="156" y="468" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ reminder_lead_days(): 3</text>
-      <text x="156" y="488" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ can_reschedule(): reason</text>
+      <rect x="140" y="452" width="240" height="160" rx="6" fill="#ffffff"/>
+      <rect x="140" y="452" width="240" height="160" rx="6" fill="#ffffff" stroke="#2e1f3d" stroke-width="1"/>
+      <line x1="140" y1="488" x2="380" y2="488" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
+      <line x1="140" y1="540" x2="380" y2="540" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
+      <text x="260" y="476" fill="#2e1f3d" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">CourtHearing</text>
+      <text x="156" y="508" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- court_name: str</text>
+      <text x="156" y="528" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- room_no: str</text>
+      <text x="156" y="560" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ reminder_lead_days(): 3</text>
+      <text x="156" y="580" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ can_reschedule(): reason (BR-3)</text>
+      <text x="156" y="600" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ kind_label(): "นัดศาล"</text>
 
-      <!-- Class: ClientMeeting -->
-      <rect x="420" y="360" width="240" height="120" rx="6" fill="#ffffff"/>
-      <rect x="420" y="360" width="240" height="120" rx="6" fill="#ffffff" stroke="#2e1f3d" stroke-width="1"/>
-      <line x1="420" y1="396" x2="660" y2="396" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
-      <line x1="420" y1="428" x2="660" y2="428" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
-      <text x="540" y="384" fill="#2e1f3d" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">ClientMeeting</text>
-      <text x="436" y="416" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- topic: str</text>
-      <text x="436" y="448" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ reminder_lead_days(): 1</text>
-      <text x="436" y="468" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ can_reschedule(): True</text>
+      <!-- Class: ClientMeeting (no extra fields) -->
+      <rect x="420" y="452" width="240" height="108" rx="6" fill="#ffffff"/>
+      <rect x="420" y="452" width="240" height="108" rx="6" fill="#ffffff" stroke="#2e1f3d" stroke-width="1"/>
+      <line x1="420" y1="488" x2="660" y2="488" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
+      <text x="540" y="476" fill="#2e1f3d" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">ClientMeeting</text>
+      <text x="436" y="508" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ reminder_lead_days(): 1</text>
+      <text x="436" y="528" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ can_reschedule(): True</text>
+      <text x="436" y="548" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ kind_label(): "นัดพบลูกความ"</text>
 
       <!-- Class: FilingDeadline -->
-      <rect x="700" y="360" width="240" height="160" rx="6" fill="#ffffff"/>
-      <rect x="700" y="360" width="240" height="160" rx="6" fill="#ffffff" stroke="#2e1f3d" stroke-width="1"/>
-      <line x1="700" y1="396" x2="940" y2="396" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
-      <line x1="700" y1="448" x2="940" y2="448" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
-      <text x="820" y="384" fill="#2e1f3d" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">FilingDeadline</text>
-      <text x="716" y="416" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- triggered_by: str</text>
-      <text x="716" y="436" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- law_days: int</text>
-      <text x="716" y="468" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ reminder_lead_days(): 15</text>
-      <text x="716" y="488" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ can_reschedule(): False</text>
-      <text x="716" y="508" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace" text-decoration="underline">+ from_event(ev, days)</text>
+      <rect x="700" y="452" width="240" height="180" rx="6" fill="#ffffff"/>
+      <rect x="700" y="452" width="240" height="180" rx="6" fill="#ffffff" stroke="#2e1f3d" stroke-width="1"/>
+      <line x1="700" y1="488" x2="940" y2="488" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
+      <line x1="700" y1="540" x2="940" y2="540" stroke="rgba(46,31,61,0.20)" stroke-width="1"/>
+      <text x="820" y="476" fill="#2e1f3d" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">FilingDeadline</text>
+      <text x="716" y="508" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">- triggered_by_event: str</text>
+      <text x="716" y="528" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace" text-decoration="underline">APPEAL_DEADLINE_DAYS = 30</text>
+      <text x="716" y="560" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ reminder_lead_days(): 15</text>
+      <text x="716" y="580" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ can_reschedule(): False (BR-5)</text>
+      <text x="716" y="600" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace">+ kind_label(): "กำหนดยื่นเอกสาร"</text>
+      <text x="716" y="620" fill="#2e1f3d" font-size="9" font-family="'Geist Mono', monospace" text-decoration="underline">+ from_event(event, days)</text>
 
       <!-- Legend -->
-      <line x1="40" y1="560" x2="960" y2="560" stroke="rgba(46,31,61,0.10)" stroke-width="0.8"/>
-      <text x="40" y="580" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+      <line x1="40" y1="692" x2="960" y2="692" stroke="rgba(46,31,61,0.10)" stroke-width="0.8"/>
+      <text x="40" y="712" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
 
-      <line x1="140" y1="600" x2="164" y2="600" stroke="#2e1f3d" stroke-width="1" marker-end="url(#uml-triangle)"/>
-      <text x="184" y="604" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">INHERITANCE</text>
+      <line x1="140" y1="732" x2="164" y2="732" stroke="#2e1f3d" stroke-width="1" marker-end="url(#uml-triangle)"/>
+      <text x="184" y="736" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">INHERITANCE</text>
 
-      <line x1="280" y1="600" x2="304" y2="600" stroke="#2e1f3d" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#uml-triangle)"/>
-      <text x="324" y="604" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">REALIZATION</text>
+      <line x1="280" y1="732" x2="304" y2="732" stroke="#2e1f3d" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#uml-triangle)"/>
+      <text x="324" y="736" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">REALIZATION</text>
 
-      <line x1="420" y1="600" x2="452" y2="600" stroke="#2e1f3d" stroke-width="1" marker-start="url(#uml-diamond-filled)"/>
-      <text x="464" y="604" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">COMPOSITION</text>
+      <line x1="420" y1="732" x2="452" y2="732" stroke="#2e1f3d" stroke-width="1" marker-start="url(#uml-diamond-filled)"/>
+      <text x="464" y="736" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">COMPOSITION</text>
 
-      <line x1="560" y1="600" x2="592" y2="600" stroke="#2e1f3d" stroke-width="1" marker-start="url(#uml-diamond-hollow)"/>
-      <text x="604" y="604" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">AGGREGATION</text>
+      <line x1="560" y1="732" x2="592" y2="732" stroke="#2e1f3d" stroke-width="1" marker-start="url(#uml-diamond-hollow)"/>
+      <text x="604" y="736" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">AGGREGATION</text>
 
-      <line x1="700" y1="600" x2="724" y2="600" stroke="#6b5b7b" stroke-width="1" marker-end="url(#uml-open)"/>
-      <text x="744" y="604" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">ASSOCIATION</text>
+      <line x1="700" y1="732" x2="724" y2="732" stroke="#6b5b7b" stroke-width="1" marker-end="url(#uml-open)"/>
+      <text x="744" y="736" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">ASSOCIATION</text>
 
-      <line x1="840" y1="600" x2="864" y2="600" stroke="#6b5b7b" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#uml-open)"/>
-      <text x="884" y="604" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">DEPENDENCY</text>
+      <line x1="840" y1="732" x2="864" y2="732" stroke="#6b5b7b" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#uml-open)"/>
+      <text x="884" y="736" fill="#6b5b7b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">DEPENDENCY</text>
     </svg>
   </div>
 </body>

@@ -2,7 +2,13 @@
 
 นายเมทนี พูลสมบัติ 6821500060 · Object-Oriented Programming
 
-**ความคืบหน้า** 23 / 23 — **เสร็จครบทุกรายการ** · README.md เขียนและทดสอบจริงบน venv ใหม่ล้วนๆ แล้ว (ติดตั้ง + DB + seed + รันเซิร์ฟเวอร์ + เทส ทำงานตามที่เขียนไว้ทุกขั้นตอน) · รวม 65 ชม. · **กำหนดส่ง 6 สัปดาห์ (กลางเดือนตุลาคม 2569)**
+**ความคืบหน้า** 29 / 29 — **เสร็จครบทุกรายการ** · README.md เขียนและทดสอบจริงบน venv ใหม่ล้วนๆ แล้ว (ติดตั้ง + DB + seed + รันเซิร์ฟเวอร์ + เทส ทำงานตามที่เขียนไว้ทุกขั้นตอน) · รวม 80 ชม. · **กำหนดส่ง 6 สัปดาห์ (กลางเดือนตุลาคม 2569)**
+
+**เพิ่ม 6 ก.ย. 2569** — [BL-31](backlog.md#bl-31) หน้า "เพิ่มคดีใหม่" ของ manager หลังพบว่า BL-11 เสร็จแค่ระดับ domain ไม่เคยต่อ UI จริง
+**เพิ่ม 7 ก.ย. 2569** — [BL-32](backlog.md#bl-32) ปฏิทินขึ้นบนสุดของ dashboard ทนาย + popup ข้อมูลคดีคลิกจากปฏิทินได้เลย
+**เพิ่ม 7 ก.ย. 2569** — [BL-33](backlog.md#bl-33) ธีมสีม่วง/ลาเวนเดอร์ทั้งระบบตาม `mockup/dashboard.html` (Phase A: override สี Pico.css เท่านั้น)
+**เพิ่ม 8 ก.ย. 2569** — [BL-34](backlog.md#bl-34) sidebar ซ้ายแทน nav บนสุด (responsive แบบ hybrid CSS) และ [BL-35](backlog.md#bl-35) แปลงรายการ/ตารางเป็นการ์ด/chip/panel ตาม mockup + แผง "ใกล้ครบกำหนด"
+**เพิ่ม 8 ก.ย. 2569** — [BL-36](backlog.md#bl-36) คดีรอตอบรับย้ายจากแถบบนสุดไปเป็น badge ตัวเลข + popup ใน sidebar (HTMX out-of-band swap)
 
 โปรเจกต์ย้ายออกจาก iCloud มาที่ `~/Work Space/Law Firm Project` และอยู่ใต้ git แล้วเมื่อ 6 ก.ย. 2569 · รัน `.venv/bin/pytest` สำหรับเทสต์ · ฐานข้อมูลใช้ MariaDB ของ XAMPP
 
@@ -64,7 +70,7 @@
 - [x] [**BL-12**](backlog.md#bl-12) เลื่อน/ยกเลิกนัด พร้อมประวัติ · Should
 - [x] [**BL-14**](backlog.md#bl-14) มอบหมายทนายหลายคนต่อคดี · Should
 
-### ชั้นข้อมูล หน้าจอ และการทดสอบ · 21 ชม.
+### ชั้นข้อมูล หน้าจอ และการทดสอบ · 32 ชม.
 
 - [x] [**BL-16**](backlog.md#bl-16) `tests/test_schedule.py` · Must
 - [x] [**BL-18**](backlog.md#bl-18) `schema.sql` + `repository/` ต่อ MySQL · Must
@@ -72,8 +78,12 @@
 - [x] [**BL-20**](backlog.md#bl-20) FastAPI + templates หน้าแรกคือตารางวันนี้ · Must
 - [x] [**BL-21**](backlog.md#bl-21) หน้าคดี หน้าเตือน · Must
 - [x] [**BL-22**](backlog.md#bl-22) `README.md` คำสั่งติดตั้งและรัน · Must
+- [x] [**BL-33**](backlog.md#bl-33) ธีมสีม่วง/ลาเวนเดอร์ตาม mockup (Phase A) · Could
+- [x] [**BL-34**](backlog.md#bl-34) sidebar ซ้ายแทน nav บนสุด (Phase B) · Could
+- [x] [**BL-35**](backlog.md#bl-35) แปลงรายการ/ตารางเป็นการ์ด + แผงใกล้ครบกำหนด (Phase C) · Could
+- [x] [**BL-36**](backlog.md#bl-36) คดีรอตอบรับเป็น badge + popup ใน sidebar · Could
 
-### ชั้นบทบาทผู้ใช้และการมอบหมายงาน · 25 ชม.
+### ชั้นบทบาทผู้ใช้และการมอบหมายงาน · 29 ชม.
 
 - [x] [**BL-23**](backlog.md#bl-23) `SystemUser` → `Manager`, `Admin` + `can_view_case()` · Must
 - [x] [**BL-24**](backlog.md#bl-24) `CaseAssignment` — รับ/ปฏิเสธคดี + BR-15 ถึง BR-19 · Must
@@ -83,6 +93,8 @@
 - [x] [**BL-28**](backlog.md#bl-28) ปฏิทินรายเดือนของทนาย · Should
 - [x] [**BL-29**](backlog.md#bl-29) หน้าจัดการผู้ใช้ของ admin · Should
 - [x] [**BL-30**](backlog.md#bl-30) `tests/test_assignment.py` · Must
+- [x] [**BL-31**](backlog.md#bl-31) หน้า "เพิ่มคดีใหม่" ของ manager · Must
+- [x] [**BL-32**](backlog.md#bl-32) ปฏิทินขึ้นบนสุดของ dashboard ทนาย + popup ข้อมูลคดี · Should
 
 **ลำดับที่ควรทำ** — BL-01 ถึง BL-06 → BL-23, BL-24 (ยังอยู่ในชั้น domain) → BL-16, BL-30 ยืนยันกฎด้วยเทสต์ → BL-11, BL-12, BL-14 → BL-18 ถึง BL-22 และ BL-25 ถึง BL-29
 

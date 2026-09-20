@@ -65,6 +65,13 @@ h1{font-size:21px;letter-spacing:-.01em}
 .stat div{flex:1}
 .stat b{font-size:19px;font-variant-numeric:tabular-nums}
 .stat small{display:block;font-size:10.5px;color:var(--ink2)}
+/* pending assignments (BL-27, ตอบสนอง /schedule/today จริง) */
+.pending{background:var(--lav);border:1px solid var(--lav2);border-left:3px solid var(--pri);border-radius:9px;padding:12px 14px;margin-bottom:14px}
+.pending h4{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--pri);margin-bottom:8px}
+.prow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0}
+.prow+.prow{border-top:1px solid var(--lav2)}
+.prow .t2{font-size:12.5px;font-weight:600}
+.prow .m2{font-size:11px;color:var(--ink2)}
 </style></head><body>
 
 <aside class="side">
@@ -78,25 +85,28 @@ h1{font-size:21px;letter-spacing:-.01em}
   </div>
   <nav class="nav">
     <a class="on"><i class="dot"></i>วันนี้</a>
-    <a><i class="dot"></i>ปฏิทินนัด</a>
-    <a><i class="dot"></i>คดีของฉัน</a>
-    <a><i class="dot"></i>ลูกความ</a>
-    <a><i class="dot"></i>บันทึกเวลา</a>
-    <a><i class="dot"></i>ใบแจ้งค่าวิชาชีพ</a>
-    <a><i class="dot"></i>รายงาน</a>
+    <a><i class="dot"></i>ปฏิทินรายเดือน</a>
+    <a><i class="dot"></i>รายการเตือน</a>
   </nav>
-  <div class="foot"><div class="av">มณ</div><div style="font-size:12px">ทนายมณี ศรีวัฒน์<div style="font-size:10.5px;color:#6B6280">คดีที่ถืออยู่ 18</div></div></div>
+  <div class="foot"><div class="av">มณ</div><div style="font-size:12px">ทนายมณี ศรีวัฒน์<div style="font-size:10.5px;color:#6B6280">ภาระงาน (คดี+นัด 30 วัน) 18</div></div></div>
 </aside>
 
 <main class="main">
   <div class="top">
     <div><h1>วันนี้</h1><p class="sub">อังคารที่ 18 สิงหาคม 2569 · มีนัด 3 รายการ</p></div>
-    <div class="search">ค้นหาด้วยหมายเลขคดีดำหรือคดีแดง เช่น พ. 1234/2568</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn p">+ เพิ่มนัด</button>
+      <button class="btn">รายการเตือน</button>
+      <button class="btn">ปฏิทินรายเดือน</button>
+    </div>
   </div>
 
-  <div class="banner">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 8v5M12 16.5v.5" stroke="#E1523D" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="#E1523D" stroke-width="2"/></svg>
-    <div><b>นัดวันที่ 20 ส.ค. ชนกัน</b><p>ศาลแพ่ง 09:00 กับ ศาลจังหวัดนนทบุรี 10:30 เว้นเวลาเดินทางไม่ถึง 90 นาที</p></div>
+  <div class="pending">
+    <h4>คดีรอการตอบรับ</h4>
+    <div class="prow">
+      <div><div class="t2">คดีผิดสัญญาซื้อขาย · พ. 1234/2568</div><div class="m2">ศาลแพ่ง · มอบหมายโดยผู้จัดการสมศักดิ์ · 17 ส.ค. 2569</div></div>
+      <div style="display:flex;gap:8px;flex:none"><button class="btn p">รับคดี</button><button class="btn">ไม่รับ</button></div>
+    </div>
   </div>
 
   <div class="cols">
@@ -104,69 +114,49 @@ h1{font-size:21px;letter-spacing:-.01em}
       <p class="sec">ตารางวันนี้</p>
 
       <div class="card">
-        <div class="time">09:00<small>3 ชม.</small></div>
+        <div class="time">09:00<small>–12:00</small></div>
         <div class="body">
           <div class="row1"><span class="chip">นัดศาล</span><span class="no">พ. 1234/2568</span></div>
-          <div class="t">สืบพยานโจทก์ · ศาลแพ่ง ห้องพิจารณา 704</div>
-          <div class="m">บริษัท ธนกิจรุ่งเรือง จำกัด (โจทก์) — คดีผิดสัญญาซื้อขาย</div>
+          <div class="t"><a href="#" style="color:inherit;text-decoration:underline">พ. 1234/2568 — คดีผิดสัญญาซื้อขาย</a></div>
+          <div class="m">ศาลแพ่ง ห้องพิจารณา 704</div>
         </div>
-        <button class="btn p">บันทึกเวลา</button>
       </div>
 
       <div class="card meet">
-        <div class="time">13:30<small>1 ชม.</small></div>
+        <div class="time">13:30<small>–14:30</small></div>
         <div class="body">
-          <div class="row1"><span class="chip l">นัดลูกความ</span><span class="no">อ. 567/2568</span></div>
-          <div class="t">พบลูกความเตรียมคำให้การ · สำนักงาน</div>
-          <div class="m">นายสมชาย ก. (จำเลย)</div>
+          <div class="row1"><span class="chip l">นัดพบลูกความ</span><span class="no">อ. 567/2568</span></div>
+          <div class="t"><a href="#" style="color:inherit;text-decoration:underline">อ. 567/2568 — เตรียมคำให้การ</a></div>
+          <div class="m">สำนักงาน</div>
         </div>
-        <button class="btn">บันทึกเวลา</button>
       </div>
 
       <div class="card dead">
-        <div class="time">16:00<small>กำหนด</small></div>
+        <div class="time">00:00<small>–23:59</small></div>
         <div class="body">
           <div class="row1"><span class="chip d">กำหนดยื่นเอกสาร</span><span class="no">รง. 89/2568</span></div>
-          <div class="t">ยื่นบัญชีระบุพยาน · ศาลแรงงานกลาง</div>
-          <div class="m">ครบกำหนดวันนี้ — นับจากวันชี้สองสถาน 4 ส.ค. 2569</div>
-        </div>
-        <button class="btn">ทำเสร็จแล้ว</button>
-      </div>
-
-      <p class="sec" style="margin-top:16px">พรุ่งนี้</p>
-      <div class="card meet" style="opacity:.62">
-        <div class="time">10:00<small>2 ชม.</small></div>
-        <div class="body">
-          <div class="row1"><span class="chip l">นัดไกล่เกลี่ย</span><span class="no">พ. 902/2568</span></div>
-          <div class="t">ศาลจังหวัดนนทบุรี ห้องไกล่เกลี่ย 2</div>
+          <div class="t"><a href="#" style="color:inherit;text-decoration:underline">รง. 89/2568 — ยื่นบัญชีระบุพยาน</a></div>
+          <div class="m">ศาลแรงงานกลาง</div>
         </div>
       </div>
     </div>
 
     <div>
       <div class="panel">
-        <h3>ใกล้ครบกำหนด</h3>
-        <div class="dl"><span class="bg">เหลือ 6 วัน</span><div><div class="t2">ยื่นอุทธรณ์</div><div class="m2">พ. 88/2568 · ครบ 24 ส.ค.</div></div></div>
-        <div class="dl"><span class="bg a">เหลือ 12 วัน</span><div><div class="t2">ยื่นคำให้การ</div><div class="m2">อ. 567/2568 · ครบ 30 ส.ค.</div></div></div>
-        <div class="dl"><span class="bg a">เหลือ 21 วัน</span><div><div class="t2">อายุความฟ้องคดี</div><div class="m2">ยังไม่ยื่นฟ้อง · ครบ 8 ก.ย.</div></div></div>
+        <h3>ใกล้ครบกำหนด (/reminders)</h3>
+        <div class="dl"><span class="bg">นัดศาล · 3 วัน</span><div><div class="t2">ไต่สวนคำร้อง</div><div class="m2">พ. 88/2568 · ครบ 24 ส.ค.</div></div></div>
+        <div class="dl"><span class="bg a">นัดพบลูกความ · 1 วัน</span><div><div class="t2">รับฟังคำแนะนำก่อนสืบพยาน</div><div class="m2">อ. 567/2568 · ครบ 19 ส.ค.</div></div></div>
+        <div class="dl"><span class="bg a">กำหนดยื่นเอกสาร · 15 วัน</span><div><div class="t2">ยื่นอุทธรณ์</div><div class="m2">รง. 89/2568 · ครบ 2 ก.ย.</div></div></div>
       </div>
 
       <div class="panel">
-        <h3>สัปดาห์นี้</h3>
-        <div class="bars"><i style="height:38%"></i><i style="height:64%"></i><i class="on" style="height:88%"></i><i style="height:46%"></i><i style="height:70%"></i><i style="height:22%"></i><i style="height:12%"></i></div>
+        <h3>สัปดาห์นี้ (week_view)</h3>
+        <div class="bars"><i style="height:38%"></i><i style="height:64%"></i><i class="on" style="height:88%"></i><i style="height:46%"></i><i style="height:70%"></i><i style="height:22%"></i><i style="height:0%"></i></div>
         <div class="days"><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span><span>อา</span></div>
         <div class="stat">
-          <div><b>22</b><small>ชม. เรียกเก็บได้</small></div>
-          <div><b>31</b><small>ชม. ทำงานจริง</small></div>
-          <div><b>5</b><small>นัดที่ขึ้นศาล</small></div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h3>ค่าว่าความสะสม · พ. 1234/2568</h3>
-        <div class="stat" style="border-top:0;padding-top:0">
-          <div><b>5</b><small>นัดที่ขึ้นแล้ว</small></div>
-          <div><b>40,000</b><small>บาท · 8,000/นัด</small></div>
+          <div><b>9</b><small>นัดสัปดาห์นี้</small></div>
+          <div><b>3</b><small>นัดศาล</small></div>
+          <div><b>1</b><small>กำหนดยื่นเอกสาร</small></div>
         </div>
       </div>
     </div>
