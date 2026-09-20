@@ -222,6 +222,7 @@ def _lawyer_workloads(conn) -> list[tuple[Lawyer, int]]:
 def manager_dashboard(request: Request, manager: Manager = Depends(require_role(Manager))):
     conn = get_connection()
     unassigned_cases = case_repo.list_without_accepted_lawyer(conn)
+    waiting = assignment_repo.list_pending_for_cases(conn, unassigned_cases)
     declined = assignment_repo.list_unresolved_declined(conn)
     withdraw_requests = assignment_repo.list_withdraw_requests(conn)
     workloads = _lawyer_workloads(conn)
@@ -230,7 +231,7 @@ def manager_dashboard(request: Request, manager: Manager = Depends(require_role(
         "dashboard/manager.html",
         {
             "request": request, "manager": manager, "unassigned_cases": unassigned_cases,
-            "declined": declined, "workloads": workloads, "withdraw_requests": withdraw_requests,
+            "waiting": waiting, "declined": declined, "workloads": workloads, "withdraw_requests": withdraw_requests,
         },
     )
 

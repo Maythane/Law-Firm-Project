@@ -211,12 +211,22 @@ def test_latest_event_by_case_returns_most_recent_only(conn):
     assert case_repo.latest_event_by_case(conn, [case.id])[case.id][0] == "เหตุการณ์ล่าสุด"
 
 
-def test_without_accepted_lawyer_drops_case_once_a_lawyer_is_pending(conn):
+def test_without_accepted_lawyer_keeps_case_while_lawyer_is_pending_and_lists_who_waits(conn):
     manager, lawyer, case, assignment = _case_with_accepted_lawyer(conn)
     cur = conn.cursor()
     cur.execute("DELETE FROM case_assignments")
     conn.commit()
     assert [c.id for c in case_repo.list_without_accepted_lawyer(conn)] == [case.id]
+    assert assignment_repo.list_pending_for_cases(conn, [case]) == {}
 
-    assignment_repo.add(conn, CaseAssignment(case=case, lawyer=lawyer, assigned_by=manager, assigned_at=datetime.now()))
+    pending = assignment_repo.add(conn, CaseAssignment(
+        case=case, lawyer=lawyer, assigned_by=manager, assigned_at=datetime.now(),
+    ))
+    # ยังไม่มีทนายตอบรับ (แค่รอตอบ) → ยังต้องอยู่ในกล่องแจ้งเตือน พร้อมรู้ว่ารอใคร
+    assert [c.id for c in case_repo.list_without_accepted_lawyer(conn)] == [case.id]
+    waiting = assignment_repo.list_pending_for_cases(conn, [case])
+    assert [a.id for a in waiting[case.id]] == [pending.id]
+
+    pending.accept()
+    assignment_repo.update_status(conn, pending)
     assert case_repo.list_without_accepted_lawyer(conn) == []

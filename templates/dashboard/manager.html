@@ -56,8 +56,12 @@
   {% for c in unassigned_cases %}
   <div class="item-card">
     <div>
-      <div class="t2"><span class="chip">ยังไม่มีทนาย</span> <a href="/cases/{{ c.id }}">{{ c.display_black_no() }} — {{ c.title }}</a></div>
-      <div class="m2">สถานะ: {{ c.status|case_status_th }} · เปิดคดี {{ c.opened_date|thaidate }}</div>
+      {% set pend = waiting.get(c.id, []) %}
+      <div class="t2">{% if pend %}<span class="chip l">รอทนายตอบรับ</span>{% else %}<span class="chip">ยังไม่ได้มอบหมาย</span>{% endif %} <a href="/cases/{{ c.id }}">{{ c.display_black_no() }} — {{ c.title }}</a></div>
+      <div class="m2">
+        {% if pend %}รอ {% for a in pend %}{{ a.lawyer.display_name() }}{% if not loop.last %}, {% endif %}{% endfor %} ตอบรับ · ค้างมา {{ -(pend[0].assigned_at.date()|days_until) }} วัน
+        {% else %}สถานะ: {{ c.status|case_status_th }} · เปิดคดี {{ c.opened_date|thaidate }}{% endif %}
+      </div>
     </div>
     <div class="actions"><a href="/manager/cases/{{ c.id }}/assign?back=unassigned" role="button">มอบหมาย</a></div>
   </div>

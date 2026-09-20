@@ -59,6 +59,24 @@ def list_accepted_for_lawyer(conn, lawyer_id: int) -> list[CaseAssignment]:
     return [_row_to_assignment(conn, row, case_repo.get_by_id(conn, row["case_id"])) for row in rows]
 
 
+def list_pending_for_cases(conn, cases) -> dict[int, list[CaseAssignment]]:
+    """รายการรอตอบรับของแต่ละคดี (case.id -> [assignment เก่าสุดก่อน]) — แสดง "รอทนายใคร ตอบรับกี่วันแล้ว" ในกล่องแจ้งเตือน"""
+    if not cases:
+        return {}
+    by_id = {c.id: c for c in cases}
+    placeholders = ", ".join(["%s"] * len(by_id))
+    cur = conn.cursor(dictionary=True)
+    cur.execute(
+        f"SELECT * FROM case_assignments WHERE status = 'pending' AND case_id IN ({placeholders}) "
+        "ORDER BY assigned_at, id",
+        tuple(by_id),
+    )
+    result: dict[int, list[CaseAssignment]] = {}
+    for row in cur.fetchall():
+        result.setdefault(row["case_id"], []).append(_row_to_assignment(conn, row, by_id[row["case_id"]]))
+    return result
+
+
 def list_withdraw_requests(conn) -> list[CaseAssignment]:
     """คำขอถอนตัวที่รออนุมัติ — กล่องบน dashboard manager + badge sidebar"""
     cur = conn.cursor(dictionary=True)

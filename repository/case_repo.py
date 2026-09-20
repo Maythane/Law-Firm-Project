@@ -60,16 +60,15 @@ def list_accepted_by_lawyer(conn, lawyer_id: int) -> list[Case]:
 
 
 def list_without_accepted_lawyer(conn) -> list[Case]:
-    """คดีที่ยังไม่มีทนายตอบรับและยังไม่มีทนายรอตอบรับ ไม่รวมคดีที่ปิด/ยกเลิกแล้ว — กล่องแจ้งเตือนของ manager (BL-26)
-    มอบหมายทนายแล้ว (pending) คดีหายจากรายการนี้ทันที เพราะงานของ manager จบที่การมอบหมาย
+    """คดีที่ยังไม่มีทนายตอบรับ ไม่รวมคดีที่ปิด/ยกเลิกแล้ว — กล่องแจ้งเตือนของ manager (BL-26)
+    รวมคดีที่มอบหมายแล้วแต่ทนายยังไม่ตอบ (pending) — คือ "ทนายไม่ตอบรับ" ที่ manager ต้องตามต่อ
     """
     cur = conn.cursor(dictionary=True)
     cur.execute(
         """SELECT c.* FROM cases c
            WHERE c.status NOT IN ('closed', 'cancelled')
            AND NOT EXISTS (
-               SELECT 1 FROM case_assignments a
-               WHERE a.case_id = c.id AND a.status IN ('accepted', 'pending')
+               SELECT 1 FROM case_assignments a WHERE a.case_id = c.id AND a.status = 'accepted'
            )
            ORDER BY c.opened_date"""
     )
