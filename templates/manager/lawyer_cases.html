@@ -19,6 +19,7 @@
 </nav>
 
 {% if rows %}
+<div class="table-wrap">
 <table>
   <thead>
     <tr><th>คดี</th><th>เลขดำ / แดง</th><th>ลูกความ</th><th>ศาล</th><th>ความคืบหน้า</th><th>นัดถัดไป</th><th>อัปเดตล่าสุด</th><th>บทบาท</th></tr>
@@ -44,6 +45,7 @@
   {% endfor %}
   </tbody>
 </table>
+</div>
 {% else %}
 <p class="empty">ยังไม่มีคดีในกลุ่มนี้</p>
 {% endif %}

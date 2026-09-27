@@ -24,6 +24,7 @@
   ทนายที่ตอบรับแล้วในคดีนี้:
   {% for l in case.lawyers() %}{{ l.display_name() }}{% if not loop.last %}, {% endif %}{% else %}ยังไม่มี{% endfor %}
 </p>
+<div class="table-wrap">
 <table>
   <thead><tr><th>ทนาย (เรียงจากว่างที่สุด)</th><th>ภาระงาน</th><th></th></tr></thead>
   <tbody>
@@ -43,4 +44,5 @@
   {% endfor %}
   </tbody>
 </table>
+</div>
 {% endblock %}

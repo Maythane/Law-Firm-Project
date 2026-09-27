@@ -8,16 +8,17 @@
   <a href="/cases" class="{{ 'on' if on_cases }}" {{ ('aria-current="page"' if on_cases else '') | safe }}>คดีของฉัน</a>
   <a href="/schedule/month" class="{{ 'on' if on_month }}" {{ ('aria-current="page"' if on_month else '') | safe }}>ปฏิทินรายเดือน</a>
   <a href="/reminders" class="{{ 'on' if on_reminders }}" {{ ('aria-current="page"' if on_reminders else '') | safe }}>รายการเตือน</a>
-  <button type="button" class="pending-trigger" onclick="document.getElementById('pending-dialog').showModal()">
+  <button type="button" class="pending-trigger" aria-haspopup="dialog" onclick="document.getElementById('pending-dialog').showModal()">
     คดีรอตอบรับ
     <span {% if not mobile %}id="pending-badge" {% endif %}class="pending-badge{{ '' if pending else ' muted' }}">{{ pending|length }}</span>
   </button>
 {% elif su.__class__.__name__ == 'Manager' %}
   {% set on_dashboard = request.url.path == '/manager/dashboard' %}
   {% set on_new_case = request.url.path == '/manager/cases/new' %}
+  {% set on_withdraw = request.url.path.startswith('/manager/withdrawals') %}
   {% set withdraw_count = withdraw_request_count(su) %}
   <a href="/manager/dashboard" class="{{ 'on' if on_dashboard }}" {{ ('aria-current="page"' if on_dashboard else '') | safe }}>หน้าแรก</a>
-  <a href="/manager/dashboard#notify-withdraw">คำขอถอนตัว
+  <a href="/manager/dashboard#notify-withdraw" class="{{ 'on' if on_withdraw }}" {{ ('aria-current="page"' if on_withdraw else '') | safe }}>คำขอถอนตัว
     <span class="pending-badge{{ '' if withdraw_count else ' muted' }}">{{ withdraw_count }}</span></a>
   <a href="/manager/cases/new" class="{{ 'on' if on_new_case }}" {{ ('aria-current="page"' if on_new_case else '') | safe }}>เพิ่มคดีใหม่</a>
 {% else %}

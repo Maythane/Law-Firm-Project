@@ -4,7 +4,7 @@
   <div>
     <div class="t2">{{ a.case.title }}</div>
     <div class="m2">{{ a.case.court_name }} · มอบหมายโดย {{ a.assigned_by.display_name() }} · {{ a.assigned_at|thaidate }}</div>
-    {% if error_assignment_id == a.id %}<div class="m2" style="color:var(--pico-del-color)">{{ decline_error }}</div>{% endif %}
+    {% if error_assignment_id == a.id %}<div class="m2" style="color:var(--lawfirm-warn-ink)">{{ decline_error }}</div>{% endif %}
   </div>
   <div class="actions">
     <form hx-post="/assignments/{{ a.id }}/accept" hx-target="#pending-list" hx-swap="innerHTML"

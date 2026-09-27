@@ -31,6 +31,7 @@
 
     <h3 class="section-title">นัดหมาย</h3>
     {% if appointments %}
+    <div class="table-wrap">
     <table>
       <thead><tr><th>วันเวลา</th><th>ชนิด</th><th>ทนาย</th><th>สถานที่</th><th>สถานะ</th></tr></thead>
       <tbody>
@@ -45,6 +46,7 @@
       {% endfor %}
       </tbody>
     </table>
+    </div>
     {% else %}
     <p class="empty">ยังไม่มีนัดหมาย</p>
     {% endif %}
