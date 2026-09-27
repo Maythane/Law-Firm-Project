@@ -79,6 +79,8 @@ label:has(> input[type="checkbox"]), label:has(> input[type="radio"]) { font-wei
   --pico-border-color: var(--lawfirm-lav2);
   --pico-color: var(--pico-primary-hover);
 }
+/* คีย์บอร์ด: เส้นขอบม่วงชัดเฉพาะตอน tab (focus-visible) ไม่รบกวนตอนคลิกเมาส์ */
+:is(.stat-card, .tabs a, .sidebar nav a, .m-panel nav a, .pending-trigger):focus-visible { outline: 2px solid var(--pico-primary); outline-offset: 2px; }
 /* ปุ่มในตารางและแถวการ์ดบีบให้พอดีเนื้อหา — Pico ทำปุ่มเป็น block เต็มความกว้างโดยดีฟอลต์ */
 td :is(button, [type="submit"], [role="button"], summary) { width: auto; margin-bottom: 0; }
 summary[role="button"]::after { display: none; } /* ซ่อนลูกศรของ Pico บนปุ่มแบบ <summary> */
@@ -128,7 +130,7 @@ summary[role="button"]::after { display: none; } /* ซ่อนลูกศร�
 
 /* position:sticky + height:100vh กันไม่ให้ sidebar ยืดตามความยาวของ .app-main (align-items:stretch ของ .app-shell)
    ไม่งั้นหน้าที่เนื้อหายาวเกิน viewport จะดึง .foot (ชื่อ account/ปุ่มออกจากระบบ) ลงไปไกลเกินจอ */
-.sidebar { width: 232px; flex: none; background: #fff; border-right: 1px solid var(--pico-muted-border-color); padding: 1.4rem 0.9rem; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.sidebar { width: 232px; flex: none; background: var(--pico-card-background-color); border-right: 1px solid var(--pico-muted-border-color); padding: 1.4rem 0.9rem; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
 .sidebar .brand { display: flex; align-items: center; gap: 0.6rem; padding: 0 0.5rem 1.4rem; }
 .sidebar .brand b { font-size: 0.95rem; display: block; }
 .sidebar .brand span { display: block; font-size: 0.62rem; color: var(--pico-muted-color); letter-spacing: .05em; }
@@ -154,12 +156,12 @@ summary[role="button"]::after { display: none; } /* ซ่อนลูกศร�
 .mobile-topbar { display: none; }
 @media (max-width: 860px) {
   .sidebar { display: none; }
-  .mobile-topbar { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; position: sticky; top: 0; z-index: 10; background: #fff; border-bottom: 1px solid var(--pico-muted-border-color); padding: 0.6rem 1rem; }
+  .mobile-topbar { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; position: sticky; top: 0; z-index: 10; background: var(--pico-card-background-color); border-bottom: 1px solid var(--pico-muted-border-color); padding: 0.6rem 1rem; }
   .m-brand { display: flex; align-items: center; gap: 0.5rem; }
   .m-menu { margin: 0; position: static; }
   .m-menu summary { list-style: none; margin: 0; width: auto; padding: 0.35rem 0.9rem; }
   .m-menu summary::-webkit-details-marker, .m-menu summary::after { display: none; }
-  .m-panel { position: absolute; left: 0; right: 0; top: 100%; background: #fff; border-bottom: 1px solid var(--pico-muted-border-color); padding: 0.6rem 1rem 1rem; }
+  .m-panel { position: absolute; left: 0; right: 0; top: 100%; background: var(--pico-card-background-color); border-bottom: 1px solid var(--pico-muted-border-color); padding: 0.6rem 1rem 1rem; }
   .m-foot { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; border-top: 1px solid var(--pico-muted-border-color); margin-top: 0.5rem; padding-top: 0.8rem; font-size: 0.85rem; }
   .m-foot span { flex: 1 1 100%; }
   .m-foot form { margin: 0; }
@@ -168,7 +170,7 @@ summary[role="button"]::after { display: none; } /* ซ่อนลูกศร�
 }
 
 /* ---------- พื้นผิว/การ์ด/chip ---------- */
-.panel { background: #fff; border: 1px solid var(--pico-muted-border-color); border-radius: 0.75rem; padding: 1.1rem 1.25rem; margin-bottom: 1rem; }
+.panel { background: var(--pico-card-background-color); border: 1px solid var(--pico-muted-border-color); border-radius: 0.75rem; padding: 1.1rem 1.25rem; margin-bottom: 1rem; }
 .panel h3 { margin-bottom: 0.7rem; font-size: 1rem; }
 .panel table { margin-bottom: 0; }
 
@@ -181,7 +183,7 @@ table tbody tr:last-child td { border-bottom: 0; }
 .table-wrap { overflow-x: auto; }
 
 /* การ์ดนัดหมายวันนี้: ไม่มีแถบสีซ้าย — ชนิดนัดสื่อด้วย chip */
-.appt-card { display: flex; gap: 0.9rem; align-items: center; background: #fff; border: 1px solid var(--pico-muted-border-color); border-radius: 0.75rem; padding: 0.8rem 1rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
+.appt-card { display: flex; gap: 0.9rem; align-items: center; background: var(--pico-card-background-color); border: 1px solid var(--pico-muted-border-color); border-radius: 0.75rem; padding: 0.8rem 1rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
 .appt-time { width: 3.6rem; flex: none; font-weight: 600; font-variant-numeric: tabular-nums; font-size: 0.95rem; }
 .appt-time small { display: block; font-size: 0.68rem; color: var(--pico-muted-color); font-weight: 400; }
 .appt-body { flex: 1; min-width: 0; }
@@ -218,6 +220,13 @@ table tbody tr:last-child td { border-bottom: 0; }
 .reminder-badge.amber { background: var(--lawfirm-amber-surface); color: var(--lawfirm-amber-ink); }
 .reminder-row .t2 { font-size: 0.85rem; font-weight: 600; }
 .reminder-row .m2 { font-size: 0.75rem; color: var(--pico-muted-color); }
+/* เนื้อกลางแถวเตือนให้กินพื้นที่ที่เหลือ — เดิมเขียน style="flex:1" เกลื่อนใน template */
+.reminder-main { flex: 1; min-width: 0; }
+/* ฟอร์มปุ่มเดียวในแถว (เช่น “ทำแล้ว”) — ไม่ full-width แบบฟอร์มทั่วไป */
+.form-inline { display: inline; margin: 0; }
+.form-inline button { width: auto; margin: 0; }
+/* ข้อความยืนยันใน dialog กลาง — เก็บขึ้นบรรทัดใหม่ตาม &#10; ใน data-confirm */
+#confirm-dialog-text { white-space: pre-line; }
 
 .cols-2 { display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem; align-items: start; }
 @media (max-width: 960px) { .cols-2 { grid-template-columns: 1fr; } }
@@ -282,13 +291,13 @@ dialog article footer button, dialog article footer [role="button"] { margin: 0;
 /* ---------- dashboard manager: การ์ดตัวเลข + คิว + แถบความคืบหน้า ---------- */
 .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.6rem; }
 @media (max-width: 720px) { .stat-row { grid-template-columns: 1fr; } }
-.stat-card { display: flex; flex-direction: column; gap: 0.2rem; background: #fff; border: 1px solid var(--pico-muted-border-color); border-radius: 0.75rem; padding: 1rem 1.2rem; text-decoration: none; color: var(--pico-color); }
+.stat-card { display: flex; flex-direction: column; gap: 0.2rem; background: var(--pico-card-background-color); border: 1px solid var(--pico-muted-border-color); border-radius: 0.75rem; padding: 1rem 1.2rem; text-decoration: none; color: var(--pico-color); }
 .stat-card:hover { border-color: var(--pico-primary); }
 .stat-card .n { font-size: 2rem; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; color: var(--pico-primary); }
 .stat-card .l { font-size: 0.85rem; color: var(--pico-muted-color); }
 .stat-card.zero .n { color: var(--pico-muted-color); }
 /* กล่องแจ้งเตือน: พับอยู่ตลอด กดการ์ดถึงเปิดกล่องของประเภทนั้น (:target — ทีละกล่อง ไม่ใช้ JS) */
-.notify-panel { display: none; background: #fff; border: 1px solid var(--pico-primary); border-radius: 0.75rem; padding: 1rem 1.25rem; margin: -0.4rem 0 1.6rem; scroll-margin-top: 14rem; }
+.notify-panel { display: none; background: var(--pico-card-background-color); border: 1px solid var(--pico-primary); border-radius: 0.75rem; padding: 1rem 1.25rem; margin: -0.4rem 0 1.6rem; scroll-margin-top: 14rem; }
 .notify-panel:target { display: block; }
 .notify-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.4rem; }
 .notify-head h3 { margin: 0; font-size: 1rem; }

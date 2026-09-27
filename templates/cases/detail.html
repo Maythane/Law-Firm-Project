@@ -72,7 +72,7 @@
               <button type="submit">บันทึก</button>
             </form>
           </details>
-          <form method="post" action="/cases/{{ case.id }}/notes/{{ n.id }}/delete" onsubmit="return confirm('ลบโน้ตนี้?');">
+          <form method="post" action="/cases/{{ case.id }}/notes/{{ n.id }}/delete" data-confirm="ลบโน้ตนี้?">
             <button type="submit" class="secondary">ลบ</button>
           </form>
         </div>
@@ -90,7 +90,7 @@
       <h3>จัดการคดี</h3>
       {% if next_status %}
       <form method="post" action="/cases/{{ case.id }}/advance"
-            onsubmit="return confirm('เลื่อนสถานะเป็น “{{ next_status|case_status_th }}”?\nย้อนกลับไม่ได้');">
+            data-confirm="เลื่อนสถานะเป็น “{{ next_status|case_status_th }}”?&#10;ย้อนกลับไม่ได้">
         <button type="submit">เลื่อนสถานะเป็น “{{ next_status|case_status_th }}”</button>
       </form>
       {% endif %}
@@ -113,14 +113,14 @@
       {% if not my_assignment.is_withdraw_requested() and case.status.value not in ('closed', 'cancelled') %}
       <details>
         <summary role="button" class="secondary">ขอถอนตัวจากคดีนี้</summary>
-        <form method="post" action="/cases/{{ case.id }}/withdraw">
+        <form method="post" action="/cases/{{ case.id }}/withdraw" data-confirm="ส่งคำขอถอนตัวให้ผู้จัดการพิจารณา?">
           <label>เหตุผล
             <select name="reason_code" required>
               {% for code, label in WITHDRAW_REASONS.items() %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
             </select>
           </label>
           <label>รายละเอียด (บังคับเมื่อเลือก “ไม่ไหว-ติดขัดอื่น”) <textarea name="note" maxlength="255"></textarea></label>
-          <button type="submit" onclick="return confirm('ส่งคำขอถอนตัวให้ผู้จัดการพิจารณา?')">ส่งคำขอถอนตัว</button>
+          <button type="submit">ส่งคำขอถอนตัว</button>
         </form>
       </details>
       {% endif %}
@@ -152,4 +152,42 @@
     </details>
   </aside>
 </div>
+
+{#- dialog ยืนยันกลางตัวเดียวของหน้านี้: ฟอร์มที่มี data-confirm จะถูกดัก submit แล้วถามก่อน — กด “ยืนยัน” ถึงส่งฟอร์มเดิมต่อ -#}
+<dialog id="confirm-dialog" aria-labelledby="confirm-dialog-title">
+  <article>
+    <h3 id="confirm-dialog-title">ยืนยันการทำรายการ</h3>
+    <p id="confirm-dialog-text"></p>
+    <footer>
+      <form method="dialog"><button class="secondary">ยกเลิก</button></form>
+      <button id="confirm-dialog-ok">ยืนยัน</button>
+    </footer>
+  </article>
+</dialog>
+<script>
+(function () {
+  var dialog = document.getElementById('confirm-dialog');
+  if (!dialog || !dialog.showModal) return;
+  var text = document.getElementById('confirm-dialog-text');
+  var ok = document.getElementById('confirm-dialog-ok');
+  var pendingForm = null;
+  document.querySelectorAll('form[data-confirm]').forEach(function (fm) {
+    fm.addEventListener('submit', function (e) {
+      if (fm.dataset.confirmed === '1') { fm.dataset.confirmed = ''; return; }
+      e.preventDefault();
+      pendingForm = fm;
+      text.textContent = fm.dataset.confirm || 'ยืนยันการทำรายการ?';
+      if (!dialog.open) dialog.showModal();
+    });
+  });
+  ok.addEventListener('click', function () {
+    if (!pendingForm) return;
+    var fm = pendingForm;
+    pendingForm = null;
+    dialog.close();
+    fm.dataset.confirmed = '1';
+    fm.requestSubmit();
+  });
+})();
+</script>
 {% endblock %}

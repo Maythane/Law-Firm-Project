@@ -70,7 +70,7 @@
       {% set d = a.starts_at.date()|days_until %}
       <div class="reminder-row">
         <span class="reminder-badge{{ '' if d <= 1 else ' amber' }}">{{ a.kind_label() }} · {{ 'เลยกำหนด ' ~ -d if d < 0 else d }} วัน</span>
-        <div style="flex:1">
+        <div class="reminder-main">
           <div class="t2">{{ a.case.display_black_no() }} — {{ a.case.title }}</div>
           <div class="m2">ครบกำหนด {{ a.starts_at|thaidate('datetime') }}</div>
         </div>

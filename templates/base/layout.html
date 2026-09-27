@@ -27,7 +27,7 @@
       <div class="av">{{ su.display_name()[:2] }}</div>
       <div class="who">
         {{ su.display_name() }}
-        <button type="button" class="secondary" onclick="document.getElementById('account-edit-dialog').showModal()">แก้ไขผู้ใช้</button>
+        <button type="button" class="secondary" onclick="document.getElementById('account-edit-dialog').showModal()">แก้ไขบัญชีของฉัน</button>
         <form method="post" action="/logout"><button type="submit" class="secondary">ออกจากระบบ</button></form>
       </div>
     </div>
@@ -44,7 +44,7 @@
           <nav>{% with mobile=true %}{% include "base/_nav.html" %}{% endwith %}</nav>
           <div class="m-foot">
             <span>{{ su.display_name() }}</span>
-            <button type="button" class="secondary" onclick="document.getElementById('account-edit-dialog').showModal()">แก้ไขผู้ใช้</button>
+            <button type="button" class="secondary" onclick="document.getElementById('account-edit-dialog').showModal()">แก้ไขบัญชีของฉัน</button>
             <form method="post" action="/logout"><button type="submit" class="secondary">ออกจากระบบ</button></form>
           </div>
         </div>
@@ -72,7 +72,7 @@
 {% set account_error = request.query_params.get('account_error') %}
 <dialog id="account-edit-dialog" aria-labelledby="account-edit-title">
   <article>
-    <h3 id="account-edit-title">แก้ไขผู้ใช้</h3>
+    <h3 id="account-edit-title">แก้ไขบัญชีของฉัน</h3>
     {% if account_error %}<p class="banner-warn" role="alert"><strong>{{ account_error }}</strong></p>{% endif %}
     <form method="post" action="/account/edit">
       <label>ชื่อที่ใช้แสดง <input type="text" name="name" value="{{ su.name }}" required></label>

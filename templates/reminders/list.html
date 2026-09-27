@@ -12,12 +12,12 @@
 {% set d = a.starts_at.date()|days_until %}
 <div class="reminder-row">
   <span class="reminder-badge{{ '' if d <= 1 else ' amber' }}">{{ a.kind_label() }} · {{ 'เลยกำหนด ' ~ -d if d < 0 else d }} วัน</span>
-  <div style="flex:1">
+  <div class="reminder-main">
     <div class="t2"><a href="/cases/{{ a.case.id }}">{{ a.case.display_black_no() }} — {{ a.case.title }}</a></div>
     <div class="m2">ครบกำหนด {{ a.starts_at|thaidate('datetime') }}</div>
   </div>
-  <form method="post" action="/reminders/{{ a.id }}/done" style="display:inline;margin:0">
-    <button type="submit" class="secondary" style="width:auto;margin:0">ทำแล้ว</button>
+  <form method="post" action="/reminders/{{ a.id }}/done" class="form-inline">
+    <button type="submit" class="secondary">ทำแล้ว</button>
   </form>
 </div>
 {% endfor %}

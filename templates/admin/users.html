@@ -25,12 +25,12 @@
       <td>{{ u.username }}</td>
       <td>{% if u.is_active %}<span class="chip">เปิดใช้งาน</span>{% else %}<span class="chip l">ปิดใช้งาน</span>{% endif %}</td>
       <td>
-        <form method="post" action="/admin/users/{{ u.id }}/toggle-active" style="display:inline">
+        <form method="post" action="/admin/users/{{ u.id }}/toggle-active">
           <button type="submit" class="{{ 'secondary' if u.is_active else '' }}">
             {% if u.is_active %}ปิดใช้งาน{% else %}เปิดใช้งาน{% endif %}
           </button>
         </form>
-        <details style="display:inline-block">
+        <details>
           <summary role="button" class="secondary">แก้ไข</summary>
           <form method="post" action="/admin/users/{{ u.id }}/edit">
             <label>ชื่อที่ใช้แสดง <input type="text" name="name" value="{{ u.name }}" required></label>

@@ -12,10 +12,10 @@
       <button type="submit">รับคดี</button>
     </form>
     <details style="display:inline-block">
-      <summary role="button" class="secondary">ไม่รับ</summary>
+      <summary role="button" class="secondary">ปฏิเสธ</summary>
       <form hx-post="/assignments/{{ a.id }}/decline" hx-target="#pending-list" hx-swap="innerHTML">
-        <label for="decline-reason-{{ a.id }}" class="sr-only">เหตุผลที่ไม่รับคดี {{ a.case.title }}</label>
-        <textarea id="decline-reason-{{ a.id }}" name="reason" placeholder="เหตุผลที่ไม่รับ (บังคับกรอก)" required></textarea>
+        <label for="decline-reason-{{ a.id }}" class="sr-only">เหตุผลที่ปฏิเสธคดี {{ a.case.title }}</label>
+        <textarea id="decline-reason-{{ a.id }}" name="reason" placeholder="เหตุผลที่ปฏิเสธ (บังคับกรอก)" required></textarea>
         <button type="submit">ส่ง</button>
       </form>
     </details>
@@ -23,5 +23,5 @@
 </div>
 {% endfor %}
 {% else %}
-<p>ไม่มีคดีรอตอบรับ</p>
+<p class="empty">ไม่มีคดีรอตอบรับ</p>
 {% endif %}

@@ -30,7 +30,7 @@
     <table>
       <thead><tr><th></th><th>ทนาย (เรียงจากว่างที่สุด)</th><th>ภาระงาน</th></tr></thead>
       <tbody>
-        <tr><td><input type="radio" name="new_lawyer_id" value="" {{ 'checked' if not form.get('new_lawyer_id') }} aria-label="ยังไม่เลือกทนายคนใหม่"></td><td colspan="2">อนุมัติเฉย ๆ ยังไม่มอบหมาย (คดีจะขึ้นในกล่อง “คดีที่ยังไม่มีทนาย” ถ้าไม่เหลือทนายตอบรับ)</td></tr>
+        <tr><td><input type="radio" name="new_lawyer_id" value="" {{ 'checked' if not form.get('new_lawyer_id') }} aria-label="ยังไม่เลือกทนายคนใหม่"></td><td colspan="2">อนุมัติโดยยังไม่มอบหมายทนายใหม่ (คดีจะขึ้นในกล่อง “คดีที่ยังไม่มีทนาย” ถ้าไม่เหลือทนายตอบรับ)</td></tr>
         {% for lawyer, workload in workloads %}
         <tr>
           <td><input type="radio" name="new_lawyer_id" value="{{ lawyer.id }}" {{ 'checked' if form.get('new_lawyer_id')|string == lawyer.id|string }} aria-label="เลือก {{ lawyer.display_name() }}"></td>
@@ -70,7 +70,7 @@
     </table>
     </div>
     {% else %}
-    <p>ไม่มีนัดค้าง</p>
+    <p class="empty">ไม่มีนัดค้าง</p>
     {% endif %}
   </div>
   <button type="submit">อนุมัติคำขอถอนตัว</button>

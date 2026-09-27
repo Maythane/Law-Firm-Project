@@ -25,7 +25,7 @@
   {% set on_dashboard = request.url.path == '/admin/dashboard' %}
   {% set on_new_user = request.url.path == '/admin/users/new' %}
   {% set on_users = request.url.path == '/admin/users' %}
-  <a href="/admin/dashboard" class="{{ 'on' if on_dashboard }}" {{ ('aria-current="page"' if on_dashboard else '') | safe }}>แดชบอร์ด</a>
+  <a href="/admin/dashboard" class="{{ 'on' if on_dashboard }}" {{ ('aria-current="page"' if on_dashboard else '') | safe }}>หน้าแรก</a>
   <a href="/admin/users/new" class="{{ 'on' if on_new_user }}" {{ ('aria-current="page"' if on_new_user else '') | safe }}>เพิ่มผู้ใช้ใหม่</a>
   <a href="/admin/users" class="{{ 'on' if on_users }}" {{ ('aria-current="page"' if on_users else '') | safe }}>รายชื่อผู้ใช้ทั้งหมด</a>
 {% endif %}

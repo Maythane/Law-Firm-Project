@@ -13,10 +13,10 @@
 <form method="post" action="/admin/users/new">
   <div class="grid">
     <label>ชื่อ-นามสกุล <input type="text" name="name" value="{{ values.name or '' }}" required></label>
-    <label>เลขบัตรประชาชน <input type="text" name="citizen_id" value="{{ values.citizen_id or '' }}" required></label>
+    <label>เลขบัตรประชาชน <input type="text" name="citizen_id" value="{{ values.citizen_id or '' }}" required inputmode="numeric"></label>
   </div>
   <div class="grid">
-    <label>เบอร์โทร <input type="text" name="phone" value="{{ values.phone or '' }}"></label>
+    <label>เบอร์โทร <input type="text" name="phone" value="{{ values.phone or '' }}" inputmode="tel"></label>
     <label>ชื่อผู้ใช้ (สำหรับล็อกอิน) <input type="text" name="username" value="{{ values.username or '' }}" required></label>
   </div>
   <div class="grid">

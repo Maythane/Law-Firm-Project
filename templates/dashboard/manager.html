@@ -14,7 +14,7 @@
     <span class="n">{{ withdraw_requests|length }}</span><span class="l">ขอถอนตัว รออนุมัติ</span>
   </a>
   <a class="stat-card{{ '' if declined else ' zero' }}" href="#notify-declined">
-    <span class="n">{{ declined|length }}</span><span class="l">ถูกปฏิเสธ ยังไม่มอบหมายใหม่</span>
+    <span class="n">{{ declined|length }}</span><span class="l">ปฏิเสธ ยังไม่มอบหมายใหม่</span>
   </a>
   <a class="stat-card{{ '' if unassigned_cases else ' zero' }}" href="#notify-unassigned">
     <span class="n">{{ unassigned_cases|length }}</span><span class="l">ยังไม่มีทนายตอบรับ</span>
@@ -36,12 +36,12 @@
   {% endfor %}
 </section>
 
-<section class="notify-panel" id="notify-declined" aria-label="แจ้งเตือน: ถูกปฏิเสธ ยังไม่มอบหมายใหม่">
-  <div class="notify-head"><h3>ถูกปฏิเสธ ยังไม่มอบหมายใหม่</h3><a href="#x" class="cancel">ปิด</a></div>
+<section class="notify-panel" id="notify-declined" aria-label="แจ้งเตือน: ปฏิเสธ ยังไม่มอบหมายใหม่">
+  <div class="notify-head"><h3>ปฏิเสธ ยังไม่มอบหมายใหม่</h3><a href="#x" class="cancel">ปิด</a></div>
   {% for a in declined %}
   <div class="item-card">
     <div>
-      <div class="t2"><span class="chip l">ถูกปฏิเสธ</span> <a href="/cases/{{ a.case.id }}">{{ a.case.display_black_no() }} — {{ a.case.title }}</a></div>
+      <div class="t2"><span class="chip l">ปฏิเสธ</span> <a href="/cases/{{ a.case.id }}">{{ a.case.display_black_no() }} — {{ a.case.title }}</a></div>
       <div class="m2">ปฏิเสธโดย {{ a.lawyer.display_name() }} · เหตุผล: {{ a.decline_reason }} · {{ a.responded_at|thaidate }}</div>
     </div>
     <div class="actions"><a href="/manager/cases/{{ a.case.id }}/assign?back=declined" role="button">มอบหมายใหม่</a></div>
