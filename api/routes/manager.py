@@ -13,7 +13,11 @@ from domain.case import Case, CaseStatus
 from domain.firm import LawFirm
 from domain.person import Client, Lawyer, Manager
 from domain.schedule import Schedule
-from repository import appointment_repo, assignment_repo, case_repo, client_repo, user_repo
+from repository.appointment_repo import AppointmentRepository
+from repository.assignment_repo import AssignmentRepository
+from repository.case_repo import CaseRepository
+from repository.client_repo import ClientRepository
+from repository.user_repo import UserRepository
 
 router = APIRouter()
 
@@ -22,10 +26,12 @@ WORKLOAD_OVERLOAD_THRESHOLD = 15  # ponytail: เกณฑ์ตายตัว�
 
 @router.get("/manager/dashboard", response_class=HTMLResponse)
 def manager_dashboard(request: Request, manager: Manager = Depends(require_role(Manager)), conn=Depends(get_db)):
-    unassigned_cases = case_repo.list_without_accepted_lawyer(conn)
-    waiting = assignment_repo.list_pending_for_cases(conn, unassigned_cases)
-    declined = assignment_repo.list_unresolved_declined(conn)
-    withdraw_requests = assignment_repo.list_withdraw_requests(conn)
+    cases = CaseRepository(conn)
+    assignments = AssignmentRepository(conn)
+    unassigned_cases = cases.list_without_accepted_lawyer()
+    waiting = assignments.list_pending_for_cases(unassigned_cases)
+    declined = assignments.list_unresolved_declined()
+    withdraw_requests = assignments.list_withdraw_requests()
     workloads = _lawyer_workloads(conn)
     return templates.TemplateResponse(
         "dashboard/manager.html",
@@ -55,13 +61,13 @@ def lawyer_cases(
     conn=Depends(get_db),
 ):
     """คดีที่ทนายคนหนึ่งดูแลอยู่ + ความคืบหน้า — manager ดูอย่างเดียว (แก้/มอบหมายทำที่หน้าเดิม)"""
-    lawyer = user_repo.get_by_id(conn, lawyer_id)
+    lawyer = UserRepository(conn).get_by_id(lawyer_id)
     if not isinstance(lawyer, Lawyer):
         raise HTTPException(404, "ไม่พบทนาย")
-    assignments = assignment_repo.list_accepted_for_lawyer(conn, lawyer.id)
+    assignments = AssignmentRepository(conn).list_accepted_for_lawyer(lawyer.id)
     workload = _workload_for(conn, lawyer)
-    appointments = appointment_repo.list_by_lawyer(conn, lawyer.id)
-    latest = case_repo.latest_event_by_case(conn, [a.case.id for a in assignments])
+    appointments = AppointmentRepository(conn).list_by_lawyer(lawyer.id)
+    latest = CaseRepository(conn).latest_event_by_case([a.case.id for a in assignments])
 
     now = datetime.now()
     next_appt = {}
@@ -96,7 +102,7 @@ def lawyer_cases(
 
 @router.get("/manager/cases/new", response_class=HTMLResponse)
 def new_case_form(request: Request, manager: Manager = Depends(require_role(Manager)), conn=Depends(get_db)):
-    clients = client_repo.list_all(conn)
+    clients = ClientRepository(conn).list_all()
     return templates.TemplateResponse(
         "manager/new_case.html",
         {
@@ -123,25 +129,25 @@ def create_case(
     conn=Depends(get_db),
 ):
     """BL-31: เลือกลูกความเดิม (client_id) หรือเพิ่มลูกความใหม่ (new_client_name ไม่ว่าง) — เลือกได้ทางใดทางหนึ่ง"""
+    clients = ClientRepository(conn)
     if new_client_name.strip():
-        client = client_repo.add(
-            conn,
+        client = clients.add(
             Client(
                 name=new_client_name, citizen_id=new_client_citizen_id,
                 phone=new_client_phone, company=new_client_company or None,
             ),
         )
     elif client_id:
-        client = client_repo.get_by_id(conn, int(client_id))
+        client = clients.get_by_id(int(client_id))
     else:
         client = None
 
     if client is None:
-        clients = client_repo.list_all(conn)
+        all_clients = clients.list_all()
         return templates.TemplateResponse(
             "manager/new_case.html",
             {
-                "request": request, "manager": manager, "clients": clients,
+                "request": request, "manager": manager, "clients": all_clients,
                 "error": "ต้องเลือกลูกความเดิม หรือกรอกอย่างน้อยชื่อลูกความใหม่",
                 "values": {
                     "title": title, "client_role": client_role, "opposing_party": opposing_party,
@@ -153,8 +159,7 @@ def create_case(
             },
         )
 
-    case = case_repo.add(
-        conn,
+    case = CaseRepository(conn).add(
         Case(
             title=title, client=client, client_role=client_role,
             opposing_party=opposing_party, court_name=court_name,
@@ -174,10 +179,10 @@ def assign_form(
     request: Request, case_id: int, manager: Manager = Depends(require_role(Manager)), back: str = "",
     conn=Depends(get_db),
 ):
-    case = case_repo.get_by_id(conn, case_id)
+    case = CaseRepository(conn).get_by_id(case_id)
     if case is None:
         raise HTTPException(404, "ไม่พบคดี")
-    case._assignments.extend(assignment_repo.list_for_case(conn, case))
+    case._assignments.extend(AssignmentRepository(conn).list_for_case(case))
     workloads = _lawyer_workloads(conn)
     return templates.TemplateResponse(
         "manager/assign.html",
@@ -201,9 +206,11 @@ def assign_submit(
     conn=Depends(get_db),
 ):
     back = _notify_back(back)
-    case = case_repo.get_by_id(conn, case_id)
-    case._assignments.extend(assignment_repo.list_for_case(conn, case))
-    lawyer = user_repo.get_by_id(conn, lawyer_id)
+    cases = CaseRepository(conn)
+    assignments = AssignmentRepository(conn)
+    case = cases.get_by_id(case_id)
+    case._assignments.extend(assignments.list_for_case(case))
+    lawyer = UserRepository(conn).get_by_id(lawyer_id)
     workload = _workload_for(conn, lawyer)
 
     if workload >= WORKLOAD_OVERLOAD_THRESHOLD and confirm_overload != "true":
@@ -233,14 +240,15 @@ def assign_submit(
                 "threshold": WORKLOAD_OVERLOAD_THRESHOLD, "error": str(e), "warning": None, "back": back,
             },
         )
-    assignment_repo.add(conn, assignment)
+    AssignmentRepository(conn).add(assignment)
     return RedirectResponse(f"/manager/dashboard#notify-{back}", status_code=303)
 
 
 def _render_withdraw_review(request, conn, assignment, manager, *, error=None, warning=None, form=None):
     case = assignment.case
-    case._assignments.extend(assignment_repo.list_for_case(conn, case))
-    appts = appointment_repo.list_open_by_case_and_lawyer(conn, case.id, assignment.lawyer.id)
+    assignments = AssignmentRepository(conn)
+    case._assignments.extend(assignments.list_for_case(case))
+    appts = AppointmentRepository(conn).list_open_by_case_and_lawyer(case.id, assignment.lawyer.id)
     workloads = [(lw, w) for lw, w in _lawyer_workloads(conn) if lw.id != assignment.lawyer.id]
     return templates.TemplateResponse(
         "manager/withdraw_review.html",
@@ -254,7 +262,7 @@ def _render_withdraw_review(request, conn, assignment, manager, *, error=None, w
 
 @router.get("/manager/withdrawals/{assignment_id}", response_class=HTMLResponse)
 def withdraw_review(request: Request, assignment_id: int, manager: Manager = Depends(require_role(Manager)), conn=Depends(get_db)):
-    assignment = assignment_repo.get_by_id(conn, assignment_id)
+    assignment = AssignmentRepository(conn).get_by_id(assignment_id)
     if assignment is None or not assignment.is_withdraw_requested():
         raise HTTPException(404, "ไม่พบคำขอถอนตัวที่รออนุมัติ")
     return _render_withdraw_review(request, conn, assignment, manager)
@@ -269,15 +277,16 @@ async def withdraw_approve(
     ตรวจทุกอย่างให้ผ่านก่อนเขียน DB — ผิดข้อใดข้อหนึ่งไม่มีอะไรถูกบันทึกครึ่งๆ กลางๆ
     """
     form = dict(await request.form())
-    assignment = assignment_repo.get_by_id(conn, assignment_id)
+    assignments = AssignmentRepository(conn)
+    assignment = assignments.get_by_id(assignment_id)
     if assignment is None or not assignment.is_withdraw_requested():
         raise HTTPException(404, "ไม่พบคำขอถอนตัวที่รออนุมัติ")
     case = assignment.case
-    case._assignments.extend(assignment_repo.list_for_case(conn, case))
+    case._assignments.extend(assignments.list_for_case(case))
     old_lawyer, was_lead = assignment.lawyer, assignment.is_lead
 
     new_lawyer_id = form.get("new_lawyer_id") or ""
-    new_lawyer = user_repo.get_by_id(conn, int(new_lawyer_id)) if new_lawyer_id else None
+    new_lawyer = UserRepository(conn).get_by_id(int(new_lawyer_id)) if new_lawyer_id else None
     if new_lawyer is not None and not isinstance(new_lawyer, Lawyer):
         raise HTTPException(400, "ต้องเลือกทนายเท่านั้น")
 
@@ -292,7 +301,8 @@ async def withdraw_approve(
                 ),
             )
 
-    appts = appointment_repo.list_open_by_case_and_lawyer(conn, case.id, old_lawyer.id)
+    appointments = AppointmentRepository(conn)
+    appts = appointments.list_open_by_case_and_lawyer(case.id, old_lawyer.id)
     choices = {a.id: form.get(f"appt_{a.id}", "keep") for a in appts}
     to_transfer = [a for a in appts if choices[a.id] == "transfer"]
     to_cancel = [a for a in appts if choices[a.id] == "cancel"]
@@ -306,7 +316,7 @@ async def withdraw_approve(
         except AssignmentError as e:  # BR-17: เช่นเลือกทนายคนเดิม หรือทนายที่มีรายการค้างอยู่แล้ว
             error = str(e)
     if error is None and to_transfer:
-        schedule = Schedule(appointments=appointment_repo.list_by_lawyer(conn, new_lawyer.id))
+        schedule = Schedule(appointments=appointments.list_by_lawyer(new_lawyer.id))
         for a in to_transfer:
             probe = replace(a, lawyer=new_lawyer)
             conflicts = schedule.find_conflicts(probe)
@@ -323,19 +333,19 @@ async def withdraw_approve(
         return _render_withdraw_review(request, conn, assignment, manager, error=error, form=form)
 
     assignment.approve_withdraw()
-    assignment_repo.update_status(conn, assignment)
+    assignments.update_status(assignment)
     if new_assignment is not None:
-        assignment_repo.add(conn, new_assignment)
+        assignments.add(new_assignment)
     for a in to_transfer:
-        appointment_repo.reassign(conn, a, new_lawyer)
+        appointments.reassign(a, new_lawyer)
     for a in to_cancel:
-        appointment_repo.cancel(conn, a, f"{old_lawyer.display_name()}ถอนตัวจากคดี")
+        appointments.cancel(a, f"{old_lawyer.display_name()}ถอนตัวจากคดี")
     detail = f"อนุมัติคำขอถอนตัวของ{old_lawyer.display_name()}"
     if new_lawyer is not None:
         detail += f" · มอบหมาย{new_lawyer.display_name()}" + (" เป็นทนายหลัก" if was_lead else "") + " (รอตอบรับ)"
     if to_transfer or to_cancel:
         detail += f" · นัด: ย้าย {len(to_transfer)} ยกเลิก {len(to_cancel)}"
-    case_repo.add_event(conn, case.id, manager, "withdraw_approved", detail)
+    CaseRepository(conn).add_event(case.id, manager, "withdraw_approved", detail)
     return RedirectResponse("/manager/dashboard#notify-withdraw", status_code=303)
 
 
@@ -344,16 +354,17 @@ def withdraw_reject(
     request: Request, assignment_id: int, reason: str = Form(""),
     manager: Manager = Depends(require_role(Manager)), conn=Depends(get_db),
 ):
-    assignment = assignment_repo.get_by_id(conn, assignment_id)
+    assignments = AssignmentRepository(conn)
+    assignment = assignments.get_by_id(assignment_id)
     if assignment is None or not assignment.is_withdraw_requested():
         raise HTTPException(404, "ไม่พบคำขอถอนตัวที่รออนุมัติ")
     try:
         assignment.reject_withdraw(reason)
     except ValueError as e:
         return _render_withdraw_review(request, conn, assignment, manager, error=str(e))
-    assignment_repo.update_status(conn, assignment)
-    case_repo.add_event(
-        conn, assignment.case.id, manager, "withdraw_rejected",
+    assignments.update_status(assignment)
+    CaseRepository(conn).add_event(
+        assignment.case.id, manager, "withdraw_rejected",
         f"ไม่อนุมัติคำขอถอนตัวของ{assignment.lawyer.display_name()}: {assignment.withdraw_reject_reason}",
     )
     return RedirectResponse("/manager/dashboard#notify-withdraw", status_code=303)

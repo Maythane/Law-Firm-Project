@@ -9,14 +9,14 @@ from api.auth import require_role
 from api.deps import get_db, templates
 from domain.person import Lawyer
 from domain.schedule import Schedule
-from repository import appointment_repo
+from repository.appointment_repo import AppointmentRepository
 
 router = APIRouter()
 
 
 @router.get("/reminders", response_class=HTMLResponse)
 def reminders(request: Request, lawyer: Lawyer = Depends(require_role(Lawyer)), conn=Depends(get_db)):
-    schedule = Schedule(appointments=appointment_repo.list_by_lawyer(conn, lawyer.id))
+    schedule = Schedule(appointments=AppointmentRepository(conn).list_by_lawyer(lawyer.id))
     items = schedule.upcoming_reminders(lawyer, date.today())
     return templates.TemplateResponse(
         "reminders/list.html", {"request": request, "lawyer": lawyer, "items": items}
@@ -27,8 +27,9 @@ def reminders(request: Request, lawyer: Lawyer = Depends(require_role(Lawyer)), 
 def mark_reminder_done(
     appointment_id: int, lawyer: Lawyer = Depends(require_role(Lawyer)), conn=Depends(get_db),
 ):
-    appt = appointment_repo.get_by_id(conn, appointment_id)
+    appointments = AppointmentRepository(conn)
+    appt = appointments.get_by_id(appointment_id)
     if appt is None or appt.lawyer.id != lawyer.id:
         raise HTTPException(403, "ไม่มีสิทธิ์ทำรายการนี้")
-    appointment_repo.mark_done(conn, appt)
+    appointments.mark_done(appt)
     return RedirectResponse("/reminders", status_code=303)

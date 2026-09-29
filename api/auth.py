@@ -13,7 +13,7 @@ from fastapi import HTTPException, Request
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 from domain.person import SystemUser
-from repository import user_repo
+from repository.user_repo import UserRepository
 from repository.db import get_connection
 
 _N, _R, _P = 2**14, 8, 1  # พารามิเตอร์ scrypt มาตรฐาน — เร็วพอสำหรับ dev ไม่ต้องจูนเพิ่ม
@@ -50,7 +50,7 @@ def read_session_cookie(token: str) -> int | None:
 def authenticate(username: str, password: str) -> SystemUser | None:
     """คืน user ถ้า username/password ถูกต้องและบัญชียัง is_active · ผิดข้อใดข้อหนึ่งคืน None"""
     conn = get_connection()
-    user = user_repo.find_by_username(conn, username)
+    user = UserRepository(conn).find_by_username(username)
     conn.close()
     if user is None or not user.is_active:
         return None
@@ -72,7 +72,7 @@ def require_role(*allowed_roles: type):
         if user_id is None:
             raise HTTPException(403, "กรุณาเข้าสู่ระบบ")
         conn = get_connection()
-        user = user_repo.get_by_id(conn, user_id)
+        user = UserRepository(conn).get_by_id(user_id)
         conn.close()
         if user is None or not user.is_active:
             raise HTTPException(403, "บัญชีถูกปิดใช้งานหรือไม่พบผู้ใช้")

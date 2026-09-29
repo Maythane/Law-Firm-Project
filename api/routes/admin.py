@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from api.auth import hash_password, require_role
 from api.deps import get_db, templates
 from domain.person import Admin, Lawyer, Manager
-from repository import user_repo
+from repository.user_repo import UserRepository
 
 router = APIRouter()
 
@@ -14,7 +14,7 @@ router = APIRouter()
 @router.get("/admin/dashboard", response_class=HTMLResponse)
 def admin_dashboard(request: Request, admin: Admin = Depends(require_role(Admin)), conn=Depends(get_db)):
     """BL-39: สถิติผู้ใช้ 3 บทบาท แยกเปิด/ปิดใช้งาน — สำนักเดียว ไม่มีสถิติคดี (อยู่ที่ manager dashboard แทน)"""
-    counts = user_repo.count_by_role(conn)
+    counts = UserRepository(conn).count_by_role()
     return templates.TemplateResponse(
         "admin/dashboard.html", {"request": request, "admin": admin, "counts": counts},
     )
@@ -25,7 +25,7 @@ def admin_users(
     request: Request, admin: Admin = Depends(require_role(Admin)),
     error: str | None = None, conn=Depends(get_db),
 ):
-    users = user_repo.list_all(conn)
+    users = UserRepository(conn).list_all()
     return templates.TemplateResponse(
         "admin/users.html", {"request": request, "admin": admin, "users": users, "error": error},
     )
@@ -51,7 +51,7 @@ def admin_create_user(
     license_no: str = Form(""),
     conn=Depends(get_db),
 ):
-    if user_repo.find_by_username(conn, username) is not None:
+    if UserRepository(conn).find_by_username(username) is not None:
         return templates.TemplateResponse(
             "admin/users_new.html",
             {
@@ -71,16 +71,17 @@ def admin_create_user(
         new_user = Manager(**common)
     else:
         new_user = Admin(**common)
-    user_repo.add(conn, new_user)
+    UserRepository(conn).add(new_user)
     return RedirectResponse("/admin/users", status_code=303)
 
 
 @router.post("/admin/users/{user_id}/toggle-active")
 def admin_toggle_active(user_id: int, admin: Admin = Depends(require_role(Admin)), conn=Depends(get_db)):
-    user = user_repo.get_by_id(conn, user_id)
+    users = UserRepository(conn)
+    user = users.get_by_id(user_id)
     if user is None:
         raise HTTPException(404, "ไม่พบผู้ใช้")
-    user_repo.set_active(conn, user_id, not user.is_active)
+    users.set_active(user_id, not user.is_active)
     return RedirectResponse("/admin/users", status_code=303)
 
 
@@ -95,9 +96,10 @@ def admin_edit_user(
     conn=Depends(get_db),
 ):
     """BL-37: แก้ชื่อที่ใช้แสดง/username/รหัสผ่าน (เว้นว่าง = ไม่เปลี่ยน) — รวมกับรีเซ็ตรหัสผ่านเดิมเป็นฟอร์มเดียว ไม่แก้ role"""
-    existing = user_repo.find_by_username(conn, username)
+    users = UserRepository(conn)
+    existing = users.find_by_username(username)
     if existing is not None and existing.id != user_id:
         return admin_users(request, admin, error=f'ชื่อผู้ใช้ "{username}" มีอยู่แล้ว', conn=conn)
     password_hash = hash_password(new_password) if new_password.strip() else None
-    user_repo.update_profile(conn, user_id, name, username, password_hash)
+    users.update_profile(user_id, name, username, password_hash)
     return RedirectResponse("/admin/users", status_code=303)

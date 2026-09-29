@@ -13,7 +13,9 @@ from domain.assignment import AssignmentError
 from domain.errors import ScheduleConflictError
 from domain.person import Lawyer
 from domain.schedule import Schedule
-from repository import appointment_repo, assignment_repo, case_repo
+from repository.appointment_repo import AppointmentRepository
+from repository.assignment_repo import AssignmentRepository
+from repository.case_repo import CaseRepository
 
 router = APIRouter()
 
@@ -36,8 +38,8 @@ def schedule_today(
     today = date.today()
     cal_year = year or today.year
     cal_month = month or today.month
-    schedule = Schedule(appointments=appointment_repo.list_by_lawyer(conn, lawyer.id))
-    pending = assignment_repo.list_pending_for_lawyer(conn, lawyer.id)
+    schedule = Schedule(appointments=AppointmentRepository(conn).list_by_lawyer(lawyer.id))
+    pending = AssignmentRepository(conn).list_pending_for_lawyer(lawyer.id)
     appointments = schedule.day_view(lawyer, today)
     reminders = schedule.upcoming_reminders(lawyer, today)[:3]
 
@@ -71,7 +73,7 @@ def schedule_day(
     conn=Depends(get_db),
 ):
     target_day = date.fromisoformat(d) if d else date.today()
-    schedule = Schedule(appointments=appointment_repo.list_by_lawyer(conn, lawyer.id))
+    schedule = Schedule(appointments=AppointmentRepository(conn).list_by_lawyer(lawyer.id))
     appointments = schedule.day_view(lawyer, target_day)
     return templates.TemplateResponse(
         "schedule/day.html",
@@ -90,7 +92,7 @@ def schedule_month(
     today = date.today()
     year = year or today.year
     month = month or today.month
-    schedule = Schedule(appointments=appointment_repo.list_by_lawyer(conn, lawyer.id))
+    schedule = Schedule(appointments=AppointmentRepository(conn).list_by_lawyer(lawyer.id))
     days_by_number = {d.day: appts for d, appts in schedule.month_view(lawyer, year, month).items()}
 
     calendar_weeks = []
@@ -125,15 +127,16 @@ def accept_assignment(
     request: Request, assignment_id: int, lawyer: Lawyer = Depends(require_role(Lawyer)),
     conn=Depends(get_db),
 ):
-    assignment = assignment_repo.get_by_id(conn, assignment_id)
+    assignments = AssignmentRepository(conn)
+    assignment = assignments.get_by_id(assignment_id)
     if assignment is None or assignment.lawyer.id != lawyer.id:
         raise HTTPException(403, "ไม่มีสิทธิ์ทำรายการนี้")
     try:
         assignment.accept()
     except AssignmentError as e:
         raise HTTPException(409, str(e))
-    assignment_repo.update_status(conn, assignment)
-    pending = assignment_repo.list_pending_for_lawyer(conn, lawyer.id)
+    assignments.update_status(assignment)
+    pending = assignments.list_pending_for_lawyer(lawyer.id)
     workload = _workload_for(conn, lawyer)
     return templates.TemplateResponse(
         "schedule/_pending_swap_response.html", {"request": request, "pending": pending, "workload": workload}
@@ -148,13 +151,14 @@ def decline_assignment(
     lawyer: Lawyer = Depends(require_role(Lawyer)),
     conn=Depends(get_db),
 ):
-    assignment = assignment_repo.get_by_id(conn, assignment_id)
+    assignments = AssignmentRepository(conn)
+    assignment = assignments.get_by_id(assignment_id)
     if assignment is None or assignment.lawyer.id != lawyer.id:
         raise HTTPException(403, "ไม่มีสิทธิ์ทำรายการนี้")
     try:
         assignment.decline(reason)
     except ValueError as e:
-        pending = assignment_repo.list_pending_for_lawyer(conn, lawyer.id)
+        pending = assignments.list_pending_for_lawyer(lawyer.id)
         workload = _workload_for(conn, lawyer)
         return templates.TemplateResponse(
             "schedule/_pending_swap_response.html",
@@ -163,8 +167,8 @@ def decline_assignment(
                 "decline_error": str(e), "error_assignment_id": assignment_id,
             },
         )
-    assignment_repo.update_status(conn, assignment)
-    pending = assignment_repo.list_pending_for_lawyer(conn, lawyer.id)
+    assignments.update_status(assignment)
+    pending = assignments.list_pending_for_lawyer(lawyer.id)
     workload = _workload_for(conn, lawyer)
     return templates.TemplateResponse(
         "schedule/_pending_swap_response.html", {"request": request, "pending": pending, "workload": workload}
@@ -177,7 +181,7 @@ def new_appointment_form(
     conn=Depends(get_db),
 ):
     """case_id เลือกล่วงหน้าได้ผ่าน query — ปุ่ม "ลงนัดถัดไป" จาก popup ปฏิทิน (BL-32)"""
-    cases = case_repo.list_accepted_by_lawyer(conn, lawyer.id)
+    cases = CaseRepository(conn).list_accepted_by_lawyer(lawyer.id)
     return templates.TemplateResponse(
         "schedule/form.html",
         {
@@ -215,19 +219,21 @@ def create_appointment(
     triggered_by_event: str = Form(""),
     conn=Depends(get_db),
 ):
-    case = case_repo.get_by_id(conn, case_id)
-    case._assignments.extend(assignment_repo.list_for_case(conn, case))
+    cases = CaseRepository(conn)
+    case = cases.get_by_id(case_id)
+    case._assignments.extend(AssignmentRepository(conn).list_for_case(case))
 
     appt = _build_appointment(
         kind, case, lawyer,
         datetime.fromisoformat(starts_at), datetime.fromisoformat(ends_at),
         location, court_name, room_no, triggered_by_event,
     )
-    schedule = Schedule(appointments=appointment_repo.list_by_lawyer(conn, lawyer.id))
+    appointments = AppointmentRepository(conn)
+    schedule = Schedule(appointments=appointments.list_by_lawyer(lawyer.id))
     try:
         schedule.add(appt)
     except (ScheduleConflictError, AssignmentError) as e:
-        cases = case_repo.list_accepted_by_lawyer(conn, lawyer.id)
+        cases = cases.list_accepted_by_lawyer(lawyer.id)
         return templates.TemplateResponse(
             "schedule/form.html",
             {
@@ -239,5 +245,5 @@ def create_appointment(
                 },
             },
         )
-    appointment_repo.add(conn, appt)
+    appointments.add(appt)
     return RedirectResponse("/schedule/today", status_code=303)

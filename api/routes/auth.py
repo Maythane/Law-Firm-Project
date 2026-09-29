@@ -9,7 +9,7 @@ from api.auth import (
 )
 from api.deps import get_db, templates
 from domain.person import SystemUser
-from repository import user_repo
+from repository.user_repo import UserRepository
 
 router = APIRouter()
 
@@ -65,8 +65,9 @@ def account_edit(
         if not verify_password(current_password, current_user.password_hash):
             return RedirectResponse(f"{back}{sep}account_error=รหัสผ่านเดิมไม่ถูกต้อง", status_code=303)
         password_hash = hash_password(new_password)
-    existing = user_repo.find_by_username(conn, username)
+    users = UserRepository(conn)
+    existing = users.find_by_username(username)
     if existing is not None and existing.id != current_user.id:
         return RedirectResponse(f"{back}{sep}account_error=ชื่อผู้ใช้นี้มีอยู่แล้ว", status_code=303)
-    user_repo.update_profile(conn, current_user.id, name, username, password_hash)
+    users.update_profile(current_user.id, name, username, password_hash)
     return RedirectResponse(back, status_code=303)

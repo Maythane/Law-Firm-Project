@@ -14,16 +14,19 @@ from domain.assignment import WITHDRAW_REASONS, AssignmentError
 from domain.case import CaseNote, CaseStatus
 from domain.errors import InvalidStatusTransition
 from domain.person import Lawyer, SystemUser
-from repository import appointment_repo, assignment_repo, case_repo
+from repository.appointment_repo import AppointmentRepository
+from repository.assignment_repo import AssignmentRepository
+from repository.case_repo import CaseRepository
 
 router = APIRouter()
 
 
 def _load_case(conn, case_id: int):
-    case = case_repo.get_by_id(conn, case_id)
+    cases = CaseRepository(conn)
+    case = cases.get_by_id(case_id)
     if case is None:
         raise HTTPException(404, "ไม่พบคดี")
-    case._assignments.extend(assignment_repo.list_for_case(conn, case))
+    case._assignments.extend(AssignmentRepository(conn).list_for_case(case))
     return case
 
 
@@ -53,8 +56,8 @@ def my_cases(
     conn=Depends(get_db),
 ):
     """หน้า "คดีของฉัน" — คดีที่ตอบรับแล้ว แยกแท็บกำลังดำเนินการ / ปิดแล้ว-ยกเลิก เรียงตามนัดถัดไป"""
-    assignments = assignment_repo.list_accepted_for_lawyer(conn, lawyer.id)
-    appointments = appointment_repo.list_by_lawyer(conn, lawyer.id)
+    assignments = AssignmentRepository(conn).list_accepted_for_lawyer(lawyer.id)
+    appointments = AppointmentRepository(conn).list_by_lawyer(lawyer.id)
 
     now = datetime.now()
     next_appt = {}
@@ -97,9 +100,10 @@ def my_cases(
 @router.get("/cases/{case_id}", response_class=HTMLResponse)
 def case_detail(request: Request, case_id: int, current_user: SystemUser = Depends(require_role()), conn=Depends(get_db)):
     case = _load_case_for(conn, case_id, current_user)
-    appointments = sorted(appointment_repo.list_by_case(conn, case_id), key=lambda a: a.starts_at)
-    notes = case_repo.list_notes(conn, case_id)
-    events = case_repo.list_events(conn, case_id)
+    cases = CaseRepository(conn)
+    appointments = sorted(AppointmentRepository(conn).list_by_case(case_id), key=lambda a: a.starts_at)
+    notes = cases.list_notes(case_id)
+    events = cases.list_events(case_id)
     my_assignment = next(
         (a for a in case._assignments if a.lawyer.id == current_user.id and a.status.value == "accepted"), None
     )
@@ -127,7 +131,7 @@ def advance_case(case_id: int, lawyer: Lawyer = Depends(require_role(Lawyer)), c
     old = case.status
     try:
         if target == CaseStatus.CLOSED:
-            appointments = appointment_repo.list_by_case(conn, case_id)
+            appointments = AppointmentRepository(conn).list_by_case(case_id)
             open_appts = _open_appointments(appointments)
             if not case.can_close(
                 has_future_appointments=any(not isinstance(a, FilingDeadline) for a in open_appts),
@@ -137,9 +141,10 @@ def advance_case(case_id: int, lawyer: Lawyer = Depends(require_role(Lawyer)), c
         case.advance_status(target)
     except InvalidStatusTransition as e:
         return _back_to_case(case_id, str(e))
-    case_repo.update_progress(conn, case)
-    case_repo.add_event(
-        conn, case_id, lawyer, "status",
+    cases = CaseRepository(conn)
+    cases.update_progress(case)
+    cases.add_event(
+        case_id, lawyer, "status",
         f"เลื่อนสถานะ {case_status_th(old)} → {case_status_th(case.status)}",
     )
     return _back_to_case(case_id)
@@ -156,19 +161,20 @@ def set_case_number(
     case = _load_case_for(conn, case_id, lawyer)
     label = "ดำ" if kind == "black" else "แดง"
     old_value = case.black_case_no if kind == "black" else case.red_case_no
+    cases = CaseRepository(conn)
     try:
         if kind == "black":
             case.assign_black_number(value)
         else:
             case.assign_red_number(value)
-        case_repo.update_progress(conn, case)
+        cases.update_progress(case)
     except (InvalidStatusTransition, ValueError) as e:
         return _back_to_case(case_id, str(e))
     except mysql.connector.IntegrityError:
         return _back_to_case(case_id, f"หมายเลขคดี{label} {value.strip()} ซ้ำกับคดีอื่นในระบบ")
     new_value = case.black_case_no if kind == "black" else case.red_case_no
-    case_repo.add_event(
-        conn, case_id, lawyer, f"{kind}_no", f"หมายเลขคดี{label}: {old_value or '-'} → {new_value}"
+    cases.add_event(
+        case_id, lawyer, f"{kind}_no", f"หมายเลขคดี{label}: {old_value or '-'} → {new_value}"
     )
     return _back_to_case(case_id)
 
@@ -183,13 +189,13 @@ def add_case_note(
         text = CaseNote.validate_text(text)
     except ValueError as e:
         return _back_to_case(case_id, str(e))
-    case_repo.add_note(conn, CaseNote(case_id=case_id, author=lawyer, text=text, created_at=datetime.now()))
+    CaseRepository(conn).add_note(CaseNote(case_id=case_id, author=lawyer, text=text, created_at=datetime.now()))
     return _back_to_case(case_id)
 
 
 def _own_note(conn, case_id: int, note_id: int, lawyer: Lawyer) -> CaseNote:
     _load_case_for(conn, case_id, lawyer)
-    note = case_repo.get_note(conn, note_id)
+    note = CaseRepository(conn).get_note(note_id)
     if note is None or note.case_id != case_id:
         raise HTTPException(404, "ไม่พบโน้ต")
     if not note.can_modify(lawyer):
@@ -207,7 +213,7 @@ def edit_case_note(
         note.text = CaseNote.validate_text(text)
     except ValueError as e:
         return _back_to_case(case_id, str(e))
-    case_repo.update_note(conn, note)
+    CaseRepository(conn).update_note(note)
     return _back_to_case(case_id)
 
 
@@ -216,7 +222,7 @@ def delete_case_note(
     case_id: int, note_id: int, lawyer: Lawyer = Depends(require_role(Lawyer)), conn=Depends(get_db),
 ):
     _own_note(conn, case_id, note_id, lawyer)
-    case_repo.delete_note(conn, note_id)
+    CaseRepository(conn).delete_note(note_id)
     return _back_to_case(case_id)
 
 
@@ -237,7 +243,7 @@ def request_withdraw(
         assignment.request_withdraw(reason_code, note)
     except (AssignmentError, ValueError) as e:
         return _back_to_case(case_id, str(e))
-    assignment_repo.update_status(conn, assignment)
+    AssignmentRepository(conn).update_status(assignment)
     detail = f"ขอถอนตัว: {WITHDRAW_REASONS[reason_code]}" + (f" — {assignment.withdraw_note}" if assignment.withdraw_note else "")
-    case_repo.add_event(conn, case_id, lawyer, "withdraw_request", detail)
+    CaseRepository(conn).add_event(case_id, lawyer, "withdraw_request", detail)
     return _back_to_case(case_id)

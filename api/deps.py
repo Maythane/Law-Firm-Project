@@ -16,7 +16,10 @@ from domain.appointment import ClientMeeting, CourtHearing, FilingDeadline
 from domain.assignment import WITHDRAW_REASONS
 from domain.case import CaseStatus
 from domain.person import Lawyer, Manager, SystemUser
-from repository import appointment_repo, assignment_repo, case_repo, user_repo
+from repository.appointment_repo import AppointmentRepository
+from repository.assignment_repo import AssignmentRepository
+from repository.case_repo import CaseRepository
+from repository.user_repo import UserRepository
 from repository.db import get_connection
 
 templates = Jinja2Templates(directory="templates")
@@ -79,7 +82,7 @@ def sidebar_user(request: Request) -> SystemUser | None:
         return None
     conn = get_connection()
     try:
-        return user_repo.get_by_id(conn, user_id)
+        return UserRepository(conn).get_by_id(user_id)
     finally:
         conn.close()
 
@@ -97,18 +100,18 @@ templates.env.globals["css_version"] = css_version
 
 def _workload_for(conn, lawyer: Lawyer) -> int:
     """คดีที่ตอบรับอยู่ + นัดในอีก 30 วัน — Lawyer.workload() (BL-23)"""
-    accepted_cases = case_repo.list_accepted_by_lawyer(conn, lawyer.id)
+    accepted_cases = CaseRepository(conn).list_accepted_by_lawyer(lawyer.id)
     today = date.today()
     horizon = today + timedelta(days=30)
     upcoming = [
-        a for a in appointment_repo.list_by_lawyer(conn, lawyer.id)
+        a for a in AppointmentRepository(conn).list_by_lawyer(lawyer.id)
         if today <= a.starts_at.date() <= horizon
     ]
     return lawyer.workload(cases=accepted_cases, appointments=upcoming)
 
 
 def _lawyer_workloads(conn) -> list[tuple[Lawyer, int]]:
-    lawyers = user_repo.list_by_role(conn, "lawyer")
+    lawyers = UserRepository(conn).list_by_role("lawyer")
     return sorted(((lw, _workload_for(conn, lw)) for lw in lawyers), key=lambda pair: pair[1])
 
 
@@ -118,7 +121,7 @@ def lawyer_pending(user: SystemUser | None) -> list:
         return []
     conn = get_connection()
     try:
-        return assignment_repo.list_pending_for_lawyer(conn, user.id)
+        return AssignmentRepository(conn).list_pending_for_lawyer(user.id)
     finally:
         conn.close()
 
@@ -146,7 +149,7 @@ def withdraw_request_count(user: SystemUser | None) -> int:
         return 0
     conn = get_connection()
     try:
-        return len(assignment_repo.list_withdraw_requests(conn))
+        return len(AssignmentRepository(conn).list_withdraw_requests())
     finally:
         conn.close()
 

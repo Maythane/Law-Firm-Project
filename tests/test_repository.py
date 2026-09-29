@@ -10,7 +10,11 @@ from domain.appointment import CourtHearing
 from domain.assignment import AssignmentStatus, CaseAssignment
 from domain.case import Case, CaseNote, CaseStatus
 from domain.person import Client, Lawyer, Manager
-from repository import appointment_repo, assignment_repo, case_repo, client_repo, user_repo
+from repository.appointment_repo import AppointmentRepository
+from repository.assignment_repo import AssignmentRepository
+from repository.case_repo import CaseRepository
+from repository.client_repo import ClientRepository
+from repository.user_repo import UserRepository
 from repository.db import get_connection
 from api.auth import authenticate, hash_password
 
@@ -29,14 +33,15 @@ def conn():
 
 
 def test_add_and_read_back_court_hearing_appointment(conn):
-    manager = user_repo.add(conn, Manager(name="ผู้จัดการหนึ่ง", citizen_id="90", phone="089", username="manager1"))
-    lawyer = user_repo.add(
-        conn,
+    users, clients, cases, appointments = (
+        UserRepository(conn), ClientRepository(conn), CaseRepository(conn), AppointmentRepository(conn),
+    )
+    manager = users.add(Manager(name="ผู้จัดการหนึ่ง", citizen_id="90", phone="089", username="manager1"))
+    lawyer = users.add(
         Lawyer(name="สมชาย", citizen_id="1", phone="080", username="lawyer1", license_no="L1"),
     )
-    client = client_repo.add(conn, Client(name="สมหญิง", citizen_id="2", phone="081"))
-    case = case_repo.add(
-        conn,
+    client = clients.add(Client(name="สมหญิง", citizen_id="2", phone="081"))
+    case = cases.add(
         Case(
             title="ผิดสัญญาซื้อขาย",
             client=client,
@@ -46,8 +51,7 @@ def test_add_and_read_back_court_hearing_appointment(conn):
             opened_date=date(2026, 1, 1),
         ),
     )
-    hearing = appointment_repo.add(
-        conn,
+    hearing = appointments.add(
         CourtHearing(
             case=case, lawyer=lawyer,
             starts_at=datetime(2026, 3, 10, 9, 0), ends_at=datetime(2026, 3, 10, 10, 0),
@@ -55,7 +59,7 @@ def test_add_and_read_back_court_hearing_appointment(conn):
         ),
     )
 
-    loaded = appointment_repo.get_by_id(conn, hearing.id)
+    loaded = appointments.get_by_id(hearing.id)
 
     assert isinstance(loaded, CourtHearing)
     assert loaded.reminder_lead_days() == 3
@@ -64,9 +68,9 @@ def test_add_and_read_back_court_hearing_appointment(conn):
 
 
 def test_case_status_round_trips_without_replaying_state_machine(conn):
-    client = client_repo.add(conn, Client(name="สมหญิง", citizen_id="2", phone="081"))
-    saved = case_repo.add(
-        conn,
+    clients, cases = ClientRepository(conn), CaseRepository(conn)
+    client = clients.add(Client(name="สมหญิง", citizen_id="2", phone="081"))
+    saved = cases.add(
         Case(
             title="ผิดสัญญาซื้อขาย", client=client, client_role="โจทก์",
             opposing_party="บจก. คู่กรณี", court_name="ศาลแพ่งกรุงเทพใต้",
@@ -74,14 +78,14 @@ def test_case_status_round_trips_without_replaying_state_machine(conn):
         ),
     )
 
-    loaded = case_repo.find_by_case_no(conn, "1234/2568")
+    loaded = cases.find_by_case_no("1234/2568")
 
     assert loaded.status == CaseStatus.OPEN
     assert loaded.id == saved.id
 
 
 def test_authenticate_accepts_correct_username_and_password(conn):
-    user_repo.add(conn, Lawyer(
+    UserRepository(conn).add(Lawyer(
         name="สมชาย", citizen_id="1", phone="080", username="lawyer1",
         password_hash=hash_password("password123"), license_no="L1",
     ))
@@ -93,7 +97,7 @@ def test_authenticate_accepts_correct_username_and_password(conn):
 
 
 def test_authenticate_rejects_wrong_password(conn):
-    user_repo.add(conn, Lawyer(
+    UserRepository(conn).add(Lawyer(
         name="สมชาย", citizen_id="1", phone="080", username="lawyer1",
         password_hash=hash_password("password123"), license_no="L1",
     ))
@@ -102,16 +106,17 @@ def test_authenticate_rejects_wrong_password(conn):
 
 
 def test_list_all_clients_returns_every_client_sorted_by_name(conn):
-    client_repo.add(conn, Client(name="วิชัย", citizen_id="3", phone="082"))
-    client_repo.add(conn, Client(name="กมล", citizen_id="4", phone="083"))
+    clients = ClientRepository(conn)
+    clients.add(Client(name="วิชัย", citizen_id="3", phone="082"))
+    clients.add(Client(name="กมล", citizen_id="4", phone="083"))
 
-    clients = client_repo.list_all(conn)
+    all_clients = clients.list_all()
 
-    assert [c.name for c in clients] == ["กมล", "วิชัย"]
+    assert [c.name for c in all_clients] == ["กมล", "วิชัย"]
 
 
 def test_authenticate_rejects_inactive_account(conn):
-    user_repo.add(conn, Lawyer(
+    UserRepository(conn).add(Lawyer(
         name="สมชาย", citizen_id="1", phone="080", username="lawyer1",
         password_hash=hash_password("password123"), license_no="L1", is_active=False,
     ))
@@ -120,14 +125,17 @@ def test_authenticate_rejects_inactive_account(conn):
 
 
 def _case_with_accepted_lawyer(conn):
-    manager = user_repo.add(conn, Manager(name="ผู้จัดการหนึ่ง", citizen_id="90", phone="089", username="manager1"))
-    lawyer = user_repo.add(conn, Lawyer(name="สมชาย", citizen_id="1", phone="080", username="lawyer1", license_no="L1"))
-    client = client_repo.add(conn, Client(name="สมหญิง", citizen_id="2", phone="081"))
-    case = case_repo.add(conn, Case(
+    users, clients, cases, assignments = (
+        UserRepository(conn), ClientRepository(conn), CaseRepository(conn), AssignmentRepository(conn),
+    )
+    manager = users.add(Manager(name="ผู้จัดการหนึ่ง", citizen_id="90", phone="089", username="manager1"))
+    lawyer = users.add(Lawyer(name="สมชาย", citizen_id="1", phone="080", username="lawyer1", license_no="L1"))
+    client = clients.add(Client(name="สมหญิง", citizen_id="2", phone="081"))
+    case = cases.add(Case(
         title="ผิดสัญญาซื้อขาย", client=client, client_role="โจทก์", opposing_party="บจก. คู่กรณี",
         court_name="ศาลแพ่ง", opened_date=date(2026, 1, 1),
     ))
-    assignment = assignment_repo.add(conn, CaseAssignment(
+    assignment = assignments.add(CaseAssignment(
         case=case, lawyer=lawyer, assigned_by=manager, assigned_at=datetime.now(),
         status=AssignmentStatus.ACCEPTED, is_lead=True,
     ))
@@ -135,98 +143,104 @@ def _case_with_accepted_lawyer(conn):
 
 
 def test_withdraw_request_round_trips_and_shows_in_manager_list(conn):
+    assignments, cases = AssignmentRepository(conn), CaseRepository(conn)
     manager, lawyer, case, assignment = _case_with_accepted_lawyer(conn)
-    assert assignment_repo.list_withdraw_requests(conn) == []
+    assert assignments.list_withdraw_requests() == []
 
     assignment.request_withdraw("other", "ป่วย")
-    assignment_repo.update_status(conn, assignment)
+    assignments.update_status(assignment)
 
-    loaded = assignment_repo.get_by_id(conn, assignment.id)
+    loaded = assignments.get_by_id(assignment.id)
     assert loaded.is_withdraw_requested() and loaded.withdraw_note == "ป่วย"
-    assert [a.id for a in assignment_repo.list_withdraw_requests(conn)] == [assignment.id]
+    assert [a.id for a in assignments.list_withdraw_requests()] == [assignment.id]
     # ระหว่างรอ ยังนับเป็นคดีของทนายอยู่ (คดีของฉัน)
-    assert [a.case.id for a in assignment_repo.list_accepted_for_lawyer(conn, lawyer.id)] == [case.id]
+    assert [a.case.id for a in assignments.list_accepted_for_lawyer(lawyer.id)] == [case.id]
 
     loaded.approve_withdraw()
-    assignment_repo.update_status(conn, loaded)
-    assert assignment_repo.list_accepted_for_lawyer(conn, lawyer.id) == []
-    assert [c.id for c in case_repo.list_without_accepted_lawyer(conn)] == [case.id]
+    assignments.update_status(loaded)
+    assert assignments.list_accepted_for_lawyer(lawyer.id) == []
+    assert [c.id for c in cases.list_without_accepted_lawyer()] == [case.id]
 
 
 def test_update_progress_and_duplicate_black_number_raises_integrity_error(conn):
+    cases = CaseRepository(conn)
     _, _, case, _ = _case_with_accepted_lawyer(conn)
-    other = case_repo.add(conn, Case(
+    other = cases.add(Case(
         title="อีกคดี", client=case.client, client_role="จำเลย", opposing_party="x",
         court_name="ศาล", opened_date=date(2026, 1, 2), black_case_no="1/2569",
     ))
     case._status = CaseStatus.FILED
     case.assign_black_number("2/2569")
-    case_repo.update_progress(conn, case)
-    assert case_repo.get_by_id(conn, case.id).black_case_no == "2/2569"
+    cases.update_progress(case)
+    assert cases.get_by_id(case.id).black_case_no == "2/2569"
 
     case.assign_black_number(other.black_case_no)
     with pytest.raises(mysql.connector.IntegrityError):
-        case_repo.update_progress(conn, case)
+        cases.update_progress(case)
 
 
 def test_notes_and_events_round_trip(conn):
+    cases = CaseRepository(conn)
     manager, lawyer, case, _ = _case_with_accepted_lawyer(conn)
-    note = case_repo.add_note(conn, CaseNote(case_id=case.id, author=lawyer, text="ก", created_at=datetime.now()))
+    note = cases.add_note(CaseNote(case_id=case.id, author=lawyer, text="ก", created_at=datetime.now()))
     note.text = "แก้"
-    case_repo.update_note(conn, note)
-    assert [n.text for n in case_repo.list_notes(conn, case.id)] == ["แก้"]
-    case_repo.delete_note(conn, note.id)
-    assert case_repo.get_note(conn, note.id) is None
+    cases.update_note(note)
+    assert [n.text for n in cases.list_notes(case.id)] == ["แก้"]
+    cases.delete_note(note.id)
+    assert cases.get_note(note.id) is None
 
-    case_repo.add_event(conn, case.id, manager, "status", "เลื่อนสถานะ")
-    events = case_repo.list_events(conn, case.id)
+    cases.add_event(case.id, manager, "status", "เลื่อนสถานะ")
+    events = cases.list_events(case.id)
     assert events[0].detail == "เลื่อนสถานะ" and events[0].actor.id == manager.id
 
 
 def test_unresolved_declined_disappears_once_case_has_pending_or_accepted_lawyer(conn):
+    users, assignments = UserRepository(conn), AssignmentRepository(conn)
     manager, lawyer, case, _ = _case_with_accepted_lawyer(conn)
     # ล้างทนายที่ตอบรับ แล้วสร้างการปฏิเสธ: คดีค้าง → ต้องขึ้นในรายการ
     cur = conn.cursor()
     cur.execute("DELETE FROM case_assignments")
     conn.commit()
-    declined = assignment_repo.add(conn, CaseAssignment(
+    declined = assignments.add(CaseAssignment(
         case=case, lawyer=lawyer, assigned_by=manager, assigned_at=datetime.now(),
     ))
     declined.decline("ภาระงานล้น")
-    assignment_repo.update_status(conn, declined)
-    assert [a.id for a in assignment_repo.list_unresolved_declined(conn)] == [declined.id]
+    assignments.update_status(declined)
+    assert [a.id for a in assignments.list_unresolved_declined()] == [declined.id]
 
     # มอบหมายทนายคนใหม่ (pending) แล้ว การปฏิเสธเก่าไม่ค้างอีก
-    other = user_repo.add(conn, Lawyer(name="สมศักดิ์", citizen_id="5", phone="083", username="lawyer2", license_no="L2"))
-    assignment_repo.add(conn, CaseAssignment(case=case, lawyer=other, assigned_by=manager, assigned_at=datetime.now()))
-    assert assignment_repo.list_unresolved_declined(conn) == []
+    other = users.add(Lawyer(name="สมศักดิ์", citizen_id="5", phone="083", username="lawyer2", license_no="L2"))
+    assignments.add(CaseAssignment(case=case, lawyer=other, assigned_by=manager, assigned_at=datetime.now()))
+    assert assignments.list_unresolved_declined() == []
 
 
 def test_latest_event_by_case_returns_most_recent_only(conn):
+    cases = CaseRepository(conn)
     manager, _, case, _ = _case_with_accepted_lawyer(conn)
-    assert case_repo.latest_event_by_case(conn, []) == {}
-    assert case_repo.latest_event_by_case(conn, [case.id]) == {}
-    case_repo.add_event(conn, case.id, manager, "status", "เหตุการณ์แรก")
-    case_repo.add_event(conn, case.id, manager, "status", "เหตุการณ์ล่าสุด")
-    assert case_repo.latest_event_by_case(conn, [case.id])[case.id][0] == "เหตุการณ์ล่าสุด"
+    assert cases.latest_event_by_case([]) == {}
+    assert cases.latest_event_by_case([case.id]) == {}
+    cases.add_event(case.id, manager, "status", "เหตุการณ์แรก")
+    cases.add_event(case.id, manager, "status", "เหตุการณ์ล่าสุด")
+    assert cases.latest_event_by_case([case.id])[case.id][0] == "เหตุการณ์ล่าสุด"
 
 
 def test_without_accepted_lawyer_keeps_case_while_lawyer_is_pending_and_lists_who_waits(conn):
+    cases, assignments = CaseRepository(conn), AssignmentRepository(conn)
     manager, lawyer, case, assignment = _case_with_accepted_lawyer(conn)
     cur = conn.cursor()
     cur.execute("DELETE FROM case_assignments")
     conn.commit()
-    assert [c.id for c in case_repo.list_without_accepted_lawyer(conn)] == [case.id]
-    assert assignment_repo.list_pending_for_cases(conn, [case]) == {}
+    assert [c.id for c in cases.list_without_accepted_lawyer()] == [case.id]
+    assert assignments.list_pending_for_cases([case]) == {}
 
-    pending = assignment_repo.add(conn, CaseAssignment(
+    pending = assignments.add(CaseAssignment(
         case=case, lawyer=lawyer, assigned_by=manager, assigned_at=datetime.now(),
     ))
     # ยังไม่มีทนายตอบรับ (แค่รอตอบ) → ยังต้องอยู่ในกล่องแจ้งเตือน พร้อมรู้ว่ารอใคร
-    assert [c.id for c in case_repo.list_without_accepted_lawyer(conn)] == [case.id]
-    waiting = assignment_repo.list_pending_for_cases(conn, [case])
+    assert [c.id for c in cases.list_without_accepted_lawyer()] == [case.id]
+    waiting = assignments.list_pending_for_cases([case])
     assert [a.id for a in waiting[case.id]] == [pending.id]
 
     pending.accept()
-    assignment_repo.update_status(conn, pending)
-    assert case_repo.list_without_accepted_lawyer(conn) == []
+    assignments.update_status(pending)
+    assert cases.list_without_accepted_lawyer() == []
