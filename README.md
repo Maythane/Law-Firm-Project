@@ -110,7 +110,9 @@ docker compose up --build
 pytest
 ```
 
-เทสส่วนใหญ่ (`domain/` ทั้งหมด) **ไม่ต้องต่อฐานข้อมูล** ยกเว้น `tests/test_repository.py` และ `tests/test_auth.py`'s DB-dependent cases ที่ต่อ `lawfirm-db` จริงผ่าน XAMPP
+เทสส่วนใหญ่ (`domain/` ทั้งหมด) **ไม่ต้องต่อฐานข้อมูล** ยกเว้น `tests/test_repository.py` ที่ต่อฐานแยก `lawfirm_test` จริงผ่าน MariaDB
+
+เทสที่ต่อ DB ใช้ฐานแยก `lawfirm_test` เสมอ (เปลี่ยนชื่อได้ผ่าน `TEST_DB_NAME` ใน `.env`, ดู `.env.example`) ไม่แตะ `lawfirm-db` ของแอป — fixture สร้างฐานและโหลด `db/schema.sql` ให้เองถ้ายังไม่มี และ `pytest.fail` ทันทีถ้าชื่อฐานเทสชนกับฐานแอป (`DB_NAME`) หรือเป็น `lawfirm-db` ก่อนแตะ `TRUNCATE`
 
 **ข้อควรระวัง** — `tests/test_repository.py` จะ **TRUNCATE ทั้ง 6 ตารางก่อนรันทุกครั้ง** เพื่อทดสอบแบบสะอาด หลังรัน `pytest` แล้วข้อมูลตัวอย่างจะหายไป ถ้าจะกลับไปเปิดเว็บดูข้อมูลต่อ ให้นำเข้า `db/seed.sql` ใหม่ผ่าน phpMyAdmin ตามขั้นตอนด้านบนอีกครั้ง
 

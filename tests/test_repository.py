@@ -1,6 +1,7 @@
-# BL-18 — เทสนี้ต่อฐานข้อมูลจริง (lawfirm-db ผ่าน XAMPP) ต่างจากเทสอื่นในโฟลเดอร์นี้ที่ไม่ต้องต่อ DB
-# ถ้า XAMPP/MariaDB ไม่ได้รันอยู่ เทสไฟล์นี้จะ fail ที่ setup ไม่ใช่ error สุ่ม
+# BL-18 — เทสนี้ต่อฐานแยก lawfirm_test (TEST_DB_NAME) ไม่แตะ lawfirm-db ของแอป
+# ถ้า MariaDB ไม่ได้รันอยู่ เทสไฟล์นี้จะ fail ที่ setup ไม่ใช่ error สุ่ม
 
+import os
 from datetime import date, datetime
 
 import mysql.connector
@@ -15,14 +16,19 @@ from repository.assignment_repo import AssignmentRepository
 from repository.case_repo import CaseRepository
 from repository.client_repo import ClientRepository
 from repository.user_repo import UserRepository
-from repository.db import get_connection
+from repository.db import TEST_DB_NAME, get_test_connection, is_test_db_allowed
 from api.auth import authenticate, hash_password
 
 
 @pytest.fixture
 def conn():
-    connection = get_connection()
+    app_db = os.environ.get("DB_NAME", "lawfirm-db")
+    if not is_test_db_allowed(TEST_DB_NAME, app_db):
+        pytest.fail(f"ชื่อฐานเทส ({TEST_DB_NAME}) ชนฐานแอป ({app_db}) หรือ lawfirm-db — ปฏิเสธ TRUNCATE")
+    connection = get_test_connection()
     cur = connection.cursor()
+    cur.execute("SELECT DATABASE()")
+    assert cur.fetchone()[0] == TEST_DB_NAME, "เทสต้องวิ่งบนฐานเทสเท่านั้น"
     cur.execute("SET FOREIGN_KEY_CHECKS = 0")
     for table in ("case_events", "case_notes", "appointment_changes", "appointments", "case_assignments", "cases", "clients", "users"):
         cur.execute(f"TRUNCATE TABLE {table}")
@@ -90,7 +96,7 @@ def test_authenticate_accepts_correct_username_and_password(conn):
         password_hash=hash_password("password123"), license_no="L1",
     ))
 
-    user = authenticate("lawyer1", "password123")
+    user = authenticate("lawyer1", "password123", conn)
 
     assert user is not None
     assert user.username == "lawyer1"
@@ -102,7 +108,7 @@ def test_authenticate_rejects_wrong_password(conn):
         password_hash=hash_password("password123"), license_no="L1",
     ))
 
-    assert authenticate("lawyer1", "wrong-password") is None
+    assert authenticate("lawyer1", "wrong-password", conn) is None
 
 
 def test_list_all_clients_returns_every_client_sorted_by_name(conn):
@@ -121,7 +127,7 @@ def test_authenticate_rejects_inactive_account(conn):
         password_hash=hash_password("password123"), license_no="L1", is_active=False,
     ))
 
-    assert authenticate("lawyer1", "password123") is None
+    assert authenticate("lawyer1", "password123", conn) is None
 
 
 def _case_with_accepted_lawyer(conn):

@@ -47,11 +47,17 @@ def read_session_cookie(token: str) -> int | None:
         return None
 
 
-def authenticate(username: str, password: str) -> SystemUser | None:
-    """คืน user ถ้า username/password ถูกต้องและบัญชียัง is_active · ผิดข้อใดข้อหนึ่งคืน None"""
-    conn = get_connection()
+def authenticate(username: str, password: str, conn=None) -> SystemUser | None:
+    """คืน user ถ้า username/password ถูกต้องและบัญชียัง is_active · ผิดข้อใดข้อหนึ่งคืน None
+
+    ส่ง conn เองได้สำหรับเทส (อ่านจากฐานเทส) — ไม่ส่งมาคือเปิด/ปิด connection ฐานแอปเองเหมือนเดิม
+    """
+    own_conn = conn is None
+    if own_conn:
+        conn = get_connection()
     user = UserRepository(conn).find_by_username(username)
-    conn.close()
+    if own_conn:
+        conn.close()
     if user is None or not user.is_active:
         return None
     if not verify_password(password, user.password_hash):
