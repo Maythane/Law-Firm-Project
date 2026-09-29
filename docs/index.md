@@ -24,6 +24,7 @@
 | [`pitch.html`](pitch.html) | สไลด์เสนอหัวข้อ |
 | [`mockup/dashboard.html`](../mockup/dashboard.html) | ภาพหน้าจอตารางวันนี้ |
 | [`diagrams/`](diagrams/) | ผังคลาสตระกูลนัดหมาย · ผังคลาสผู้ใช้และบทบาท · ผังสถาปัตยกรรม (HTML เปิดในเบราว์เซอร์) |
+| [`slides/index.html`](slides/index.html) | สไลด์นำเสนอ OOP 16 หน้า (เปิดในเบราว์เซอร์ เต็มจอด้วย F พิมพ์เป็น PDF ได้) |
 | [`db/seed.sql`](../db/seed.sql) | สร้างโดย `tools/generate_seed.py` — **ห้ามแก้ตรงๆ** แก้สคริปต์แล้วรันใหม่ · นำเข้า `lawfirm-db` แล้ว |
 | [`survey_questions.md`](survey_questions.md) | แบบสอบถาม — **ยกเลิกแล้ว** เก็บไว้เป็นบันทึก |
 

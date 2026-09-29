@@ -13,7 +13,7 @@ api/          web layer — main.py เป็น app factory บางๆ, deps.
 templates/    Jinja2 templates (Pico.css + HTMX ผ่าน CDN)
 static/       theme.css — โทเค็นสี/คลาสของระบบ
 db/           schema.sql (โครงตาราง MariaDB 6 ตาราง), seed.sql (ข้อมูลตัวอย่าง), migrations/
-docs/         backlog/proposal/uml/index/pitch/survey (เอกสาร) + diagrams/
+docs/         backlog/proposal/uml/index/pitch/survey (เอกสาร) + diagrams/ + slides/ (สไลด์นำเสนอ OOP)
 tools/        generate_seed.py — สร้าง db/seed.sql (อยู่นอกระบบที่ส่งมอบ)
 tests/        pytest — ส่วนใหญ่ไม่ต้องต่อฐานข้อมูล ยกเว้น test_repository.py
 Dockerfile, docker-compose.yml   รันทั้งเว็บ + MariaDB + phpMyAdmin ด้วย Docker (ทางเลือกแทน XAMPP)

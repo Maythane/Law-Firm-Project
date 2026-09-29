@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Law Firm Project — OOP Presentation</title>
+<style>
+:root{
+  --primary:#5E35B1; --primary-hover:#4527A0; --surface:#EDE7F6; --lav:#D1C4E9;
+  --bg:#F7F5FC; --ink:#241C33; --muted:#6B6280; --border:#E8E3F2; --chip:#EFECF5;
+  --card:#FFFFFF; --danger:#E1523D; --danger-bg:#FBE3DF; --danger-ink:#A5341F;
+  --amber:#D98A0B; --amber-bg:#FDF0D9; --amber-ink:#8A5A05;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--ink);font-family:"Noto Sans Thai",system-ui,sans-serif;color:var(--ink);
+  display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
+.slide{background:var(--bg);width:1280px;height:720px;flex:none;display:none;
+  flex-direction:column;padding:56px 72px;position:relative;transform-origin:center center}
+.slide.active{display:flex}
+.kicker{font-size:18px;font-weight:600;color:var(--primary);letter-spacing:.04em;margin-bottom:6px}
+h1{font-size:44px;font-weight:600;margin:0 0 18px;line-height:1.25}
+h1.small{font-size:36px}
+.content{font-size:20px;line-height:1.65;flex:1;min-height:0}
+.content p{margin:0 0 12px}
+.content ul{margin:0;padding-left:28px}
+.content li{margin-bottom:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px}
+.card h3{margin:0 0 6px;font-size:22px}
+.card p{margin:0;font-size:19px;color:var(--muted)}
+.chip{display:inline-block;font-size:16px;font-weight:600;padding:3px 14px;border-radius:999px;
+  background:var(--surface);color:var(--primary);white-space:nowrap}
+.chip.n{background:var(--chip);color:#4A4260}
+.chip.d{background:var(--danger-bg);color:var(--danger-ink)}
+pre{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;
+  font-size:17px;line-height:1.55;margin:0 0 10px;overflow:hidden;white-space:pre}
+code{font-family:ui-monospace,Menlo,Consolas,monospace}
+.ref{font-size:16px;color:var(--muted)}
+table{border-collapse:collapse;font-size:19px;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:8px 16px;border-bottom:1px solid var(--border)}
+th{font-size:17px;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.hero{display:flex;flex-direction:column;justify-content:center;height:100%}
+.hero h1{font-size:60px}
+.hero .sub{font-size:24px;color:var(--muted)}
+.flow-note{font-size:18px;color:var(--muted)}
+svg text{font-family:"Noto Sans Thai",system-ui,sans-serif}
+/* chrome */
+#counter{position:fixed;right:22px;bottom:16px;color:#fff;font-size:16px;opacity:.75}
+#hint{position:fixed;left:22px;bottom:16px;color:#fff;font-size:16px;opacity:.55}
+aside.notes{display:none}
+body.show-notes aside.notes{display:block;position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;
+  background:#fff;color:var(--ink);font-size:17px;padding:14px 26px;border-top:3px solid var(--primary);z-index:50}
+@media print{
+  @page{size:13.33in 7.5in;margin:0}
+  body{display:block;background:#fff;overflow:visible;min-height:0}
+  .slide{display:flex !important;transform:none !important;page-break-after:always;break-after:page}
+  .slide:last-child{page-break-after:auto;break-after:auto}
+  #counter,#hint,aside.notes{display:none !important}
+}
+</style>
+</head>
+<body>
+<div id="hint">← → / Space เปลี่ยนสไลด์ · N โน้ต · F เต็มจอ</div>
+<div id="counter"></div>
+
+<!-- 1 -->
+<section class="slide" id="s1">
+<div class="hero">
+<div class="kicker">OBJECT-ORIENTED PROGRAMMING · COURSE PRESENTATION</div>
+<h1>ระบบผู้ช่วยจัดการคดี<br>และตารางนัดหมายสำหรับทนายความ</h1>
+<p class="sub">Law Firm Case &amp; Schedule Assistant — นำเสนอเชิงออกแบบ OOP</p>
+<p class="sub" style="margin-top:18px">ผู้นำเสนอ: <strong>[ชื่อผู้นำเสนอ]</strong> · รหัส […………]</p>
+</div>
+<aside class="notes">เปิดด้วยการบอกว่าทุกข้อใน deck นี้ชี้ไปที่โค้ดจริงใน repo (path + บรรทัดอยู่ใต้ snippet) ไม่ใช่คำโฆษณา</aside>
+</section>
+
+<!-- 2 -->
+<section class="slide" id="s2">
+<div class="kicker">02 · ปัญหาและผู้ใช้</div>
+<h1 class="small">สมุด + แชต = นัดชน กำหนดหลุด คดีไม่มีเจ้าของ</h1>
+<div class="content">
+<ul>
+<li>รับนัดใหม่โดยไม่รู้ว่าวันนั้นมีนัดอีกคดีอยู่แล้ว</li>
+<li>กำหนดยื่นตามกฎหมาย (คำให้การ/อุทธรณ์/ฎีกา) ไม่มีอะไรนับวันให้</li>
+<li>มอบหมายทางแชต — ไม่รู้ว่าทนายเห็น รับไหว หรือรับไปแล้ว</li>
+<li>แจกคดีใหม่โดยไม่เห็นว่าทนายแต่ละคนงานแน่นแค่ไหน</li>
+</ul>
+<div class="grid3" style="margin-top:16px">
+<div class="card"><h3><span class="chip">ทนาย</span></h3><p>ดูนัดวันนี้ ตอบรับ/ปฏิเสธคดี ดูรายการใกล้ครบกำหนด</p></div>
+<div class="card"><h3><span class="chip">ผู้จัดการ</span></h3><p>มอบหมายคดีตามภาระงาน เปิดคดีใหม่ อนุมัติคำขอถอนตัว</p></div>
+<div class="card"><h3><span class="chip n">แอดมิน</span></h3><p>จัดการบัญชีผู้ใช้ ไม่เห็นเนื้อหาคดี</p></div>
+</div>
+<p class="ref">PRODUCT.md · docs/proposal.md §1</p>
+</div>
+<aside class="notes">ย้ำ 4 ปัญหาจาก proposal: ชน/หลุด/ไม่มีเจ้าของ/เกินตัว แล้วโยงว่าแต่ละ role ในระบบแก้ข้อไหน</aside>
+</section>
+
+<!-- 3 -->
+<section class="slide" id="s3">
+<div class="kicker">03 · ภาพรวมระบบ + tech stack</div>
+<h1 class="small">เว็บเดียว 3 หน้าแรกตามบทบาท ฐานเดียว</h1>
+<div class="content">
+<div class="grid2">
+<div class="card"><h3>Web layer</h3><p>FastAPI 0.115 · Jinja2 templates · Pico.css + HTMX ผ่าน CDN · <code>uvicorn api.main:app</code></p></div>
+<div class="card"><h3>Data + infra</h3><p>MariaDB 10.4 (XAMPP/docker) · mysql-connector ตรงๆ ไม่ใช้ ORM · Docker + phpMyAdmin · pytest 8.3 (92 เทส)</p></div>
+</div>
+<ul style="margin-top:16px">
+<li>ล็อกอินครั้งเดียว → <code>/dashboard</code> เด้งไปหน้าแรกของบทบาทตัวเอง (ทนาย: ตารางวันนี้ · ผู้จัดการ: ภาพรวมคิวงาน · แอดมิน: จัดการผู้ใช้)</li>
+<li>รหัสผ่าน scrypt + signed-cookie session · วันที่แสดงผล พ.ศ. เก็บเป็น ค.ศ.</li>
+</ul>
+<p class="ref">requirements.txt · Dockerfile · docker-compose.yml · README.md</p>
+</div>
+<aside class="notes">สไลด์เดียวพอ อย่าลงลึก ส tack มีไว้ให้รู้ว่า "ของจริงรันได้" แล้วรีบไปสถาปัตยกรรม</aside>
+</section>
+
+<!-- 4 -->
+<section class="slide" id="s4">
+<div class="kicker">04 · สถาปัตยกรรม 3 ชั้น</div>
+<h1 class="small">กฎทิศทางเดียว: domain ไม่รู้จักใครเลย</h1>
+<div class="content">
+<svg viewBox="0 0 1136 300" width="1136" height="300" role="img" aria-label="layer diagram">
+<defs><marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="none" stroke="#5E35B1" stroke-width="2"/></marker></defs>
+<rect x="8" y="30" width="360" height="150" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="188" y="70" text-anchor="middle" font-size="24" font-weight="600" fill="#5E35B1">api/ — web</text>
+<text x="188" y="104" text-anchor="middle" font-size="19" fill="#241C33">routes/ · deps.py · auth.py</text>
+<text x="188" y="134" text-anchor="middle" font-size="19" fill="#6B6280">38 เส้น · Depends(get_db)</text>
+<rect x="388" y="30" width="360" height="150" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="568" y="70" text-anchor="middle" font-size="24" font-weight="600" fill="#5E35B1">repository/ — persistence</text>
+<text x="568" y="104" text-anchor="middle" font-size="19" fill="#241C33">5 คลาสต่อตาราง + db.py</text>
+<text x="568" y="134" text-anchor="middle" font-size="19" fill="#6B6280">map แถว ↔ object</text>
+<rect x="768" y="30" width="360" height="150" rx="12" fill="#EDE7F6" stroke="#5E35B1" stroke-width="2"/>
+<text x="948" y="70" text-anchor="middle" font-size="24" font-weight="600" fill="#5E35B1">domain/ — business objects</text>
+<text x="948" y="104" text-anchor="middle" font-size="19" fill="#241C33">กฎ BR-* ทั้งหมดอยู่ที่นี่</text>
+<text x="948" y="134" text-anchor="middle" font-size="19" fill="#6B6280">import ได้แค่ stdlib + กันเอง</text>
+<line x1="368" y1="105" x2="384" y2="105" stroke="#5E35B1" stroke-width="3" marker-end="url(#ar)"/>
+<line x1="748" y1="105" x2="764" y2="105" stroke="#5E35B1" stroke-width="3" marker-end="url(#ar)"/>
+<text x="198" y="215" text-anchor="middle" font-size="18" fill="#5E35B1">api → repository, domain</text>
+<text x="578" y="215" text-anchor="middle" font-size="18" fill="#5E35B1">repository → domain</text>
+<text x="948" y="215" text-anchor="middle" font-size="18" fill="#A5341F">domain → ไม่มีใคร (กฎ)</text>
+</svg>
+<ul>
+<li>ตรวจกฎได้: <code>grep -r "from api\|from repository" domain/</code> ต้องว่างเปล่า</li>
+<li>DB เปิด/ปิดที่จุดเดียว: <code>get_db</code> ใน <code>api/deps.py</code> ผ่าน <code>Depends</code></li>
+</ul>
+<p class="ref">api/main.py:23 บรรทัด (factory) · api/deps.py · repository/db.py</p>
+</div>
+<aside class="notes">ชี้ลูกศรบนจอ: ไม่มีลูกศรเส้นไหนชี้เข้า domain จากข้างนอกไม่ได้ — มีแต่ domain ถูกใช้ สาธิต grep สดได้ถ้าอาจารย์ถาม</aside>
+</section>
+
+<!-- 5 -->
+<section class="slide" id="s5">
+<div class="kicker">05 · โครงโฟลเดอร์</div>
+<h1 class="small">แต่ละโฟลเดอร์มีหน้าที่เดียว</h1>
+<div class="content">
+<pre>domain/       กติกาธุรกิจ (Person, Case, Appointment, Schedule, LawFirm, …)
+repository/   Repository class ต่อตาราง คุย MariaDB ตรงๆ ไม่ใช้ ORM
+api/          main.py factory บางๆ · deps.py ของใช้ร่วม · routes/ · auth.py
+templates/    Jinja2 (Pico.css + HTMX ผ่าน CDN) · static/ คือ theme.css
+db/           schema.sql · seed.sql · migrations/        docs/  backlog/proposal/uml/…
+tools/        generate_seed.py (สร้าง seed)             tests/  pytest 92 เทส</pre>
+<p class="ref">README.md §โครงสร้างโปรเจกต์ — ตัวเลขไฟล์: routes/ 7 โมดูล 38 เส้น · api/main.py 1212 → 23 บรรทัด</p>
+</div>
+<aside class="notes">ถ้าถามว่าทำไมแยก: ตอบว่าให้อาจารย์เดาได้ว่าโค้ดอยู่ไหนโดยไม่ต้องเปิดหา — กฎอยู่ domain, SQL อยู่ repository, หน้าเว็บอยู่ routes</aside>
+</section>
+
+<!-- 6 -->
+<section class="slide" id="s6">
+<div class="kicker">06 · CLASS DIAGRAM — ฝั่งคน (1/2)</div>
+<h1 class="small">ลูกศรหัวว่างทุกเส้น = สืบทอด</h1>
+<div class="content">
+<svg viewBox="0 0 1136 380" width="1136" height="380" role="img" aria-label="people class diagram">
+<defs><marker id="inh" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L10,6 L0,12 Z" fill="#FFFFFF" stroke="#5E35B1" stroke-width="2"/></marker></defs>
+<rect x="388" y="8" width="360" height="120" rx="12" fill="#FFFFFF" stroke="#5E35B1" stroke-width="2"/>
+<text x="568" y="42" text-anchor="middle" font-size="23" font-weight="600">Person «abstract»</text>
+<text x="568" y="74" text-anchor="middle" font-size="19" fill="#6B6280">name · citizen_id · phone</text>
+<text x="568" y="102" text-anchor="middle" font-size="19">display_name()* · contact_info()</text>
+<rect x="388" y="168" width="360" height="120" rx="12" fill="#FFFFFF" stroke="#5E35B1" stroke-width="2"/>
+<text x="568" y="202" text-anchor="middle" font-size="23" font-weight="600">SystemUser «abstract»</text>
+<text x="568" y="234" text-anchor="middle" font-size="19" fill="#6B6280">username · password_hash · is_active</text>
+<text x="568" y="262" text-anchor="middle" font-size="19">can_view_case()* · dashboard_cards()* · home_url()*</text>
+<line x1="568" y1="168" x2="568" y2="128" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh)"/>
+<rect x="8" y="320" width="280" height="52" rx="12" fill="#EDE7F6" stroke="#5E35B1" stroke-width="2"/>
+<text x="148" y="353" text-anchor="middle" font-size="21" font-weight="600">Lawyer +license_no</text>
+<rect x="298" y="320" width="280" height="52" rx="12" fill="#EDE7F6" stroke="#5E35B1" stroke-width="2"/>
+<text x="438" y="353" text-anchor="middle" font-size="21" font-weight="600">Manager</text>
+<rect x="588" y="320" width="280" height="52" rx="12" fill="#EDE7F6" stroke="#5E35B1" stroke-width="2"/>
+<text x="728" y="353" text-anchor="middle" font-size="21" font-weight="600">Admin</text>
+<rect x="878" y="320" width="250" height="52" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="1003" y="353" text-anchor="middle" font-size="21" font-weight="600">Client +company</text>
+<path d="M148,320 V306 H468 V292" fill="none" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh)"/>
+<line x1="438" y1="320" x2="438" y2="292" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh)"/>
+<line x1="728" y1="320" x2="728" y2="292" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh)"/>
+<path d="M1003,320 V68 H752" fill="none" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh)"/>
+</svg>
+<p class="ref">domain/person.py · เทียบ docs/uml.md §1 (trust the code — ตรงกัน)</p>
+</div>
+<aside class="notes">ลูกศรทุกเส้นวิ่งขึ้นหาคลาสแม่ Client สืบจาก Person ตรง ไม่ผ่าน SystemUser (ลูกความไม่ใช่ user)</aside>
+</section>
+
+<!-- 7 -->
+<section class="slide" id="s7">
+<div class="kicker">07 · CLASS DIAGRAM — ฝั่งคดีและตาราง (2/2)</div>
+<h1 class="small">หัวว่าง = สืบทอด · เส้นธรรมดา = รู้จักกัน</h1>
+<div class="content">
+<svg viewBox="0 0 1136 400" width="1136" height="400" role="img" aria-label="case class diagram">
+<defs><marker id="inh2" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L10,6 L0,12 Z" fill="#FFFFFF" stroke="#5E35B1" stroke-width="2"/></marker></defs>
+<rect x="388" y="8" width="360" height="86" rx="12" fill="#EDE7F6" stroke="#5E35B1" stroke-width="2"/>
+<text x="568" y="42" text-anchor="middle" font-size="23" font-weight="600">Case (−status, −assignments)</text>
+<text x="568" y="72" text-anchor="middle" font-size="17">advance_status() · can_close() · lawyers()</text>
+<rect x="8" y="8" width="340" height="86" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="178" y="42" text-anchor="middle" font-size="23" font-weight="600">CaseAssignment</text>
+<text x="178" y="72" text-anchor="middle" font-size="17">accept() · decline() · request_withdraw()</text>
+<rect x="788" y="8" width="340" height="86" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="958" y="42" text-anchor="middle" font-size="23" font-weight="600">Schedule</text>
+<text x="958" y="72" text-anchor="middle" font-size="17">add() · find_conflicts() · day/month_view()</text>
+<rect x="8" y="150" width="360" height="150" rx="12" fill="#FFFFFF" stroke="#5E35B1" stroke-width="2"/>
+<text x="188" y="182" text-anchor="middle" font-size="23" font-weight="600">Appointment «abstract»</text>
+<text x="188" y="212" text-anchor="middle" font-size="17">reminder_lead_days()* · kind_label()*</text>
+<text x="188" y="238" text-anchor="middle" font-size="17">can_reschedule()* · overlaps()</text>
+<text x="188" y="264" text-anchor="middle" font-size="17">reschedule() · cancel()</text>
+<rect x="8" y="318" width="360" height="52" rx="12" fill="#EDE7F6" stroke="#5E35B1" stroke-width="2"/>
+<text x="188" y="351" text-anchor="middle" font-size="21" font-weight="600">นัดศาล · นัดพบลูกความ · กำหนดยื่นเอกสาร</text>
+<line x1="188" y1="318" x2="188" y2="304" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh2)"/>
+<rect x="408" y="150" width="320" height="120" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="568" y="184" text-anchor="middle" font-size="23" font-weight="600">LawFirm</text>
+<text x="568" y="214" text-anchor="middle" font-size="17">open_case() · assign_lawyer()</text>
+<text x="568" y="240" text-anchor="middle" font-size="17">search() · find_by_case_no()</text>
+<rect x="768" y="150" width="360" height="120" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="948" y="184" text-anchor="middle" font-size="23" font-weight="600">CaseNote · CaseEvent</text>
+<text x="948" y="216" text-anchor="middle" font-size="19">validate_text() · can_modify()</text>
+<text x="948" y="244" text-anchor="middle" font-size="19" fill="#6B6280">+ CaseStatus (enum 7 ค่า)</text>
+<line x1="348" y1="51" x2="388" y2="51" stroke="#5E35B1" stroke-width="2"/>
+<line x1="748" y1="51" x2="788" y2="51" stroke="#5E35B1" stroke-width="2"/>
+<text x="240" y="140" text-anchor="middle" font-size="18" fill="#5E35B1">คดีมีนัดหมาย / นัดรู้ว่าคดีไหน</text>
+<text x="700" y="140" text-anchor="middle" font-size="18" fill="#5E35B1">Schedule ตรวจนัดของทนาย</text>
+</svg>
+<p class="ref">domain/case.py · appointment.py · assignment.py · schedule.py · firm.py</p>
+</div>
+<aside class="notes">สามเหลี่ยม appointment: นัดศาลเตือนล่วงหน้า 3 วัน นัดพบลูกความ 1 วัน กำหนดยื่น 15 วัน — ตัวเลขต่างกันแต่เรียกเมธอดเดียว</aside>
+</section>
+
+<!-- 8 -->
+<section class="slide" id="s8">
+<div class="kicker">08 · INHERITANCE — สืบทอดแล้วเติมของตัวเอง</div>
+<h1 class="small">แม่ประกาศสัญญา ลูกเติมพฤติกรรม</h1>
+<div class="content">
+<pre>class Person(ABC):               @abstractmethod display_name() …
+class SystemUser(Person):        username · password_hash · is_active …
+class Lawyer(SystemUser):        license_no + display_name() → "ทนาย…"
+class Manager(SystemUser):       display_name() → "ผู้จัดการ…"
+class Admin(SystemUser):         display_name() → "ผู้ดูแลระบบ…"
+class Client(Person):            company (ไม่ใช่ user — สืบตรงจาก Person)</pre>
+<p class="ref">domain/person.py:15,30,45,67,79,91 — Client ไม่ผ่าน SystemUser เพราะลูกความไม่ได้ล็อกอิน</p>
+</div>
+<aside class="notes">จุดที่อาจารย์ชอบถาม: ทำไม Client ไม่สืบ SystemUser — ตอบว่าลูกความไม่มี username/password ไม่ผ่าน is-a</aside>
+</section>
+
+<!-- 9 -->
+<section class="slide" id="s9">
+<div class="kicker">09 · POLYMORPHISM — เรียกเมธอดเดียว ได้พฤติกรรมตามชนิด</div>
+<h1 class="small">ไม่มี <code>if role ==</code> ใน route</h1>
+<div class="content">
+<div class="grid2">
+<div>
+<pre>Lawyer.home_url()   → "/schedule/today"
+Manager.home_url()  → "/manager/dashboard"
+Admin.home_url()    → "/admin/dashboard"</pre>
+<pre>return RedirectResponse(
+    current_user.home_url())</pre>
+</div>
+<div>
+<pre>นัดศาล reminder… → 3
+นัดพบลูกความ … → 1
+กำหนดยื่นเอกสาร … → 15</pre>
+<pre>days = appt.reminder_lead_days()
+# ชนิดไหนก็เรียกบรรทัดเดียว</pre>
+</div>
+</div>
+<p class="ref">domain/person.py:44,63,85,100 · api/routes/dashboard.py:19 · domain/appointment.py:90,103,119</p>
+</div>
+<aside class="notes">สองตัวอย่างคนละมิติ: home_url คือพฤติกรรมตามบทบาท, reminder_lead_days คือข้อมูลตามชนิดนัด — polymorphism ทั้งคู่</aside>
+</section>
+
+<!-- 10 -->
+<section class="slide" id="s10">
+<div class="kicker">10 · ENCAPSULATION — สถานะแตะตรงไม่ได้</div>
+<h1 class="small">เปลี่ยนสถานะต้องผ่านประตูกฎ</h1>
+<div class="content">
+<pre>_status: CaseStatus = field(default=CaseStatus.OPEN, kw_only=True)  # อ่านผ่าน .status อย่างเดียว
+def advance_status(self, new_status):   # ทีละขั้น (BR-7) · ยื่นฟ้องต้องมีทนายรับแล้ว (BR-18)
+    … else raise InvalidStatusTransition(…)</pre>
+<pre>assignment.accept() / .decline(reason) / .request_withdraw(…)  # ผิดสถานะโยน AssignmentError</pre>
+<p class="ref">domain/case.py:56,61,87 · domain/assignment.py:50,57,70 — repository ตั้ง <code>_status</code> ตรงได้ที่เดียวตอนประกอบแถวเดิมจาก DB</p>
+</div>
+<aside class="notes">ย้ำว่า _status มีข้อยกเว้นที่เดียวคือ repository ตอนโหลดข้อมูลเก่า — ไม่ใช่การเปลี่ยนสถานะเลยไม่ผ่านกฎ</aside>
+</section>
+
+<!-- 11 -->
+<section class="slide" id="s11">
+<div class="kicker">11 · REPOSITORY PATTERN — SQL อยู่ที่นี่ที่เดียว</div>
+<h1 class="small">domain ไม่เคยเห็น SQL · repository ไม่รู้จักกฎ</h1>
+<div class="content">
+<pre>cases = CaseRepository(conn)        # ถือ connection ไว้หนึ่งตัว
+case = cases.get_by_id(case_id)     # คืน object ไม่ใช่ dict/row</pre>
+<pre>_ROLE_TO_CLASS = {"lawyer": Lawyer, "manager": Manager, "admin": Admin}
+cls = _ROLE_TO_CLASS[row["role"]]   # อ่าน role แล้วสร้างให้ตรงคลาสลูก</pre>
+<p class="ref">repository/case_repo.py:21 · repository/user_repo.py:8 — peer repo (client/user) ใช้ connection เดียวกัน</p>
+</div>
+<aside class="notes">ถ้าถามว่าทำไมไม่ใช้ ORM: ตอบว่าโปรเจกต์เล็ก SQL ตรงๆ อ่านง่ายกว่า และ repository class คือจุดเดียวที่ต้องเปลี่ยนถ้าย้ายฐาน</aside>
+</section>
+
+<!-- 12 -->
+<section class="slide" id="s12">
+<div class="kicker">12 · EXCEPTION HIERARCHY — error มีชนิด ไม่ใช่ string</div>
+<h1 class="small">แม่เดียว ลูกสี่ · api แปลเป็นภาษาคน</h1>
+<div class="content">
+<div class="grid2">
+<pre>DomainError (แม่)
+├ ScheduleConflictError  BR-1
+├ InvalidStatusTransition BR-7/8/9/18
+├ RescheduleNotAllowed   BR-3/5
+└ AssignmentError        BR-15…19</pre>
+<div>
+<pre>try: schedule.add(appt)
+except ScheduleConflictError as e:
+    → ฟอร์มเดิม + "นัดชน…"</pre>
+<pre>except AssignmentError as e:
+    → HTTP 409 "รับได้เฉพาะ…"</pre>
+</div>
+</div>
+<p class="ref">domain/errors.py:8 — เทสบังคับ assert ชนิด subclass เจาะจง ไม่ใช่แม่เฉยๆ</p>
+</div>
+<aside class="notes">ข้อยกเว้น: docstring ใน errors.py พูดถึง handler กลางที่ไม่มีจริง — ของจริงคือแต่ละ route จับ subclass เองแล้วแปลเป็นข้อความไทย อย่าอ้าง handler กลางตอนถาม</aside>
+</section>
+
+<!-- 13 -->
+<section class="slide" id="s13">
+<div class="kicker">13 · FLOW ของคดี — ทุกขั้นมีเมธอดคุม</div>
+<h1 class="small">จากเปิดคดีถึงปิดคดี ไม่ข้ามกฎ</h1>
+<div class="content">
+<svg viewBox="0 0 1136 360" width="1136" height="360" role="img" aria-label="case flow">
+<defs><marker id="fl" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="none" stroke="#5E35B1" stroke-width="2"/></marker></defs>
+<rect x="8" y="20" width="200" height="70" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="108" y="50" text-anchor="middle" font-size="20" font-weight="600">เปิดคดี</text>
+<text x="108" y="74" text-anchor="middle" font-size="16" fill="#6B6280">open_case()</text>
+<rect x="238" y="20" width="200" height="70" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="338" y="50" text-anchor="middle" font-size="20" font-weight="600">มอบหมายทนาย</text>
+<text x="338" y="74" text-anchor="middle" font-size="16" fill="#6B6280">assign_lawyer()</text>
+<rect x="468" y="20" width="200" height="70" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="568" y="50" text-anchor="middle" font-size="20" font-weight="600">รับ / ปฏิเสธ</text>
+<text x="568" y="74" text-anchor="middle" font-size="16" fill="#6B6280">accept() · decline()</text>
+<rect x="678" y="20" width="230" height="70" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="793" y="50" text-anchor="middle" font-size="20" font-weight="600">นัด + เลื่อนสถานะ</text>
+<text x="793" y="74" text-anchor="middle" font-size="15" fill="#6B6280">add() · advance_status()</text>
+<rect x="928" y="20" width="200" height="70" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="1028" y="50" text-anchor="middle" font-size="20" font-weight="600">ปิดคดี</text>
+<text x="1028" y="74" text-anchor="middle" font-size="16" fill="#6B6280">can_close() → CLOSED</text>
+<rect x="238" y="170" width="200" height="70" rx="12" fill="#FBE3DF" stroke="#E1523D" stroke-width="2"/>
+<text x="338" y="200" text-anchor="middle" font-size="20" font-weight="600">ขอถอนตัว</text>
+<text x="338" y="224" text-anchor="middle" font-size="16" fill="#A5341F">request_withdraw()</text>
+<rect x="458" y="170" width="220" height="70" rx="12" fill="#FBE3DF" stroke="#E1523D" stroke-width="2"/>
+<text x="568" y="200" text-anchor="middle" font-size="20" font-weight="600">อนุมัติ / ไม่อนุมัติ</text>
+<text x="568" y="224" text-anchor="middle" font-size="15" fill="#A5341F">approve/reject_withdraw()</text>
+<rect x="698" y="170" width="200" height="70" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="798" y="200" text-anchor="middle" font-size="20" font-weight="600">ย้าย / ยกเลิกนัด</text>
+<text x="798" y="224" text-anchor="middle" font-size="16" fill="#6B6280">reassign() · cancel()</text>
+<line x1="208" y1="55" x2="234" y2="55" stroke="#5E35B1" stroke-width="2" marker-end="url(#fl)"/>
+<line x1="438" y1="55" x2="464" y2="55" stroke="#5E35B1" stroke-width="2" marker-end="url(#fl)"/>
+<line x1="668" y1="55" x2="694" y2="55" stroke="#5E35B1" stroke-width="2" marker-end="url(#fl)"/>
+<line x1="908" y1="55" x2="924" y2="55" stroke="#5E35B1" stroke-width="2" marker-end="url(#fl)"/>
+<line x1="568" y1="90" x2="568" y2="166" stroke="#E1523D" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#fl)"/>
+<line x1="438" y1="205" x2="454" y2="205" stroke="#E1523D" stroke-width="2" marker-end="url(#fl)"/>
+<line x1="680" y1="205" x2="694" y2="205" stroke="#E1523D" stroke-width="2" marker-end="url(#fl)"/>
+<text x="1028" y="230" text-anchor="middle" font-size="18" fill="#6B6280">กล่องแดง = ทางแยกถอนตัว</text>
+</svg>
+<p class="ref">domain/firm.py:26,49 · assignment.py:50,89 · schedule.py:37 · case.py:87,142</p>
+</div>
+<aside class="notes">เดินตามลูกศร: เส้นทึบคือทางหลัก เส้นประแดงคือทางแยกถอนตัว — ทุกกล่องมีเมธอด domain คุม ไม่มีขั้นไหนแก้ DB ตรง</aside>
+</section>
+
+<!-- 14 -->
+<section class="slide" id="s14">
+<div class="kicker">14 · TESTING — 92 เทส · เคยล้างฐานจริงมาแล้ว</div>
+<h1 class="small">domain ไม่ต้องใช้ DB · เทส DB วิ่งบนฐานแยก</h1>
+<div class="content">
+<table>
+<tr><th>ไฟล์</th><th>จำนวน</th><th>ไฟล์</th><th>จำนวน</th></tr>
+<tr><td>appointment</td><td>10</td><td>assignment</td><td>21</td></tr>
+<tr><td>case / firm</td><td>14 / 5</td><td>person / schedule</td><td>8 / 12</td></tr>
+<tr><td>auth</td><td>6</td><td>repository (ฐานแยก)</td><td>12</td></tr>
+<tr><td>db_safety (guard)</td><td>4</td><td><strong>รวม</strong></td><td><strong>92</strong></td></tr>
+</table>
+<ul style="margin-top:12px">
+<li>บทเรียนจริง: fixture เคย TRUNCATE ฐาน <code>lawfirm-db</code> ของแอป → ตอนนี้เทสใช้ <code>lawfirm_test</code> สร้าง+ลง schema ให้เอง มี guard <code>pytest.fail</code> ก่อน TRUNCATE ถ้าชื่อชน</li>
+</ul>
+<p class="ref">pytest --collect-only · tests/test_repository.py · tests/test_db_safety.py · repository/db.py</p>
+</div>
+<aside class="notes">เล่า lesson learned อย่างภาคภูมิ: เจอเอง แก้เอง มีเทส guard 4 เคสที่ไม่ต้องใช้ DB คอยกันไม่ให้เกิดซ้ำ</aside>
+</section>
+
+<!-- 15 -->
+<section class="slide" id="s15">
+<div class="kicker">15 · DEMO SCRIPT — 3 ฉาก รหัสผ่านเดียวกันหมด</div>
+<h1 class="small"><code>http://localhost:8000</code> · รหัส <code>password123</code></h1>
+<div class="content">
+<div class="grid3">
+<div class="card"><h3><span class="chip">lawyer1</span></h3><p>เปิด popup "คดีรอตอบรับ" กดรับคดี → "+ เพิ่มนัด" นัดศาลพรุ่งนี้ → ดูแผงใกล้ครบกำหนด</p></div>
+<div class="card"><h3><span class="chip">manager1</span></h3><p>ดูคิว "ยังไม่มีทนายตอบรับ" กดมอบหมาย → เปิดคำขอถอนตัว กดอนุมัติพร้อมย้ายนัด</p></div>
+<div class="card"><h3><span class="chip n">admin</span></h3><p>"+ เพิ่มผู้ใช้ใหม่" สร้างทนาย → ปิดใช้งาน → เปิดคืน</p></div>
+</div>
+<p class="ref">README.md §บัญชีตัวอย่าง — seed มี lawyer1–8 · manager1 · admin</p>
+</div>
+<aside class="notes">ซ้อม 3 ฉากตามเวลาที่มี: ถ้าเวลาน้อยเล่นแค่ฉากทนาย (รับคดี+เพิ่มนัด) ฉากเดียวก็เห็น loop หลักครบ</aside>
+</section>
+
+<!-- 16 -->
+<section class="slide" id="s16">
+<div class="kicker">16 · สรุป + งานต่อยอด</div>
+<h1 class="small">OOP ที่โชว์ได้ กับขั้นต่อไปที่ทำได้จริง</h1>
+<div class="content">
+<ul>
+<li><strong>Inheritance</strong> — Person/SystemUser/Client แยกตาม is-a จริง (ลูกความไม่ใช่ user)</li>
+<li><strong>Polymorphism</strong> — <code>home_url()</code> / <code>reminder_lead_days()</code> ไม่มี if ชนิดในผู้เรียก</li>
+<li><strong>Encapsulation</strong> — สถานะคดีแตะตรงไม่ได้ ผ่าน <code>advance_status()</code> อย่างเดียว</li>
+<li><strong>Separation</strong> — api → repository → domain ทิศทางเดียว ตรวจด้วย grep ได้</li>
+</ul>
+<p style="margin-top:14px"><strong>ต่อยอด:</strong> แจ้งเตือนทางอีเมล/ไลน์ · ปฏิทินซิงก์ · สิทธิ์ละเอียดต่อคดี (ตอนนี้ manager เห็นหมด)</p>
+</div>
+<aside class="notes">จบด้วยประโยคเดียว: ระบบนี้กฎอยู่ใน object ไม่ได้อยู่ใน if — แล้วเปิดรับคำถาม</aside>
+</section>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter = document.getElementById('counter');
+  function fit(){
+    var s = Math.min(window.innerWidth/1280, window.innerHeight/720);
+    slides.forEach(function(el){ el.style.transform = 'scale('+s+')'; });
+  }
+  function current(){
+    var n = parseInt(location.hash.replace('#',''), 10);
+    return (n >= 1 && n <= slides.length) ? n - 1 : 0;
+  }
+  function go(i){
+    i = Math.max(0, Math.min(slides.length-1, i));
+    slides.forEach(function(el){ el.classList.remove('active'); });
+    slides[i].classList.add('active');
+    counter.textContent = (i+1) + ' / ' + slides.length;
+    if(('#'+(i+1)) !== location.hash) location.hash = '#'+(i+1);
+    fit();
+  }
+  document.addEventListener('keydown', function(e){
+    var i = current();
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown') go(i+1);
+    else if(e.key==='ArrowLeft'||e.key==='PageUp') go(i-1);
+    else if(e.key==='Home') go(0);
+    else if(e.key==='End') go(slides.length-1);
+    else if(e.key==='f'||e.key==='F'){
+      if(document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen();
+    }
+    else if(e.key==='n'||e.key==='N') document.body.classList.toggle('show-notes');
+  });
+  window.addEventListener('hashchange', function(){ go(current()); });
+  window.addEventListener('resize', fit);
+  go(current());
+})();
+</script>
+</body>
+</html>
