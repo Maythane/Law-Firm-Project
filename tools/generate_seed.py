@@ -1,9 +1,9 @@
-"""BL-19: สร้าง seed.sql — ข้อมูลตัวอย่างสำหรับสาธิต/ตรวจงาน (อยู่นอก domain/ ไม่ใช่ส่วนที่ส่งมอบ)
+"""BL-19: สร้าง db/seed.sql — ข้อมูลตัวอย่างสำหรับสาธิต/ตรวจงาน (อยู่นอก domain/ ไม่ใช่ส่วนที่ส่งมอบ)
 
 ใช้ random.seed() คงที่ (ชื่อ/การกระจายข้อมูลเหมือนเดิมทุกครั้ง) + date.today() เป็นจุดยึด
 (นัดคร่อมวันที่รันเสมอ) — รันวันเดียวกันได้ผลเดิม รันคนละวันได้ข้อมูลขยับตามวันนั้นแต่โครงเหมือนเดิม
 
-รัน:  python tools/generate_seed.py   -> เขียนไฟล์ seed.sql ที่ root ของโปรเจกต์
+รัน:  python tools/generate_seed.py   -> เขียนไฟล์ db/seed.sql
 ดูขอบเขตงานเต็มที่ backlog.md#bl-19
 """
 
@@ -353,7 +353,7 @@ def build_seed_sql() -> str:
 
 def main():
     sql = build_seed_sql()
-    out_path = Path(__file__).resolve().parent.parent / "seed.sql"
+    out_path = Path(__file__).resolve().parent.parent / "db" / "seed.sql"
     out_path.write_text(sql, encoding="utf-8")
     print(f"เขียน {out_path} เรียบร้อยแล้ว")
 

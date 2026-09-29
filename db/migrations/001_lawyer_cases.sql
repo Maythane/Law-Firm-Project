@@ -1,5 +1,5 @@
--- ฐานข้อมูลที่สร้างไว้ก่อนหน้านี้ (volume เดิม) รันไฟล์นี้ครั้งเดียว — schema.sql ทำงานเฉพาะตอน volume ว่าง
--- docker compose exec -T db mysql lawfirm-db < migrations/001_lawyer_cases.sql
+-- ฐานข้อมูลที่สร้างไว้ก่อนหน้านี้ (volume เดิม) รันไฟล์นี้ครั้งเดียว — db/schema.sql ทำงานเฉพาะตอน volume ว่าง
+-- docker compose exec -T db mysql lawfirm-db < db/migrations/001_lawyer_cases.sql
 ALTER TABLE case_assignments
     MODIFY status ENUM('pending', 'accepted', 'declined', 'withdrawn') NOT NULL DEFAULT 'pending',
     ADD COLUMN withdraw_requested_at DATETIME,
