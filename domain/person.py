@@ -40,6 +40,11 @@ class SystemUser(Person):
     def dashboard_cards(self) -> list[str]:
         ...
 
+    @abstractmethod
+    def home_url(self) -> str:
+        """หน้าแรกหลังล็อกอิน — route /dashboard เด้งตามเมธอดนี้ ไม่ใช้ if role=="""
+        ...
+
 
 @dataclass
 class Lawyer(SystemUser):
@@ -54,6 +59,9 @@ class Lawyer(SystemUser):
 
     def dashboard_cards(self) -> list[str]:
         return ["today_schedule", "upcoming_reminders", "my_cases", "pending_assignments"]
+
+    def home_url(self) -> str:
+        return "/schedule/today"
 
     def workload(self, cases: list["Case"], appointments: list["Appointment"]) -> int:
         """จำนวนคดีที่ตอบรับอยู่ + นัดในอีก 30 วัน — ใช้ในหน้ามอบหมาย
@@ -74,6 +82,9 @@ class Manager(SystemUser):
     def dashboard_cards(self) -> list[str]:
         return ["unassigned_cases", "recently_declined_assignments", "lawyer_workload"]
 
+    def home_url(self) -> str:
+        return "/manager/dashboard"
+
 
 @dataclass
 class Admin(SystemUser):
@@ -85,6 +96,9 @@ class Admin(SystemUser):
 
     def dashboard_cards(self) -> list[str]:
         return ["user_management"]
+
+    def home_url(self) -> str:
+        return "/admin/dashboard"
 
 
 @dataclass

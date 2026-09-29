@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 
 from api.auth import require_role
 from api.deps import templates
-from domain.person import Admin, Lawyer, Manager, SystemUser
+from domain.person import SystemUser
 
 router = APIRouter()
 
@@ -18,8 +18,4 @@ def style_guide(request: Request):
 
 @router.get("/dashboard")
 def dashboard(current_user: SystemUser = Depends(require_role())):
-    if isinstance(current_user, Lawyer):
-        return RedirectResponse("/schedule/today")
-    if isinstance(current_user, Manager):
-        return RedirectResponse("/manager/dashboard")
-    return RedirectResponse("/admin/dashboard")
+    return RedirectResponse(current_user.home_url())

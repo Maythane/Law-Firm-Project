@@ -70,3 +70,13 @@ def test_can_view_case_is_polymorphic_without_type_checks():
 def test_lawyer_workload_combines_case_and_appointment_counts():
     lawyer = Lawyer(name="สมชาย", citizen_id="1", phone="080", license_no="L1")
     assert lawyer.workload(cases=[object(), object()], appointments=[object()]) == 3
+
+
+def test_home_url_is_polymorphic_without_type_checks():
+    users = [
+        Lawyer(name="สมชาย", citizen_id="1", phone="080", license_no="L1"),
+        Manager(name="ผู้จัดการหนึ่ง", citizen_id="4", phone="083"),
+        Admin(name="แอดมิน", citizen_id="5", phone="084"),
+    ]
+
+    assert [u.home_url() for u in users] == ["/schedule/today", "/manager/dashboard", "/admin/dashboard"]
