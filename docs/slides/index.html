@@ -34,12 +34,12 @@ h1.small{font-size:36px}
   background:var(--surface);color:var(--primary);white-space:nowrap}
 .chip.n{background:var(--chip);color:#4A4260}
 .chip.d{background:var(--danger-bg);color:var(--danger-ink)}
-pre{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;
-  font-size:17px;line-height:1.55;margin:0 0 10px;overflow:hidden;white-space:pre}
+pre{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px;
+  font-size:22px;line-height:1.5;margin:0 0 12px;overflow:hidden;white-space:pre}
 code{font-family:ui-monospace,Menlo,Consolas,monospace}
 .ref{font-size:16px;color:var(--muted)}
-table{border-collapse:collapse;font-size:19px;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-th,td{text-align:left;padding:8px 16px;border-bottom:1px solid var(--border)}
+table{border-collapse:collapse;font-size:22px;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:12px 20px;border-bottom:1px solid var(--border)}
 th{font-size:17px;color:var(--muted)}
 tr:last-child td{border-bottom:0}
 .hero{display:flex;flex-direction:column;justify-content:center;height:100%}
@@ -121,25 +121,25 @@ body.show-notes aside.notes{display:block;position:fixed;left:0;right:0;bottom:0
 <div class="kicker">04 · สถาปัตยกรรม 3 ชั้น</div>
 <h1 class="small">กฎทิศทางเดียว: domain ไม่รู้จักใครเลย</h1>
 <div class="content">
-<svg viewBox="0 0 1136 300" width="1136" height="300" role="img" aria-label="layer diagram">
+<svg viewBox="0 0 1136 360" width="1136" height="360" role="img" aria-label="layer diagram">
 <defs><marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="none" stroke="#5E35B1" stroke-width="2"/></marker></defs>
-<rect x="8" y="30" width="360" height="150" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
-<text x="188" y="70" text-anchor="middle" font-size="24" font-weight="600" fill="#5E35B1">api/ — web</text>
-<text x="188" y="104" text-anchor="middle" font-size="19" fill="#241C33">routes/ · deps.py · auth.py</text>
-<text x="188" y="134" text-anchor="middle" font-size="19" fill="#6B6280">38 เส้น · Depends(get_db)</text>
-<rect x="388" y="30" width="360" height="150" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
-<text x="568" y="70" text-anchor="middle" font-size="24" font-weight="600" fill="#5E35B1">repository/ — persistence</text>
-<text x="568" y="104" text-anchor="middle" font-size="19" fill="#241C33">5 คลาสต่อตาราง + db.py</text>
-<text x="568" y="134" text-anchor="middle" font-size="19" fill="#6B6280">map แถว ↔ object</text>
-<rect x="768" y="30" width="360" height="150" rx="12" fill="#EDE7F6" stroke="#5E35B1" stroke-width="2"/>
-<text x="948" y="70" text-anchor="middle" font-size="24" font-weight="600" fill="#5E35B1">domain/ — business objects</text>
-<text x="948" y="104" text-anchor="middle" font-size="19" fill="#241C33">กฎ BR-* ทั้งหมดอยู่ที่นี่</text>
-<text x="948" y="134" text-anchor="middle" font-size="19" fill="#6B6280">import ได้แค่ stdlib + กันเอง</text>
-<line x1="368" y1="105" x2="384" y2="105" stroke="#5E35B1" stroke-width="3" marker-end="url(#ar)"/>
-<line x1="748" y1="105" x2="764" y2="105" stroke="#5E35B1" stroke-width="3" marker-end="url(#ar)"/>
-<text x="198" y="215" text-anchor="middle" font-size="18" fill="#5E35B1">api → repository, domain</text>
-<text x="578" y="215" text-anchor="middle" font-size="18" fill="#5E35B1">repository → domain</text>
-<text x="948" y="215" text-anchor="middle" font-size="18" fill="#A5341F">domain → ไม่มีใคร (กฎ)</text>
+<rect x="8" y="20" width="360" height="180" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="188" y="72" text-anchor="middle" font-size="27" font-weight="600" fill="#5E35B1">api/ — web</text>
+<text x="188" y="118" text-anchor="middle" font-size="22" fill="#241C33">routes/ · deps.py · auth.py</text>
+<text x="188" y="154" text-anchor="middle" font-size="22" fill="#6B6280">39 เส้น · Depends(get_db)</text>
+<rect x="388" y="20" width="360" height="180" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="568" y="72" text-anchor="middle" font-size="27" font-weight="600" fill="#5E35B1">repository/ — persistence</text>
+<text x="568" y="118" text-anchor="middle" font-size="22" fill="#241C33">5 คลาสต่อตาราง + db.py</text>
+<text x="568" y="154" text-anchor="middle" font-size="22" fill="#6B6280">map แถว ↔ object</text>
+<rect x="768" y="20" width="360" height="180" rx="12" fill="#EDE7F6" stroke="#5E35B1" stroke-width="2"/>
+<text x="948" y="72" text-anchor="middle" font-size="27" font-weight="600" fill="#5E35B1">domain/ — business objects</text>
+<text x="948" y="118" text-anchor="middle" font-size="22" fill="#241C33">กฎ BR-* ทั้งหมดอยู่ที่นี่</text>
+<text x="948" y="154" text-anchor="middle" font-size="22" fill="#6B6280">import ได้แค่ stdlib + กันเอง</text>
+<line x1="368" y1="110" x2="384" y2="110" stroke="#5E35B1" stroke-width="3" marker-end="url(#ar)"/>
+<line x1="748" y1="110" x2="764" y2="110" stroke="#5E35B1" stroke-width="3" marker-end="url(#ar)"/>
+<text x="198" y="248" text-anchor="middle" font-size="21" fill="#5E35B1">api → repository, domain</text>
+<text x="578" y="248" text-anchor="middle" font-size="21" fill="#5E35B1">repository → domain</text>
+<text x="948" y="248" text-anchor="middle" font-size="21" fill="#A5341F">domain → ไม่มีใคร (กฎ)</text>
 </svg>
 <ul>
 <li>ตรวจกฎได้: <code>grep -r "from api\|from repository" domain/</code> ต้องว่างเปล่า</li>
@@ -161,7 +161,7 @@ api/          main.py factory บางๆ · deps.py ของใช้ร่�
 templates/    Jinja2 (Pico.css + HTMX ผ่าน CDN) · static/ คือ theme.css
 db/           schema.sql · seed.sql · migrations/        docs/  backlog/proposal/uml/…
 tools/        generate_seed.py (สร้าง seed)             tests/  pytest 92 เทส</pre>
-<p class="ref">README.md §โครงสร้างโปรเจกต์ — ตัวเลขไฟล์: routes/ 7 โมดูล 38 เส้น · api/main.py 1212 → 23 บรรทัด</p>
+<p class="ref">README.md §โครงสร้างโปรเจกต์ — ตัวเลขไฟล์: routes/ 7 โมดูล 39 เส้น · api/main.py 1212 → 23 บรรทัด</p>
 </div>
 <aside class="notes">ถ้าถามว่าทำไมแยก: ตอบว่าให้อาจารย์เดาได้ว่าโค้ดอยู่ไหนโดยไม่ต้องเปิดหา — กฎอยู่ domain, SQL อยู่ repository, หน้าเว็บอยู่ routes</aside>
 </section>
@@ -173,14 +173,15 @@ tools/        generate_seed.py (สร้าง seed)             tests/  pytest
 <div class="content">
 <svg viewBox="0 0 1136 380" width="1136" height="380" role="img" aria-label="people class diagram">
 <defs><marker id="inh" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L10,6 L0,12 Z" fill="#FFFFFF" stroke="#5E35B1" stroke-width="2"/></marker></defs>
-<rect x="388" y="8" width="360" height="120" rx="12" fill="#FFFFFF" stroke="#5E35B1" stroke-width="2"/>
+<rect x="348" y="8" width="440" height="120" rx="12" fill="#FFFFFF" stroke="#5E35B1" stroke-width="2"/>
 <text x="568" y="42" text-anchor="middle" font-size="23" font-weight="600">Person «abstract»</text>
 <text x="568" y="74" text-anchor="middle" font-size="19" fill="#6B6280">name · citizen_id · phone</text>
 <text x="568" y="102" text-anchor="middle" font-size="19">display_name()* · contact_info()</text>
-<rect x="388" y="168" width="360" height="120" rx="12" fill="#FFFFFF" stroke="#5E35B1" stroke-width="2"/>
-<text x="568" y="202" text-anchor="middle" font-size="23" font-weight="600">SystemUser «abstract»</text>
-<text x="568" y="234" text-anchor="middle" font-size="19" fill="#6B6280">username · password_hash · is_active</text>
-<text x="568" y="262" text-anchor="middle" font-size="19">can_view_case()* · dashboard_cards()* · home_url()*</text>
+<rect x="348" y="168" width="440" height="120" rx="12" fill="#FFFFFF" stroke="#5E35B1" stroke-width="2"/>
+<text x="568" y="200" text-anchor="middle" font-size="23" font-weight="600">SystemUser «abstract»</text>
+<text x="568" y="226" text-anchor="middle" font-size="19" fill="#6B6280">username · password_hash · is_active</text>
+<text x="568" y="252" text-anchor="middle" font-size="19">can_view_case()* · dashboard_cards()*</text>
+<text x="568" y="276" text-anchor="middle" font-size="19">home_url()*</text>
 <line x1="568" y1="168" x2="568" y2="128" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh)"/>
 <rect x="8" y="320" width="280" height="52" rx="12" fill="#EDE7F6" stroke="#5E35B1" stroke-width="2"/>
 <text x="148" y="353" text-anchor="middle" font-size="21" font-weight="600">Lawyer +license_no</text>
@@ -190,10 +191,10 @@ tools/        generate_seed.py (สร้าง seed)             tests/  pytest
 <text x="728" y="353" text-anchor="middle" font-size="21" font-weight="600">Admin</text>
 <rect x="878" y="320" width="250" height="52" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
 <text x="1003" y="353" text-anchor="middle" font-size="21" font-weight="600">Client +company</text>
-<path d="M148,320 V306 H468 V292" fill="none" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh)"/>
-<line x1="438" y1="320" x2="438" y2="292" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh)"/>
+<path d="M148,320 V306 H438 V292" fill="none" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh)"/>
+<line x1="438" y1="320" x2="438" y2="306" stroke="#5E35B1" stroke-width="2"/>
 <line x1="728" y1="320" x2="728" y2="292" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh)"/>
-<path d="M1003,320 V68 H752" fill="none" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh)"/>
+<path d="M1003,320 V68 H792" fill="none" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh)"/>
 </svg>
 <p class="ref">domain/person.py · เทียบ docs/uml.md §1 (trust the code — ตรงกัน)</p>
 </div>
@@ -216,26 +217,30 @@ tools/        generate_seed.py (สร้าง seed)             tests/  pytest
 <rect x="788" y="8" width="340" height="86" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
 <text x="958" y="42" text-anchor="middle" font-size="23" font-weight="600">Schedule</text>
 <text x="958" y="72" text-anchor="middle" font-size="17">add() · find_conflicts() · day/month_view()</text>
-<rect x="8" y="150" width="360" height="150" rx="12" fill="#FFFFFF" stroke="#5E35B1" stroke-width="2"/>
-<text x="188" y="182" text-anchor="middle" font-size="23" font-weight="600">Appointment «abstract»</text>
-<text x="188" y="212" text-anchor="middle" font-size="17">reminder_lead_days()* · kind_label()*</text>
-<text x="188" y="238" text-anchor="middle" font-size="17">can_reschedule()* · overlaps()</text>
-<text x="188" y="264" text-anchor="middle" font-size="17">reschedule() · cancel()</text>
-<rect x="8" y="318" width="360" height="52" rx="12" fill="#EDE7F6" stroke="#5E35B1" stroke-width="2"/>
-<text x="188" y="351" text-anchor="middle" font-size="21" font-weight="600">นัดศาล · นัดพบลูกความ · กำหนดยื่นเอกสาร</text>
-<line x1="188" y1="318" x2="188" y2="304" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh2)"/>
-<rect x="408" y="150" width="320" height="120" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
-<text x="568" y="184" text-anchor="middle" font-size="23" font-weight="600">LawFirm</text>
-<text x="568" y="214" text-anchor="middle" font-size="17">open_case() · assign_lawyer()</text>
-<text x="568" y="240" text-anchor="middle" font-size="17">search() · find_by_case_no()</text>
-<rect x="768" y="150" width="360" height="120" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
-<text x="948" y="184" text-anchor="middle" font-size="23" font-weight="600">CaseNote · CaseEvent</text>
-<text x="948" y="216" text-anchor="middle" font-size="19">validate_text() · can_modify()</text>
-<text x="948" y="244" text-anchor="middle" font-size="19" fill="#6B6280">+ CaseStatus (enum 7 ค่า)</text>
+<rect x="8" y="140" width="360" height="150" rx="12" fill="#FFFFFF" stroke="#5E35B1" stroke-width="2"/>
+<text x="188" y="172" text-anchor="middle" font-size="23" font-weight="600">Appointment «abstract»</text>
+<text x="188" y="202" text-anchor="middle" font-size="17">reminder_lead_days()* · kind_label()*</text>
+<text x="188" y="228" text-anchor="middle" font-size="17">can_reschedule()* · overlaps()</text>
+<text x="188" y="254" text-anchor="middle" font-size="17">reschedule() · cancel()</text>
+<rect x="8" y="300" width="360" height="92" rx="12" fill="#EDE7F6" stroke="#5E35B1" stroke-width="2"/>
+<text x="188" y="330" text-anchor="middle" font-size="21" font-weight="600">CourtHearing · ClientMeeting</text>
+<text x="188" y="358" text-anchor="middle" font-size="21" font-weight="600">FilingDeadline</text>
+<text x="188" y="382" text-anchor="middle" font-size="17" fill="#6B6280">นัดศาล · นัดพบลูกความ · กำหนดยื่นเอกสาร</text>
+<line x1="188" y1="300" x2="188" y2="294" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh2)"/>
+<rect x="408" y="140" width="320" height="130" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="568" y="174" text-anchor="middle" font-size="23" font-weight="600">LawFirm</text>
+<text x="568" y="204" text-anchor="middle" font-size="17">open_case() · assign_lawyer()</text>
+<text x="568" y="230" text-anchor="middle" font-size="17">search() · find_by_case_no()</text>
+<rect x="768" y="140" width="360" height="130" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="948" y="174" text-anchor="middle" font-size="23" font-weight="600">CaseNote · CaseEvent</text>
+<text x="948" y="204" text-anchor="middle" font-size="19">validate_text() · can_modify()</text>
+<text x="948" y="232" text-anchor="middle" font-size="19" fill="#6B6280">+ CaseStatus (enum 7 ค่า)</text>
 <line x1="348" y1="51" x2="388" y2="51" stroke="#5E35B1" stroke-width="2"/>
+<text x="356" y="70" text-anchor="middle" font-size="15" fill="#5E35B1">*</text>
+<text x="380" y="70" text-anchor="middle" font-size="15" fill="#5E35B1">1</text>
 <line x1="748" y1="51" x2="788" y2="51" stroke="#5E35B1" stroke-width="2"/>
-<text x="240" y="140" text-anchor="middle" font-size="18" fill="#5E35B1">คดีมีนัดหมาย / นัดรู้ว่าคดีไหน</text>
-<text x="700" y="140" text-anchor="middle" font-size="18" fill="#5E35B1">Schedule ตรวจนัดของทนาย</text>
+<text x="240" y="130" text-anchor="middle" font-size="18" fill="#5E35B1">คดี 1 — * การมอบหมาย (case._assignments)</text>
+<text x="700" y="130" text-anchor="middle" font-size="18" fill="#5E35B1">Schedule ตรวจนัดของทนาย (โหลดผ่าน repo)</text>
 </svg>
 <p class="ref">domain/case.py · appointment.py · assignment.py · schedule.py · firm.py</p>
 </div>
@@ -253,7 +258,7 @@ class Lawyer(SystemUser):        license_no + display_name() → "ทนาย�
 class Manager(SystemUser):       display_name() → "ผู้จัดการ…"
 class Admin(SystemUser):         display_name() → "ผู้ดูแลระบบ…"
 class Client(Person):            company (ไม่ใช่ user — สืบตรงจาก Person)</pre>
-<p class="ref">domain/person.py:15,30,45,67,79,91 — Client ไม่ผ่าน SystemUser เพราะลูกความไม่ได้ล็อกอิน</p>
+<p class="ref">domain/person.py:15,30,50,75,90,105 — Client ไม่ผ่าน SystemUser เพราะลูกความไม่ได้ล็อกอิน</p>
 </div>
 <aside class="notes">จุดที่อาจารย์ชอบถาม: ทำไม Client ไม่สืบ SystemUser — ตอบว่าลูกความไม่มี username/password ไม่ผ่าน is-a</aside>
 </section>
@@ -265,21 +270,36 @@ class Client(Person):            company (ไม่ใช่ user — สืบ�
 <div class="content">
 <div class="grid2">
 <div>
-<pre>Lawyer.home_url()   → "/schedule/today"
-Manager.home_url()  → "/manager/dashboard"
-Admin.home_url()    → "/admin/dashboard"</pre>
-<pre>return RedirectResponse(
+<pre># person.py:50,63,75,85,90,100
+class Lawyer(SystemUser):
+    def home_url(self) -> str:
+        return "/schedule/today"
+class Manager(SystemUser):
+    def home_url(self) -> str:
+        return "/manager/dashboard"
+class Admin(SystemUser):
+    def home_url(self) -> str:
+        return "/admin/dashboard"</pre>
+<pre># api/routes/dashboard.py:19
+return RedirectResponse(
     current_user.home_url())</pre>
 </div>
 <div>
-<pre>นัดศาล reminder… → 3
-นัดพบลูกความ … → 1
-กำหนดยื่นเอกสาร … → 15</pre>
+<pre># appointment.py:86,90,102,103,114,119
+class CourtHearing(Appointment):
+    def reminder_lead_days(…):
+        return 3
+class ClientMeeting(Appointment):
+    def reminder_lead_days(…):
+        return 1
+class FilingDeadline(Appointment):
+    def reminder_lead_days(…):
+        return 15</pre>
 <pre>days = appt.reminder_lead_days()
 # ชนิดไหนก็เรียกบรรทัดเดียว</pre>
 </div>
 </div>
-<p class="ref">domain/person.py:44,63,85,100 · api/routes/dashboard.py:19 · domain/appointment.py:90,103,119</p>
+<p class="ref">domain/person.py · domain/appointment.py · api/routes/dashboard.py — ตัดบางบรรทัดด้วย … โค้ดที่เหลือคัดมาตรงๆ</p>
 </div>
 <aside class="notes">สองตัวอย่างคนละมิติ: home_url คือพฤติกรรมตามบทบาท, reminder_lead_days คือข้อมูลตามชนิดนัด — polymorphism ทั้งคู่</aside>
 </section>
@@ -289,11 +309,21 @@ Admin.home_url()    → "/admin/dashboard"</pre>
 <div class="kicker">10 · ENCAPSULATION — สถานะแตะตรงไม่ได้</div>
 <h1 class="small">เปลี่ยนสถานะต้องผ่านประตูกฎ</h1>
 <div class="content">
-<pre>_status: CaseStatus = field(default=CaseStatus.OPEN, kw_only=True)  # อ่านผ่าน .status อย่างเดียว
-def advance_status(self, new_status):   # ทีละขั้น (BR-7) · ยื่นฟ้องต้องมีทนายรับแล้ว (BR-18)
-    … else raise InvalidStatusTransition(…)</pre>
-<pre>assignment.accept() / .decline(reason) / .request_withdraw(…)  # ผิดสถานะโยน AssignmentError</pre>
-<p class="ref">domain/case.py:56,61,87 · domain/assignment.py:50,57,70 — repository ตั้ง <code>_status</code> ตรงได้ที่เดียวตอนประกอบแถวเดิมจาก DB</p>
+<p>เลื่อนทีละขั้น (BR-7) · ยื่นฟ้องต้องมีทนายรับแล้ว (BR-18) · ผิดสถานะโยน error</p>
+<pre># case.py:56,87 — _status อ่านผ่าน .status อย่างเดียว
+_status: CaseStatus = field(…OPEN…)
+def advance_status(self, new_status): …
+    if self._status == CaseStatus.CANCELLED: …
+        raise InvalidStatusTransition(…)
+    if …FILED and not self.lawyers(): …
+        raise InvalidStatusTransition(…)
+    self._status = new_status</pre>
+<pre># assignment.py:50
+def accept(self) -> None:
+    if self.status != AssignmentStatus.PENDING: …
+        raise AssignmentError(…)
+    self.status = AssignmentStatus.ACCEPTED</pre>
+<p class="ref">domain/case.py · domain/assignment.py — repository ตั้ง <code>_status</code> ตรงได้ที่เดียวตอนประกอบแถวเดิมจาก DB</p>
 </div>
 <aside class="notes">ย้ำว่า _status มีข้อยกเว้นที่เดียวคือ repository ตอนโหลดข้อมูลเก่า — ไม่ใช่การเปลี่ยนสถานะเลยไม่ผ่านกฎ</aside>
 </section>
@@ -307,7 +337,11 @@ def advance_status(self, new_status):   # ทีละขั้น (BR-7) · ย
 case = cases.get_by_id(case_id)     # คืน object ไม่ใช่ dict/row</pre>
 <pre>_ROLE_TO_CLASS = {"lawyer": Lawyer, "manager": Manager, "admin": Admin}
 cls = _ROLE_TO_CLASS[row["role"]]   # อ่าน role แล้วสร้างให้ตรงคลาสลูก</pre>
-<p class="ref">repository/case_repo.py:21 · repository/user_repo.py:8 — peer repo (client/user) ใช้ connection เดียวกัน</p>
+<pre># case_repo.py:21 — peer repo ใช้ connection เดียวกัน
+def __init__(self, conn, clients=None, users=None):
+    self._conn = conn
+    self._clients = clients or ClientRepository(conn)</pre>
+<p class="ref">repository/case_repo.py · repository/user_repo.py:8</p>
 </div>
 <aside class="notes">ถ้าถามว่าทำไมไม่ใช้ ORM: ตอบว่าโปรเจกต์เล็ก SQL ตรงๆ อ่านง่ายกว่า และ repository class คือจุดเดียวที่ต้องเปลี่ยนถ้าย้ายฐาน</aside>
 </section>
@@ -341,42 +375,43 @@ except ScheduleConflictError as e:
 <div class="kicker">13 · FLOW ของคดี — ทุกขั้นมีเมธอดคุม</div>
 <h1 class="small">จากเปิดคดีถึงปิดคดี ไม่ข้ามกฎ</h1>
 <div class="content">
-<svg viewBox="0 0 1136 360" width="1136" height="360" role="img" aria-label="case flow">
+<svg viewBox="0 0 1136 376" width="1136" height="376" role="img" aria-label="case flow">
 <defs><marker id="fl" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="none" stroke="#5E35B1" stroke-width="2"/></marker></defs>
-<rect x="8" y="20" width="200" height="70" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
-<text x="108" y="50" text-anchor="middle" font-size="20" font-weight="600">เปิดคดี</text>
-<text x="108" y="74" text-anchor="middle" font-size="16" fill="#6B6280">open_case()</text>
-<rect x="238" y="20" width="200" height="70" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
-<text x="338" y="50" text-anchor="middle" font-size="20" font-weight="600">มอบหมายทนาย</text>
-<text x="338" y="74" text-anchor="middle" font-size="16" fill="#6B6280">assign_lawyer()</text>
-<rect x="468" y="20" width="200" height="70" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
-<text x="568" y="50" text-anchor="middle" font-size="20" font-weight="600">รับ / ปฏิเสธ</text>
-<text x="568" y="74" text-anchor="middle" font-size="16" fill="#6B6280">accept() · decline()</text>
-<rect x="678" y="20" width="230" height="70" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
-<text x="793" y="50" text-anchor="middle" font-size="20" font-weight="600">นัด + เลื่อนสถานะ</text>
-<text x="793" y="74" text-anchor="middle" font-size="15" fill="#6B6280">add() · advance_status()</text>
-<rect x="928" y="20" width="200" height="70" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
-<text x="1028" y="50" text-anchor="middle" font-size="20" font-weight="600">ปิดคดี</text>
-<text x="1028" y="74" text-anchor="middle" font-size="16" fill="#6B6280">can_close() → CLOSED</text>
-<rect x="238" y="170" width="200" height="70" rx="12" fill="#FBE3DF" stroke="#E1523D" stroke-width="2"/>
-<text x="338" y="200" text-anchor="middle" font-size="20" font-weight="600">ขอถอนตัว</text>
-<text x="338" y="224" text-anchor="middle" font-size="16" fill="#A5341F">request_withdraw()</text>
-<rect x="458" y="170" width="220" height="70" rx="12" fill="#FBE3DF" stroke="#E1523D" stroke-width="2"/>
-<text x="568" y="200" text-anchor="middle" font-size="20" font-weight="600">อนุมัติ / ไม่อนุมัติ</text>
-<text x="568" y="224" text-anchor="middle" font-size="15" fill="#A5341F">approve/reject_withdraw()</text>
-<rect x="698" y="170" width="200" height="70" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
-<text x="798" y="200" text-anchor="middle" font-size="20" font-weight="600">ย้าย / ยกเลิกนัด</text>
-<text x="798" y="224" text-anchor="middle" font-size="16" fill="#6B6280">reassign() · cancel()</text>
-<line x1="208" y1="55" x2="234" y2="55" stroke="#5E35B1" stroke-width="2" marker-end="url(#fl)"/>
-<line x1="438" y1="55" x2="464" y2="55" stroke="#5E35B1" stroke-width="2" marker-end="url(#fl)"/>
-<line x1="668" y1="55" x2="694" y2="55" stroke="#5E35B1" stroke-width="2" marker-end="url(#fl)"/>
-<line x1="908" y1="55" x2="924" y2="55" stroke="#5E35B1" stroke-width="2" marker-end="url(#fl)"/>
-<line x1="568" y1="90" x2="568" y2="166" stroke="#E1523D" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#fl)"/>
-<line x1="438" y1="205" x2="454" y2="205" stroke="#E1523D" stroke-width="2" marker-end="url(#fl)"/>
-<line x1="680" y1="205" x2="694" y2="205" stroke="#E1523D" stroke-width="2" marker-end="url(#fl)"/>
+<rect x="8" y="20" width="200" height="78" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="108" y="53" text-anchor="middle" font-size="22" font-weight="600">เปิดคดี</text>
+<text x="108" y="79" text-anchor="middle" font-size="16" fill="#6B6280">open_case()</text>
+<rect x="238" y="20" width="200" height="78" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="338" y="53" text-anchor="middle" font-size="22" font-weight="600">มอบหมายทนาย</text>
+<text x="338" y="79" text-anchor="middle" font-size="16" fill="#6B6280">assign_lawyer()</text>
+<rect x="468" y="20" width="200" height="78" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="568" y="53" text-anchor="middle" font-size="22" font-weight="600">รับ / ปฏิเสธ</text>
+<text x="568" y="79" text-anchor="middle" font-size="16" fill="#6B6280">accept() · decline()</text>
+<rect x="678" y="20" width="230" height="78" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="793" y="53" text-anchor="middle" font-size="22" font-weight="600">นัด + เลื่อนสถานะ</text>
+<text x="793" y="79" text-anchor="middle" font-size="16" fill="#6B6280">add() · advance_status()</text>
+<rect x="928" y="20" width="200" height="78" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="1028" y="53" text-anchor="middle" font-size="22" font-weight="600">ปิดคดี</text>
+<text x="1028" y="79" text-anchor="middle" font-size="16" fill="#6B6280">can_close() → CLOSED</text>
+<rect x="238" y="178" width="200" height="92" rx="12" fill="#FBE3DF" stroke="#E1523D" stroke-width="2"/>
+<text x="338" y="210" text-anchor="middle" font-size="22" font-weight="600">ขอถอนตัว</text>
+<text x="338" y="236" text-anchor="middle" font-size="16" fill="#A5341F">request_withdraw()</text>
+<rect x="458" y="178" width="220" height="92" rx="12" fill="#FBE3DF" stroke="#E1523D" stroke-width="2"/>
+<text x="568" y="210" text-anchor="middle" font-size="22" font-weight="600">อนุมัติ / ไม่อนุมัติ</text>
+<text x="568" y="236" text-anchor="middle" font-size="16" fill="#A5341F">approve/reject_withdraw()</text>
+<rect x="698" y="178" width="200" height="92" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="798" y="210" text-anchor="middle" font-size="22" font-weight="600">ย้าย / ยกเลิกนัด</text>
+<text x="798" y="236" text-anchor="middle" font-size="16" fill="#6B6280">reassign() · cancel()</text>
+<text x="798" y="258" text-anchor="middle" font-size="14" fill="#6B6280">ของ AppointmentRepository</text>
+<line x1="208" y1="59" x2="234" y2="59" stroke="#5E35B1" stroke-width="2" marker-end="url(#fl)"/>
+<line x1="438" y1="59" x2="464" y2="59" stroke="#5E35B1" stroke-width="2" marker-end="url(#fl)"/>
+<line x1="668" y1="59" x2="694" y2="59" stroke="#5E35B1" stroke-width="2" marker-end="url(#fl)"/>
+<line x1="908" y1="59" x2="924" y2="59" stroke="#5E35B1" stroke-width="2" marker-end="url(#fl)"/>
+<line x1="568" y1="98" x2="568" y2="174" stroke="#E1523D" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#fl)"/>
+<line x1="438" y1="224" x2="454" y2="224" stroke="#E1523D" stroke-width="2" marker-end="url(#fl)"/>
+<line x1="680" y1="224" x2="694" y2="224" stroke="#E1523D" stroke-width="2" marker-end="url(#fl)"/>
 <text x="1028" y="230" text-anchor="middle" font-size="18" fill="#6B6280">กล่องแดง = ทางแยกถอนตัว</text>
 </svg>
-<p class="ref">domain/firm.py:26,49 · assignment.py:50,89 · schedule.py:37 · case.py:87,142</p>
+<p class="ref">domain/firm.py:26,49 · assignment.py:50,89 · schedule.py:37 · case.py:87,142 · repository/appointment_repo.py:92,113</p>
 </div>
 <aside class="notes">เดินตามลูกศร: เส้นทึบคือทางหลัก เส้นประแดงคือทางแยกถอนตัว — ทุกกล่องมีเมธอด domain คุม ไม่มีขั้นไหนแก้ DB ตรง</aside>
 </section>
