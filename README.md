@@ -7,7 +7,7 @@
 ## โครงสร้างโปรเจกต์
 
 ```
-domain/       กติกาธุรกิจทั้งหมด (Person, Case, Appointment, Schedule, LawFirm, CaseAssignment, errors)
+domain/       กติกาธุรกิจทั้งหมด (Person, Case, Appointment, Schedule, CaseAssignment, errors)
 repository/   Repository class ต่อตาราง (User/Client/Case/Appointment/Assignment) คุยกับ MariaDB ตรงๆ ไม่ใช้ ORM
 api/          web layer — main.py เป็น app factory บางๆ, deps.py ของใช้ร่วม, routes/ แยกตามพื้นที่งาน, auth.py ล็อกอิน/session/require_role
 templates/    Jinja2 templates (Pico.css + HTMX ผ่าน CDN)

@@ -3,7 +3,7 @@
 ดูขอบเขตงานเต็มที่ backlog.md#bl-02
 
 หมายเลขคดีดำ/แดง (black_case_no/red_case_no) เก็บเป็นสตริงที่จัดรูปแบบไว้แล้ว
-(เช่น "1234/2568") — การออกเลขจริงเป็นหน้าที่ของ LawFirm.open_case() (BL-11)
+(เช่น "1234/2568") — การสร้างแถวคดีในฐานข้อมูลเป็นหน้าที่ของ CaseRepository.add()
 display_black_no()/display_red_no() แค่คืนค่าที่มีอยู่ หรือ "-" ถ้ายังไม่มี
 """
 
@@ -11,9 +11,9 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 from enum import Enum
 
-from domain.assignment import AssignmentStatus
-from domain.errors import InvalidStatusTransition
-from domain.person import Client, Lawyer
+from domain.assignment import AssignmentStatus, CaseAssignment
+from domain.errors import AssignmentError, InvalidStatusTransition
+from domain.person import Client, Lawyer, Manager
 
 
 class CaseStatus(Enum):
@@ -60,6 +60,28 @@ class Case:
     @property
     def status(self) -> CaseStatus:
         return self._status
+
+    def assign_lawyer(
+        self, lawyer: Lawyer, assigned_by: Manager, *, is_lead: bool = False
+    ) -> CaseAssignment:
+        """มอบหมายทนายให้คดี เป็นรายการรอตอบรับ — ปฏิเสธมอบหมายซ้ำที่ยัง PENDING/ACCEPTED (BR-17)"""
+        for existing in self._assignments:
+            if existing.lawyer == lawyer and existing.status in (
+                AssignmentStatus.PENDING,
+                AssignmentStatus.ACCEPTED,
+            ):
+                raise AssignmentError(
+                    f"{lawyer.display_name()} มีการมอบหมายคดีนี้ค้างอยู่แล้ว (BR-17)"
+                )
+        assignment = CaseAssignment(
+            case=self,
+            lawyer=lawyer,
+            assigned_by=assigned_by,
+            assigned_at=datetime.now(),
+            is_lead=is_lead,
+        )
+        self._assignments.append(assignment)
+        return assignment
 
     def lawyers(self) -> list[Lawyer]:
         """ทนายที่ ACCEPTED แล้วเท่านั้น — BL-14 + BL-24 (BR-15)"""

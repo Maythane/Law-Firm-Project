@@ -74,7 +74,7 @@ classDiagram
     CaseAssignment "*" --> "1" Case : คดีที่มอบหมาย
 ```
 
-**หมายเหตุ** — การมอบหมายคดีเป็นเมธอด `LawFirm.assign_lawyer(case, lawyer, assigned_by, is_lead)` ไม่ใช่เมธอดของ `Manager` เอง เช่นเดียวกับ `Admin` ที่ไม่มีเมธอดสร้าง/ปิดผู้ใช้ในชั้น domain — การเปิด/ปิดบัญชีและรีเซ็ตรหัสผ่านทำผ่าน `repository/user_repo.py` + route ของ `api/main.py` (BL-29) เพราะเป็นการเขียนฐานข้อมูลตรงๆ ไม่ใช่กติกาธุรกิจ
+**หมายเหตุ** — การมอบหมายคดีเป็นเมธอด `Case.assign_lawyer(lawyer, assigned_by, is_lead)` ไม่ใช่เมธอดของ `Manager` เอง เช่นเดียวกับ `Admin` ที่ไม่มีเมธอดสร้าง/ปิดผู้ใช้ในชั้น domain — การเปิด/ปิดบัญชีและรีเซ็ตรหัสผ่านทำผ่าน `repository/user_repo.py` + route ของ `api/main.py` (BL-29) เพราะเป็นการเขียนฐานข้อมูลตรงๆ ไม่ใช่กติกาธุรกิจ
 
 ---
 
@@ -158,13 +158,6 @@ classDiagram
         +upcoming_reminders(today)
         +mark_done(appointment)
     }
-    class LawFirm {
-        +open_case()
-        +assign_lawyer()
-        +find_by_case_no()
-        +search()
-    }
-
     Case --> CaseStatus
     Appointment <|-- CourtHearing
     Appointment <|-- ClientMeeting
@@ -175,9 +168,6 @@ classDiagram
     Appointment "1" --> "1" Lawyer : เจ้าของนัด
     Appointment "1" --> "*" AppointmentChange : ประวัติการเลื่อน
     Schedule "1" --> "*" Appointment
-    LawFirm "1" --> "*" Case
-    LawFirm "1" --> "1" Schedule
-    LawFirm "1" --> "*" SystemUser
 ```
 
 **จุดที่ใช้ polymorphism** — `Appointment` 3 ชนิดตอบ `reminder_lead_days()` และ `can_reschedule()` คนละแบบ · `SystemUser` 3 บทบาทตอบ `can_view_case()` และ `dashboard_cards()` คนละแบบ ทำให้ทั้งระบบตรวจสิทธิ์ที่จุดเดียวโดยไม่มี `if role ==`

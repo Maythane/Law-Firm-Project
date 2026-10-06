@@ -4,8 +4,8 @@ import pytest
 
 from domain.assignment import AssignmentStatus, CaseAssignment
 from domain.case import Case, CaseStatus
-from domain.errors import InvalidStatusTransition
-from domain.person import Client, Lawyer
+from domain.errors import AssignmentError, InvalidStatusTransition
+from domain.person import Client, Lawyer, Manager
 
 
 def make_case(**overrides):
@@ -22,12 +22,12 @@ def make_case(**overrides):
 
 
 def give_case_an_accepted_lawyer(case: Case) -> None:
-    """ทางลัดสำหรับเทส Case เพียวๆ — ข้าม LawFirm/Manager ที่ไม่ใช่จุดสนใจของเทสนี้ (BR-18 ต้องมีทนายตอบรับก่อนยื่นฟ้อง)"""
+    """ทางลัดสำหรับเทส Case เพียวๆ — ตั้งสถานะตอบรับตรงๆ ไม่ผ่าน assign_lawyer (BR-18 ต้องมีทนายตอบรับก่อนยื่นฟ้อง)"""
     lawyer = Lawyer(name="สมชาย", citizen_id="99", phone="080", license_no="L1")
     case._assignments.append(
         CaseAssignment(
             case=case, lawyer=lawyer, assigned_by=None, assigned_at=datetime.now(),
-            status=AssignmentStatus.ACCEPTED,
+            _status=AssignmentStatus.ACCEPTED,
         )
     )
 
@@ -142,6 +142,68 @@ def test_case_note_only_author_can_modify():
     assert note.can_modify(author) and not note.can_modify(other)
     with pytest.raises(ValueError):
         CaseNote.validate_text("  ")
+
+
+def test_reassigning_same_lawyer_while_pending_or_accepted_raises():
+    # BR-17 — คดีเป็นเจ้าของกฎนี้ (ย้ายจาก LawFirm.assign_lawyer)
+    case = make_case()
+    manager = Manager(name="ผู้จัดการหนึ่ง", citizen_id="90", phone="089")
+    lawyer = Lawyer(name="สมชาย", citizen_id="1", phone="080", license_no="L1")
+    case.assign_lawyer(lawyer, assigned_by=manager)  # ยัง PENDING
+
+    with pytest.raises(AssignmentError):
+        case.assign_lawyer(lawyer, assigned_by=manager)
+
+
+def test_reassigning_after_decline_is_allowed():
+    # BR-17 — รายการเดิมจบแล้ว (DECLINED) มอบหมายใหม่ได้
+    case = make_case()
+    manager = Manager(name="ผู้จัดการหนึ่ง", citizen_id="90", phone="089")
+    lawyer = Lawyer(name="สมชาย", citizen_id="1", phone="080", license_no="L1")
+    first = case.assign_lawyer(lawyer, assigned_by=manager)
+    first.decline("ภาระงานเต็มแล้ว")
+
+    second = case.assign_lawyer(lawyer, assigned_by=manager)  # มอบหมายใหม่ได้
+    assert second.status == AssignmentStatus.PENDING
+
+
+def test_withdrawn_lawyer_can_be_assigned_again():
+    # BR-17 — รายการเดิมจบแล้ว (WITHDRAWN) ไม่โยน error
+    case = make_case()
+    manager = Manager(name="ผู้จัดการหนึ่ง", citizen_id="90", phone="089")
+    lawyer = Lawyer(name="สมชาย", citizen_id="1", phone="080", license_no="L1")
+    a = case.assign_lawyer(lawyer, assigned_by=manager)
+    a.accept()
+    a.request_withdraw("overload")
+    a.approve_withdraw()
+    case.assign_lawyer(lawyer, assigned_by=manager)
+
+
+def test_assign_lawyer_supports_three_lawyers_with_lead():
+    # BL-14 (many-to-many + 1 lead): lawyers()/lead_lawyer() นับเฉพาะที่ ACCEPTED แล้ว
+    case = make_case()
+    manager = Manager(name="ผู้จัดการหนึ่ง", citizen_id="90", phone="089")
+    lead = Lawyer(name="สมชาย", citizen_id="1", phone="080", license_no="L1")
+    second = Lawyer(name="สมศักดิ์", citizen_id="3", phone="082", license_no="L2")
+    third = Lawyer(name="สมหมาย", citizen_id="4", phone="083", license_no="L3")
+
+    case.assign_lawyer(lead, assigned_by=manager, is_lead=True).accept()
+    case.assign_lawyer(second, assigned_by=manager).accept()
+    case.assign_lawyer(third, assigned_by=manager).accept()
+
+    assert len(case.lawyers()) == 3
+    assert case.lead_lawyer() is lead
+
+
+def test_assign_lawyer_only_counts_accepted_ones():
+    case = make_case()
+    manager = Manager(name="ผู้จัดการหนึ่ง", citizen_id="90", phone="089")
+    lawyer = Lawyer(name="สมชาย", citizen_id="1", phone="080", license_no="L1")
+
+    case.assign_lawyer(lawyer, assigned_by=manager)  # ยังไม่กดรับ
+
+    assert case.lawyers() == []
+    assert case.lead_lawyer() is None
 
 
 def test_next_status_follows_order_and_stops():

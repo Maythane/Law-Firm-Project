@@ -37,7 +37,7 @@ def ensure_accepted(case, lawyer):
         case._assignments.append(
             CaseAssignment(
                 case=case, lawyer=lawyer, assigned_by=None, assigned_at=datetime.now(),
-                status=AssignmentStatus.ACCEPTED,
+                _status=AssignmentStatus.ACCEPTED,
             )
         )
 

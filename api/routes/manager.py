@@ -10,7 +10,6 @@ from api.auth import require_role
 from api.deps import _lawyer_workloads, _workload_for, get_db, templates, thaidate
 from domain.assignment import AssignmentError
 from domain.case import Case, CaseStatus
-from domain.firm import LawFirm
 from domain.person import Client, Lawyer, Manager
 from domain.schedule import Schedule
 from repository.appointment_repo import AppointmentRepository
@@ -228,9 +227,8 @@ def assign_submit(
             },
         )
 
-    firm = LawFirm()  # ไม่ได้ใช้ firm.cases เลย แค่ยืม assign_lawyer() ที่บังคับ BR-17 มาใช้
     try:
-        assignment = firm.assign_lawyer(case, lawyer, assigned_by=manager, is_lead=is_lead)
+        assignment = case.assign_lawyer(lawyer, assigned_by=manager, is_lead=is_lead)
     except AssignmentError as e:
         workloads = _lawyer_workloads(conn)
         return templates.TemplateResponse(
@@ -312,7 +310,7 @@ async def withdraw_approve(
         error = "ต้องเลือกทนายคนใหม่ก่อน จึงจะย้ายนัดได้"
     if error is None and new_lawyer is not None:
         try:
-            new_assignment = LawFirm().assign_lawyer(case, new_lawyer, assigned_by=manager, is_lead=was_lead)
+            new_assignment = case.assign_lawyer(new_lawyer, assigned_by=manager, is_lead=was_lead)
         except AssignmentError as e:  # BR-17: เช่นเลือกทนายคนเดิม หรือทนายที่มีรายการค้างอยู่แล้ว
             error = str(e)
     if error is None and to_transfer:

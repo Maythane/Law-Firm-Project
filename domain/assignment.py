@@ -35,7 +35,7 @@ class CaseAssignment:
     assigned_by: "Manager"
     assigned_at: datetime
     is_lead: bool = field(default=False, kw_only=True)
-    status: AssignmentStatus = field(default=AssignmentStatus.PENDING, kw_only=True)
+    _status: AssignmentStatus = field(default=AssignmentStatus.PENDING, kw_only=True)
     responded_at: datetime | None = field(default=None, kw_only=True)
     decline_reason: str | None = field(default=None, kw_only=True)
     withdraw_requested_at: datetime | None = field(default=None, kw_only=True)
@@ -44,6 +44,12 @@ class CaseAssignment:
     withdraw_reject_reason: str | None = field(default=None, kw_only=True)
     id: int | None = field(default=None, kw_only=True)
 
+    @property
+    def status(self) -> AssignmentStatus:
+        """อ่านได้อย่างเดียว — เปลี่ยนสถานะได้เฉพาะผ่าน accept()/decline()/… เท่านั้น
+        repository ตั้ง _status ตรงๆ ได้ตอนประกอบแถวจาก DB (ข้อยกเว้นเดียวกับ Case._status)"""
+        return self._status
+
     def is_pending(self) -> bool:
         return self.status == AssignmentStatus.PENDING
 
@@ -51,7 +57,7 @@ class CaseAssignment:
         """รับคดี — ทำได้เฉพาะตอนยังรอตอบรับอยู่ เรียกซ้ำหรือผิดสถานะโยน error"""
         if self.status != AssignmentStatus.PENDING:
             raise AssignmentError("รับคดีได้เฉพาะรายการที่ยังรอตอบรับอยู่เท่านั้น")
-        self.status = AssignmentStatus.ACCEPTED
+        self._status = AssignmentStatus.ACCEPTED
         self.responded_at = datetime.now()
 
     def decline(self, reason: str) -> None:
@@ -60,7 +66,7 @@ class CaseAssignment:
             raise AssignmentError("ปฏิเสธได้เฉพาะรายการที่ยังรอตอบรับอยู่เท่านั้น")
         if not reason or not reason.strip():
             raise ValueError("ต้องระบุเหตุผลที่ปฏิเสธคดี")
-        self.status = AssignmentStatus.DECLINED
+        self._status = AssignmentStatus.DECLINED
         self.decline_reason = reason
         self.responded_at = datetime.now()
 
@@ -89,7 +95,7 @@ class CaseAssignment:
     def approve_withdraw(self) -> None:
         if not self.is_withdraw_requested():
             raise AssignmentError("ไม่มีคำขอถอนตัวที่รออนุมัติ")
-        self.status = AssignmentStatus.WITHDRAWN
+        self._status = AssignmentStatus.WITHDRAWN
 
     def reject_withdraw(self, reason: str) -> None:
         """ปฏิเสธคำขอ — บังคับมีเหตุผล ทนายเดิมถือคดีต่อและเห็นเหตุผลนี้"""

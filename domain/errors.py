@@ -1,6 +1,7 @@
 """ตระกูล exception ของชั้น domain — ตัดสินไว้ใน backlog.md หัวข้อ 2 (6 ก.ย. 2569)
 
-ชั้น FastAPI (api/) แมป DomainError -> HTTP 400 ที่ exception handler จุดเดียว
+ไม่มี exception handler กลาง — แต่ละ route จับ subclass ที่เจาะจงเอง
+(เช่น AssignmentError, InvalidStatusTransition) แล้วคืน HTTP 400 เอง
 เทสต์ต้อง raise/assert ชนิด subclass ที่เจาะจง ไม่ใช่ DomainError เฉยๆ
 """
 

@@ -6,7 +6,6 @@ import pytest
 from domain.assignment import AssignmentStatus, CaseAssignment
 from domain.case import Case, CaseStatus
 from domain.errors import AssignmentError, InvalidStatusTransition
-from domain.firm import LawFirm
 from domain.person import Admin, Client, Lawyer, Manager
 from domain.schedule import Schedule
 from domain.appointment import ClientMeeting
@@ -41,6 +40,15 @@ def test_accept_from_pending_succeeds():
     assignment.accept()
     assert assignment.status == AssignmentStatus.ACCEPTED
     assert assignment.responded_at is not None
+
+
+def test_status_is_read_only():
+    assignment = CaseAssignment(
+        case=make_case(), lawyer=make_lawyer(), assigned_by=make_manager(),
+        assigned_at=datetime.now(),
+    )
+    with pytest.raises(AttributeError):
+        assignment.status = AssignmentStatus.ACCEPTED
 
 
 def test_accept_twice_raises():
@@ -82,30 +90,6 @@ def test_decline_after_already_declined_raises():
         assignment.decline("เหตุผลอื่น")
 
 
-def test_reassigning_same_lawyer_while_pending_or_accepted_raises():
-    # BR-17
-    firm = LawFirm()
-    case = make_case()
-    manager = make_manager()
-    lawyer = make_lawyer()
-    firm.assign_lawyer(case, lawyer, assigned_by=manager)  # ยัง PENDING
-
-    with pytest.raises(AssignmentError):
-        firm.assign_lawyer(case, lawyer, assigned_by=manager)
-
-
-def test_reassigning_after_decline_is_allowed():
-    firm = LawFirm()
-    case = make_case()
-    manager = make_manager()
-    lawyer = make_lawyer()
-    first = firm.assign_lawyer(case, lawyer, assigned_by=manager)
-    first.decline("ภาระงานเต็มแล้ว")
-
-    second = firm.assign_lawyer(case, lawyer, assigned_by=manager)  # มอบหมายใหม่ได้
-    assert second.status == AssignmentStatus.PENDING
-
-
 def test_case_cannot_advance_to_filed_without_any_accepted_lawyer():
     # BR-18
     case = make_case()
@@ -114,12 +98,10 @@ def test_case_cannot_advance_to_filed_without_any_accepted_lawyer():
 
 
 def test_case_advances_to_filed_once_a_lawyer_accepts():
-    firm = LawFirm()
     case = make_case()
-    firm.open_case(case)
     manager = make_manager()
     lawyer = make_lawyer()
-    firm.assign_lawyer(case, lawyer, assigned_by=manager).accept()
+    case.assign_lawyer(lawyer, assigned_by=manager).accept()
 
     case.advance_status(CaseStatus.FILED)
     assert case.status == CaseStatus.FILED
@@ -141,14 +123,12 @@ def test_schedule_add_rejects_appointment_for_lawyer_who_has_not_accepted():
 
 def test_can_view_case_correct_for_all_three_roles():
     # BR-15
-    firm = LawFirm()
     case = make_case()
-    firm.open_case(case)
     manager = make_manager()
     lawyer = make_lawyer()
     other_lawyer = make_lawyer(citizen_id="3")
     admin = Admin(name="แอดมิน", citizen_id="5", phone="084")
-    firm.assign_lawyer(case, lawyer, assigned_by=manager).accept()
+    case.assign_lawyer(lawyer, assigned_by=manager).accept()
 
     assert lawyer.can_view_case(case) is True
     assert other_lawyer.can_view_case(case) is False
@@ -235,11 +215,3 @@ def test_reject_withdraw_needs_reason_and_allows_new_request():
     assert a.withdraw_reject_reason is None
 
 
-def test_withdrawn_lawyer_can_be_assigned_again():
-    firm = LawFirm()
-    case, lawyer, manager = make_case(), make_lawyer(), make_manager()
-    a = firm.assign_lawyer(case, lawyer, manager)
-    a.accept()
-    a.request_withdraw("overload")
-    a.approve_withdraw()
-    firm.assign_lawyer(case, lawyer, manager)  # ไม่โยน BR-17 เพราะรายการเดิมจบแล้ว

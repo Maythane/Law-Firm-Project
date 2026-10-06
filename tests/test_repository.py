@@ -143,7 +143,7 @@ def _case_with_accepted_lawyer(conn):
     ))
     assignment = assignments.add(CaseAssignment(
         case=case, lawyer=lawyer, assigned_by=manager, assigned_at=datetime.now(),
-        status=AssignmentStatus.ACCEPTED, is_lead=True,
+        _status=AssignmentStatus.ACCEPTED, is_lead=True,
     ))
     return manager, lawyer, case, assignment
 

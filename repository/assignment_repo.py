@@ -20,7 +20,7 @@ class AssignmentRepository:
             assigned_by=self._users.get_by_id(row["assigned_by"]),
             assigned_at=row["assigned_at"],
             is_lead=bool(row["is_lead"]),
-            status=AssignmentStatus(row["status"]),
+            _status=AssignmentStatus(row["status"]),
             responded_at=row["responded_at"],
             decline_reason=row["decline_reason"],
             withdraw_requested_at=row["withdraw_requested_at"],

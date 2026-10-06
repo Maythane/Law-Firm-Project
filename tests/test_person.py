@@ -3,7 +3,6 @@ from datetime import date
 import pytest
 
 from domain.case import Case
-from domain.firm import LawFirm
 from domain.person import Admin, Client, Lawyer, Manager, Person, SystemUser
 
 
@@ -57,9 +56,7 @@ def test_can_view_case_is_polymorphic_without_type_checks():
     manager = Manager(name="ผู้จัดการหนึ่ง", citizen_id="4", phone="083")
     admin = Admin(name="แอดมิน", citizen_id="5", phone="084")
 
-    firm = LawFirm()
-    firm.open_case(case)
-    firm.assign_lawyer(case, lawyer, assigned_by=manager).accept()
+    case.assign_lawyer(lawyer, assigned_by=manager).accept()
 
     users = [lawyer, other_lawyer, manager, admin]
     results = [u.can_view_case(case) for u in users]
