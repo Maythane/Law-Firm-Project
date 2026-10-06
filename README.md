@@ -12,7 +12,7 @@ repository/   Repository class ต่อตาราง (User/Client/Case/Appoin
 api/          web layer — main.py เป็น app factory บางๆ, deps.py ของใช้ร่วม, routes/ แยกตามพื้นที่งาน, auth.py ล็อกอิน/session/require_role
 templates/    Jinja2 templates (Pico.css + HTMX ผ่าน CDN)
 static/       theme.css — โทเค็นสี/คลาสของระบบ
-db/           schema.sql (โครงตาราง MariaDB 6 ตาราง), seed.sql (ข้อมูลตัวอย่าง), migrations/
+db/           schema.sql (โครงตาราง MariaDB 8 ตาราง), seed.sql (ข้อมูลตัวอย่าง), migrations/
 docs/         backlog/proposal/uml/index/pitch/survey (เอกสาร) + diagrams/ + slides/ (สไลด์นำเสนอ OOP)
 tools/        generate_seed.py — สร้าง db/seed.sql (อยู่นอกระบบที่ส่งมอบ)
 tests/        pytest — ส่วนใหญ่ไม่ต้องต่อฐานข้อมูล ยกเว้น test_repository.py
@@ -36,7 +36,7 @@ pip install -r requirements.txt
 
 1. เปิด XAMPP Control Panel แล้ว Start โมดูล MySQL/MariaDB
 2. เปิด phpMyAdmin (`http://localhost/phpmyadmin`) → แท็บ **Databases** → สร้างฐานข้อมูลชื่อ `lawfirm-db` collation `utf8mb4_unicode_ci`
-3. เลือกฐานข้อมูล `lawfirm-db` ที่เพิ่งสร้าง → แท็บ **Import** → เลือกไฟล์ [`db/schema.sql`](db/schema.sql) → กด Go (ได้ตารางครบ 6 ตาราง)
+3. เลือกฐานข้อมูล `lawfirm-db` ที่เพิ่งสร้าง → แท็บ **Import** → เลือกไฟล์ [`db/schema.sql`](db/schema.sql) → กด Go (ได้ตารางครบ 8 ตาราง)
 4. แท็บ **Import** อีกครั้ง → เลือกไฟล์ [`db/seed.sql`](db/seed.sql) → กด Go (ได้ข้อมูลตัวอย่างครบ)
 
 ค่าเชื่อมต่อดีฟอลต์ (`repository/db.py`)คือ `root` รหัสผ่านว่าง ฐาน `lawfirm-db` ที่ `localhost:3306` — ตรงกับค่าเริ่มต้นของ XAMPP พอดี **ไม่ต้องตั้งค่าอะไรเพิ่ม** ถ้าเครื่องที่รันใช้ค่าเริ่มต้นของ XAMPP อยู่แล้ว
@@ -114,7 +114,7 @@ pytest
 
 เทสที่ต่อ DB ใช้ฐานแยก `lawfirm_test` เสมอ (เปลี่ยนชื่อได้ผ่าน `TEST_DB_NAME` ใน `.env`, ดู `.env.example`) ไม่แตะ `lawfirm-db` ของแอป — fixture สร้างฐานและโหลด `db/schema.sql` ให้เองถ้ายังไม่มี และ `pytest.fail` ทันทีถ้าชื่อฐานเทสชนกับฐานแอป (`DB_NAME`) หรือเป็น `lawfirm-db` ก่อนแตะ `TRUNCATE`
 
-**ข้อควรระวัง** — `tests/test_repository.py` จะ **TRUNCATE ทั้ง 6 ตารางก่อนรันทุกครั้ง** เพื่อทดสอบแบบสะอาด หลังรัน `pytest` แล้วข้อมูลตัวอย่างจะหายไป ถ้าจะกลับไปเปิดเว็บดูข้อมูลต่อ ให้นำเข้า `db/seed.sql` ใหม่ผ่าน phpMyAdmin ตามขั้นตอนด้านบนอีกครั้ง
+**ข้อควรระวัง** — `tests/test_repository.py` จะ **TRUNCATE ทั้ง 8 ตารางก่อนรันทุกครั้ง** เพื่อทดสอบแบบสะอาด หลังรัน `pytest` แล้วข้อมูลตัวอย่างจะหายไป ถ้าจะกลับไปเปิดเว็บดูข้อมูลต่อ ให้นำเข้า `db/seed.sql` ใหม่ผ่าน phpMyAdmin ตามขั้นตอนด้านบนอีกครั้ง
 
 ## หมายเหตุสำหรับผู้สอน/ผู้เรียน
 
