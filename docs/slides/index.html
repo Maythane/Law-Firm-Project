@@ -274,9 +274,12 @@ class SystemUser(Person):
 <div>
 <pre># appointment.py:41,45,49
 class Appointment(ABC):
-    @abstractmethod reminder_lead_days() …
-    @abstractmethod can_reschedule() …
-    @abstractmethod kind_label() …</pre>
+    @abstractmethod
+    def reminder_lead_days() …
+    @abstractmethod
+    def can_reschedule() …
+    @abstractmethod
+    def kind_label() …</pre>
 <pre>Appointment(…) → TypeError:
 can't instantiate abstract class …</pre>
 </div>
