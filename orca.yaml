@@ -1,0 +1,5 @@
+# Orca worktree setup — see https://www.onorca.dev/docs/model/orca-yaml
+# .venv is shared (symlinked) from the primary checkout, so new worktrees need no install.
+worktree:
+  sharedDirectories:
+    - .venv
