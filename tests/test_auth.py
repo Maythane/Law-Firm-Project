@@ -21,8 +21,12 @@ def test_session_cookie_round_trips_user_id():
 
 
 def test_session_cookie_rejects_tampered_token():
+    # แก้อักขระกลางส่วน signature (itsdangerous คั่นส่วนด้วย ".") — เปลี่ยนบิต
+    # ที่ถอดรหัสแล้วแน่นอน ไม่เหมือนแก้ตัวท้ายที่บางทีได้ไบต์เดิมแล้วดันผ่าน
     token = create_session_cookie(42)
-    tampered = token[:-1] + ("a" if token[-1] != "a" else "b")
+    head, sig = token.rsplit(".", 1)
+    i = len(sig) // 2
+    tampered = head + "." + sig[:i] + ("a" if sig[i] != "a" else "b") + sig[i + 1:]
     assert read_session_cookie(tampered) is None
 
 
