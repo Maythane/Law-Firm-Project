@@ -207,7 +207,7 @@
   .step-title { font-weight: 700; font-size: 1.05rem; }
   .step-body p { color: var(--ink-2); font-size: .95rem; line-height: 1.7; }
 
-  /* ---------- billing: one instruction, three results ---------- */
+  /* ---------- one instruction, three results ---------- */
   .plans { display: grid; gap: var(--s2); grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
   .plan {
     background: var(--card);
@@ -336,7 +336,7 @@
     <p class="eyebrow">ข้อเสนอหัวข้อโปรเจกต์ · Object-Oriented Programming</p>
     <h1>ระบบบริหารจัดการคดี<br>สำนักงานกฎหมาย</h1>
     <p class="sub">Law Firm Case Management System</p>
-    <p class="lede">รวมข้อมูลคดี ชั่วโมงทำงานของทนาย และการออกใบแจ้งหนี้ ไว้ในระบบเดียว โดยยึด <b>หมายเลขคดี</b> เป็นกุญแจหลักแบบเดียวกับที่สำนักงานกฎหมายใช้จริง</p>
+    <p class="lede">รวมตารางนัด กำหนดเวลาตามกฎหมาย และการมอบหมายคดีไว้ในระบบเดียว โดยยึด <b>หมายเลขคดี</b> เป็นกุญแจหลักแบบเดียวกับที่สำนักงานกฎหมายใช้จริง</p>
     <div class="hero-meta">
       <span>ผู้จัดทำ <b>นายเมทนี พูลสมบัติ</b></span>
       <span>รหัส <b>6821500060</b></span>
@@ -349,11 +349,11 @@
       <span class="num">01</span>
       <h2>ปัญหาที่พบ</h2>
     </div>
-    <p class="lede">สำนักงานกฎหมายขนาดเล็ก ทนาย 3–10 คน ส่วนใหญ่ยังจดคดี ชั่วโมงทำงาน และค่าจ้าง แยกกันคนละไฟล์</p>
+    <p class="lede">สำนักงานกฎหมายขนาดเล็ก ทนาย 3–10 คน ส่วนใหญ่ยังจดวันนัด กำหนดยื่นเอกสาร และการมอบหมายงานแยกกันคนละที่</p>
     <div class="problems">
       <div class="problem">
-        <h3>ออกใบแจ้งหนี้ผิด</h3>
-        <p>สำนักงานเดียวมีค่าจ้างหลายรูปแบบ ทั้งรายชั่วโมง เหมาจ่าย และคิดเป็นเปอร์เซ็นต์จากทุนทรัพย์ที่ชนะ คิดด้วยมือจึงตกหล่นบ่อย</p>
+        <h3>นัดชนกันโดยไม่รู้ตัว</h3>
+        <p>รับนัดใหม่ตอนอยู่ที่ศาล แล้วเพิ่งมารู้ทีหลังว่าวันนั้นมีนัดอีกคดีอยู่แล้ว ระบบจึงต้องเตือนตั้งแต่ตอนบันทึก</p>
       </div>
       <div class="problem">
         <h3>ตามอายุความไม่ทัน</h3>
@@ -378,7 +378,7 @@
         <div class="marker"><span class="dot"></span><span class="line"></span></div>
         <div class="step-body">
           <span class="step-title">รับเรื่อง</span>
-          <p>ลูกความเข้าปรึกษา เปิดแฟ้มคดี เลือกประเภท — แพ่ง อาญา หรือแรงงาน ระบบคำนวณค่าขึ้นศาลและวันครบอายุความให้ตามประเภทนั้น</p>
+          <p>ลูกความเข้าปรึกษา เปิดแฟ้มคดี บันทึกชื่อเรื่อง คู่ความ และศาล นัดและกำหนดยื่นเอกสารผูกกับคดี โดยกำหนดเวลาตามกฎหมายนับวันครบให้อัตโนมัติจากวันที่เกิดเหตุการณ์</p>
         </div>
       </div>
 
@@ -395,7 +395,7 @@
         <div class="marker"><span class="dot"></span><span class="line"></span></div>
         <div class="step-body">
           <span class="step-title">สืบพยาน</span>
-          <p>ทนายที่รับผิดชอบบันทึกชั่วโมงทำงานลงคดีทุกวัน ชั่วโมงสะสมนี้คือฐานของค่าจ้างในตอนท้าย</p>
+          <p>ทุกนัดผูกกับคดีและทนายเจ้าของนัด ถ้าเวลาชนกับนัดเดิมของทนายคนเดียวกัน ระบบเตือนและไม่บันทึกให้จนกว่าจะแก้</p>
         </div>
       </div>
 
@@ -412,7 +412,7 @@
         <div class="marker"><span class="dot"></span><span class="line"></span></div>
         <div class="step-body">
           <span class="step-title">ปิดคดี</span>
-          <p>ออกใบแจ้งหนี้ — ค่าทนายตามรูปแบบที่ตกลงกับลูกความรายนั้น บวกค่าขึ้นศาลที่จ่ายไป</p>
+          <p>ปิดคดีได้เมื่อไม่มีนัดในอนาคตและไม่มีกำหนดเวลาที่ยังไม่ดำเนินการค้างอยู่</p>
         </div>
       </div>
     </div>
@@ -427,38 +427,37 @@
       <span class="num">03</span>
       <h2>หัวใจของงานนี้ในเชิง OOP</h2>
     </div>
-    <p class="lede">ค่าทนายสามแบบ คิดคนละสูตรกันคนละทาง แต่โปรแกรมสั่งด้วยคำสั่งเดียว</p>
+    <p class="lede">นัดสามแบบ เตือนล่วงหน้าและเลื่อนได้ต่างกัน แต่โปรแกรมสั่งด้วยคำสั่งเดียว</p>
 
     <div class="plans">
       <div class="plan">
-        <span class="kind">รายชั่วโมง</span>
-        <span class="formula">rate × hours</span>
-        <span class="amount">100,000 ฿</span>
-        <span class="note">2,500 ฿ × 40 ชั่วโมง</span>
+        <span class="kind">นัดศาล</span>
+        <span class="formula">reminder_lead_days() == 3</span>
+        <span class="amount">3 วัน</span>
+        <span class="note">เลื่อนได้เมื่อมีเหตุผลกำกับ</span>
       </div>
       <div class="plan">
-        <span class="kind">เหมาจ่าย</span>
-        <span class="formula">fixed_amount</span>
-        <span class="amount">80,000 ฿</span>
-        <span class="note">ทำกี่ชั่วโมงก็ราคาเดิม</span>
+        <span class="kind">นัดพบลูกความ</span>
+        <span class="formula">reminder_lead_days() == 1</span>
+        <span class="amount">1 วัน</span>
+        <span class="note">เลื่อนนัดได้ บันทึกเหตุผลไว้</span>
       </div>
       <div class="plan">
-        <span class="kind">ร้อยละของทุนทรัพย์</span>
-        <span class="formula">percent × amount_won</span>
-        <span class="amount">200,000 ฿</span>
-        <span class="note">20% ของ 1,000,000 ฿ · แพ้คดีได้ 0 ฿</span>
+        <span class="kind">กำหนดยื่นเอกสาร</span>
+        <span class="formula">reminder_lead_days() == 15</span>
+        <span class="amount">15 วัน</span>
+        <span class="note">เลื่อนไม่ได้ทุกกรณี</span>
       </div>
     </div>
 
     <div class="converge">
       <span class="tick">ทั้งสามแบบ ถูกเรียกด้วยบรรทัดเดียวกันนี้</span>
-      <div class="codeblock"><span class="cm"># รายได้รวมทั้งสำนักงาน</span>
-def total_revenue(self):
-    return sum(<span class="hl">c.billing_plan.calculate_fee(c)</span> for c in self.cases)</div>
+      <div class="codeblock"><span class="cm"># นัดที่ใกล้ถึงกำหนดของทนาย</span>
+soon = [a for a in appts if <span class="hl">a.is_due_soon(today)</span>]</div>
     </div>
 
     <div class="callout">
-      ไม่มีการเช็คว่าคดีนี้คิดเงินแบบไหนด้วย <span class="mono">if-else</span> เลยสักบรรทัด — คลาสของค่าจ้างแต่ละแบบรู้สูตรของตัวเอง เพิ่มรูปแบบค่าจ้างแบบที่สี่ในอนาคต ก็ไม่ต้องแก้โค้ดตรงนี้
+      ไม่มีการเช็คว่านัดนี้ประเภทไหนด้วย <span class="mono">if-else</span> เลยสักบรรทัด — คลาสนัดแต่ละประเภทรู้ระยะเตือนและกฎการเลื่อนของตัวเอง เพิ่มประเภทนัดแบบที่สี่ในอนาคต ก็ไม่ต้องแก้โค้ดตรงนี้
     </div>
   </section>
 
@@ -472,15 +471,15 @@ def total_revenue(self):
     <div class="layers">
       <div class="layer">
         <span class="name">หน้าจอ</span>
-        <span class="what"><b>เว็บ</b> — หน้ารายการคดี ช่องค้นหา หน้าบันทึกชั่วโมง หน้าใบแจ้งหนี้ และหน้ารายงาน</span>
+        <span class="what"><b>เว็บ</b> — ตารางนัดรายวันและรายสัปดาห์ ปฏิทินรายเดือน หน้ารายการคดีพร้อมช่องค้นหาด้วยหมายเลขคดี หน้ามอบหมายคดี และหน้ารายการใกล้ครบกำหนด</span>
       </div>
       <div class="layer">
         <span class="name">ตัวระบบ</span>
-        <span class="what"><b>Python เป็น Backend</b> — คลาสประเภทคดี คลาสรูปแบบค่าจ้าง และกฎการเปลี่ยนสถานะคดี อยู่ในชั้นนี้ทั้งหมด นี่คือส่วนที่เป็นเนื้องานของวิชา</span>
+        <span class="what"><b>Python เป็น Backend</b> — คลาสนัดหมายสามประเภท กฎการเปลี่ยนสถานะคดี และกฎการมอบหมายคดี อยู่ในชั้นนี้ทั้งหมด นี่คือส่วนที่เป็นเนื้องานของวิชา</span>
       </div>
       <div class="layer">
         <span class="name">ฐานข้อมูล</span>
-        <span class="what"><b>MySQL</b> 6 ตาราง — ลูกความ ทนาย คดี การมอบหมายงาน บันทึกเวลา ใบแจ้งหนี้ โดยหมายเลขคดีดำและคดีแดงทำดัชนีไว้ เพราะเป็นช่องทางค้นหาที่ใช้บ่อยที่สุด</span>
+        <span class="what"><b>MariaDB</b> 8 ตาราง — ผู้ใช้ ลูกความ คดี การมอบหมายงาน นัดหมาย ประวัติการเลื่อนนัด บันทึกคดี และเหตุการณ์คดี โดยหมายเลขคดีดำและคดีแดงทำดัชนีไว้ เพราะเป็นช่องทางค้นหาที่ใช้บ่อยที่สุด</span>
       </div>
     </div>
   </section>
@@ -496,13 +495,13 @@ def total_revenue(self):
       <div class="fig"><span class="n">60</span><span class="l">คดี</span></div>
       <div class="fig"><span class="n">40</span><span class="l">ลูกความ</span></div>
       <div class="fig"><span class="n">8</span><span class="l">ทนาย</span></div>
-      <div class="fig"><span class="n">500</span><span class="l">บันทึกชั่วโมง</span></div>
+      <div class="fig"><span class="n">250</span><span class="l">นัดหมาย</span></div>
     </div>
 
     <div class="callout">
       คดีทั้ง 60 คดีจงใจกระจายให้ครบทุกกรณี — คดีที่ยังไม่ยื่นฟ้อง คดีที่มีแต่หมายเลขคดีดำ คดีที่ตัดสินแล้วมีครบทั้งสองเลข และคดีที่ยกเลิกกลางทางซึ่งจะไม่มีหมายเลขคดีแดงตลอดไป เพื่อให้ทดสอบกฎในระบบได้ครบทุกเส้นทาง
       <br><br>
-      ส่วนหนึ่งต่อยอดจากชุดข้อมูลที่จัดทำไว้ในวิชา Applied Machine Learning โดยนำเฉพาะลูกความที่ตัดสินใจว่าจ้างมาแปลงเป็นคดีตั้งต้น ค่าจ้างและสัดส่วนประเภทคดีจึงกระจายตัวสมจริง
+      ส่วนหนึ่งต่อยอดจากชุดข้อมูลที่จัดทำไว้ในวิชา Applied Machine Learning โดยนำเฉพาะลูกความที่ตัดสินใจว่าจ้างมาแปลงเป็นคดีตั้งต้น สถานะคดีจึงกระจายครบทุกเส้นทางสมจริง
     </div>
   </section>
 
@@ -512,9 +511,9 @@ def total_revenue(self):
       <h2>ทำไมหัวข้อนี้เหมาะกับวิชา</h2>
     </div>
     <div class="why">
-      <div><b>คลาสลูกต่างกันที่พฤติกรรม ไม่ใช่ต่างแค่ชื่อข้อมูล</b> — คดีแต่ละประเภทคิดค่าขึ้นศาลและนับอายุความคนละแบบ ค่าจ้างแต่ละรูปแบบคิดเงินคนละสูตร</div>
+      <div><b>คลาสลูกต่างกันที่พฤติกรรม ไม่ใช่ต่างแค่ชื่อข้อมูล</b> — นัดแต่ละประเภทเตือนล่วงหน้าและเลื่อนได้ต่างกัน ผู้ใช้แต่ละบทบาทเห็นคดีและหน้าแรกต่างกัน</div>
       <div><b>มีกฎที่ต้องปกป้อง</b> — สถานะคดีข้ามขั้นไม่ได้ และหมายเลขคดีแดงใส่ก่อนศาลตัดสินไม่ได้ เป็นเหตุผลจริงที่ต้องปิดข้อมูลไม่ให้แก้ตรง ๆ จากภายนอก</div>
-      <div><b>ขนาดพอดีกับหนึ่งคน</b> — 6 ตาราง คลาสหลักราวสิบคลาส ทำเสร็จได้จริงในเวลาที่มี โดยไม่ต้องตัดส่วนที่เป็นเนื้อหาของวิชาออก</div>
+      <div><b>ขนาดพอดีกับหนึ่งคน</b> — 8 ตาราง คลาสหลักราวสิบคลาส ทำเสร็จได้จริงในเวลาที่มี โดยไม่ต้องตัดส่วนที่เป็นเนื้อหาของวิชาออก</div>
     </div>
   </section>
 
