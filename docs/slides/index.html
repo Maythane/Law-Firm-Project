@@ -105,7 +105,7 @@ body.show-notes aside.notes{display:block;position:fixed;left:0;right:0;bottom:0
 <div class="content">
 <div class="grid2">
 <div class="card"><h3>Web layer</h3><p>FastAPI 0.115 · Jinja2 templates · Pico.css + HTMX ผ่าน CDN · <code>uvicorn api.main:app</code></p></div>
-<div class="card"><h3>Data + infra</h3><p>MariaDB 10.4 (XAMPP/docker) · mysql-connector ตรงๆ ไม่ใช้ ORM · Docker + phpMyAdmin · pytest 8.3 (92 เทส)</p></div>
+<div class="card"><h3>Data + infra</h3><p>MariaDB 10.4 (XAMPP/docker) · mysql-connector ตรงๆ ไม่ใช้ ORM · Docker + phpMyAdmin · pytest 8.3 (90 เทส)</p></div>
 </div>
 <ul style="margin-top:16px">
 <li>ล็อกอินครั้งเดียว → <code>/dashboard</code> เด้งไปหน้าแรกของบทบาทตัวเอง (ทนาย: ตารางวันนี้ · ผู้จัดการ: ภาพรวมคิวงาน · แอดมิน: จัดการผู้ใช้)</li>
@@ -155,12 +155,12 @@ body.show-notes aside.notes{display:block;position:fixed;left:0;right:0;bottom:0
 <div class="kicker">05 · โครงโฟลเดอร์</div>
 <h1 class="small">แต่ละโฟลเดอร์มีหน้าที่เดียว</h1>
 <div class="content">
-<pre>domain/       กติกาธุรกิจ (Person, Case, Appointment, Schedule, LawFirm, …)
+<pre>domain/       กติกาธุรกิจ (Person, Case, Appointment, Schedule, CaseAssignment, …)
 repository/   Repository class ต่อตาราง คุย MariaDB ตรงๆ ไม่ใช้ ORM
 api/          main.py factory บางๆ · deps.py ของใช้ร่วม · routes/ · auth.py
 templates/    Jinja2 (Pico.css + HTMX ผ่าน CDN) · static/ คือ theme.css
 db/           schema.sql · seed.sql · migrations/        docs/  backlog/proposal/uml/…
-tools/        generate_seed.py (สร้าง seed)             tests/  pytest 92 เทส</pre>
+tools/        generate_seed.py (สร้าง seed)             tests/  pytest 90 เทส</pre>
 <p class="ref">README.md §โครงสร้างโปรเจกต์ — ตัวเลขไฟล์: routes/ 7 โมดูล 39 เส้น · api/main.py 1212 → 23 บรรทัด</p>
 </div>
 <aside class="notes">ถ้าถามว่าทำไมแยก: ตอบว่าให้อาจารย์เดาได้ว่าโค้ดอยู่ไหนโดยไม่ต้องเปิดหา — กฎอยู่ domain, SQL อยู่ repository, หน้าเว็บอยู่ routes</aside>
@@ -208,48 +208,87 @@ tools/        generate_seed.py (สร้าง seed)             tests/  pytest
 <div class="content">
 <svg viewBox="0 0 1136 400" width="1136" height="400" role="img" aria-label="case class diagram">
 <defs><marker id="inh2" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L10,6 L0,12 Z" fill="#FFFFFF" stroke="#5E35B1" stroke-width="2"/></marker></defs>
-<rect x="388" y="8" width="360" height="86" rx="12" fill="#EDE7F6" stroke="#5E35B1" stroke-width="2"/>
+<rect x="8" y="8" width="340" height="104" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="178" y="42" text-anchor="middle" font-size="23" font-weight="600">CaseAssignment (−status)</text>
+<text x="178" y="70" text-anchor="middle" font-size="18">accept() · decline()</text>
+<text x="178" y="96" text-anchor="middle" font-size="18">request_withdraw() · approve/reject()</text>
+<rect x="388" y="8" width="360" height="104" rx="12" fill="#EDE7F6" stroke="#5E35B1" stroke-width="2"/>
 <text x="568" y="42" text-anchor="middle" font-size="23" font-weight="600">Case (−status, −assignments)</text>
-<text x="568" y="72" text-anchor="middle" font-size="17">advance_status() · can_close() · lawyers()</text>
-<rect x="8" y="8" width="340" height="86" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
-<text x="178" y="42" text-anchor="middle" font-size="23" font-weight="600">CaseAssignment</text>
-<text x="178" y="72" text-anchor="middle" font-size="17">accept() · decline() · request_withdraw()</text>
-<rect x="788" y="8" width="340" height="86" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="568" y="70" text-anchor="middle" font-size="18">assign_lawyer() · advance_status()</text>
+<text x="568" y="96" text-anchor="middle" font-size="18">lawyers() · lead_lawyer() · can_close()</text>
+<rect x="788" y="8" width="340" height="104" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
 <text x="958" y="42" text-anchor="middle" font-size="23" font-weight="600">Schedule</text>
-<text x="958" y="72" text-anchor="middle" font-size="17">add() · find_conflicts() · day/month_view()</text>
-<rect x="8" y="140" width="360" height="150" rx="12" fill="#FFFFFF" stroke="#5E35B1" stroke-width="2"/>
-<text x="188" y="172" text-anchor="middle" font-size="23" font-weight="600">Appointment «abstract»</text>
-<text x="188" y="202" text-anchor="middle" font-size="17">reminder_lead_days()* · kind_label()*</text>
-<text x="188" y="228" text-anchor="middle" font-size="17">can_reschedule()* · overlaps()</text>
-<text x="188" y="254" text-anchor="middle" font-size="17">reschedule() · cancel()</text>
-<rect x="8" y="300" width="360" height="92" rx="12" fill="#EDE7F6" stroke="#5E35B1" stroke-width="2"/>
-<text x="188" y="330" text-anchor="middle" font-size="21" font-weight="600">CourtHearing · ClientMeeting</text>
-<text x="188" y="358" text-anchor="middle" font-size="21" font-weight="600">FilingDeadline</text>
-<text x="188" y="382" text-anchor="middle" font-size="17" fill="#6B6280">นัดศาล · นัดพบลูกความ · กำหนดยื่นเอกสาร</text>
-<line x1="188" y1="300" x2="188" y2="294" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh2)"/>
-<rect x="408" y="140" width="320" height="130" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
-<text x="568" y="174" text-anchor="middle" font-size="23" font-weight="600">LawFirm</text>
-<text x="568" y="204" text-anchor="middle" font-size="17">open_case() · assign_lawyer()</text>
-<text x="568" y="230" text-anchor="middle" font-size="17">search() · find_by_case_no()</text>
-<rect x="768" y="140" width="360" height="130" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
-<text x="948" y="174" text-anchor="middle" font-size="23" font-weight="600">CaseNote · CaseEvent</text>
-<text x="948" y="204" text-anchor="middle" font-size="19">validate_text() · can_modify()</text>
-<text x="948" y="232" text-anchor="middle" font-size="19" fill="#6B6280">+ CaseStatus (enum 7 ค่า)</text>
-<line x1="348" y1="51" x2="388" y2="51" stroke="#5E35B1" stroke-width="2"/>
-<text x="356" y="70" text-anchor="middle" font-size="15" fill="#5E35B1">*</text>
-<text x="380" y="70" text-anchor="middle" font-size="15" fill="#5E35B1">1</text>
-<line x1="748" y1="51" x2="788" y2="51" stroke="#5E35B1" stroke-width="2"/>
-<text x="240" y="130" text-anchor="middle" font-size="18" fill="#5E35B1">คดี 1 — * การมอบหมาย (case._assignments)</text>
-<text x="700" y="130" text-anchor="middle" font-size="18" fill="#5E35B1">Schedule ตรวจนัดของทนาย (โหลดผ่าน repo)</text>
+<text x="958" y="70" text-anchor="middle" font-size="18">add() · find_conflicts()</text>
+<text x="958" y="96" text-anchor="middle" font-size="18">day/week/month_view() · mark_done()</text>
+<line x1="348" y1="60" x2="388" y2="60" stroke="#5E35B1" stroke-width="2"/>
+<text x="356" y="80" text-anchor="middle" font-size="18" fill="#5E35B1">*</text>
+<text x="380" y="80" text-anchor="middle" font-size="18" fill="#5E35B1">1</text>
+<text x="178" y="134" text-anchor="middle" font-size="18" fill="#5E35B1">* — 1 Lawyer (ดูสไลด์ 06)</text>
+<line x1="568" y1="112" x2="568" y2="146" stroke="#5E35B1" stroke-width="2"/>
+<text x="580" y="132" text-anchor="middle" font-size="18" fill="#5E35B1">1</text>
+<text x="580" y="162" text-anchor="middle" font-size="18" fill="#5E35B1">*</text>
+<rect x="8" y="146" width="360" height="120" rx="12" fill="#FFFFFF" stroke="#5E35B1" stroke-width="2"/>
+<text x="188" y="178" text-anchor="middle" font-size="23" font-weight="600">Appointment «abstract»</text>
+<text x="188" y="206" text-anchor="middle" font-size="18">reminder_lead_days()* · kind_label()*</text>
+<text x="188" y="232" text-anchor="middle" font-size="18">can_reschedule()* · overlaps()</text>
+<text x="188" y="256" text-anchor="middle" font-size="18">reschedule() · cancel() · is_due_soon()</text>
+<rect x="8" y="276" width="360" height="92" rx="12" fill="#EDE7F6" stroke="#5E35B1" stroke-width="2"/>
+<text x="188" y="308" text-anchor="middle" font-size="21" font-weight="600">CourtHearing · ClientMeeting</text>
+<text x="188" y="336" text-anchor="middle" font-size="21" font-weight="600">FilingDeadline</text>
+<text x="188" y="360" text-anchor="middle" font-size="18" fill="#6B6280">นัดศาล · นัดพบลูกความ · กำหนดยื่นเอกสาร</text>
+<line x1="188" y1="276" x2="188" y2="270" stroke="#5E35B1" stroke-width="2" marker-end="url(#inh2)"/>
+<rect x="408" y="146" width="320" height="84" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="568" y="170" text-anchor="middle" font-size="21" font-weight="600">CaseNote · CaseEvent</text>
+<text x="568" y="196" text-anchor="middle" font-size="18">คดี 1 — * · case_id</text>
+<text x="568" y="220" text-anchor="middle" font-size="18" fill="#6B6280">validate_text() · can_modify()</text>
+<rect x="408" y="240" width="320" height="60" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="568" y="264" text-anchor="middle" font-size="21" font-weight="600">Client</text>
+<text x="568" y="288" text-anchor="middle" font-size="18" fill="#6B6280">คดี * — 1 ลูกความ (case.client)</text>
+<rect x="768" y="146" width="360" height="120" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
+<text x="948" y="178" text-anchor="middle" font-size="21" font-weight="600">«enum» · @dataclass</text>
+<text x="948" y="206" text-anchor="middle" font-size="18">CaseStatus — 7 ค่า</text>
+<text x="948" y="230" text-anchor="middle" font-size="18">AssignmentStatus — 4 ค่า</text>
+<text x="948" y="254" text-anchor="middle" font-size="18" fill="#6B6280">domain ทุกคลาสเป็น @dataclass</text>
+<text x="568" y="392" text-anchor="middle" font-size="18" fill="#5E35B1">Case 1 — * มอบหมาย/นัด/โน้ต · Schedule ◇—* นัด (ยืมลิสต์จาก repo มาตรวจ ไม่ได้สร้างเอง)</text>
 </svg>
-<p class="ref">domain/case.py · appointment.py · assignment.py · schedule.py · firm.py</p>
+<p class="ref">domain/case.py:64 · assignment.py:47 · appointment.py:41 · schedule.py:17</p>
 </div>
-<aside class="notes">สามเหลี่ยม appointment: นัดศาลเตือนล่วงหน้า 3 วัน นัดพบลูกความ 1 วัน กำหนดยื่น 15 วัน — ตัวเลขต่างกันแต่เรียกเมธอดเดียว</aside>
+<aside class="notes">สามเหลี่ยม appointment: นัดศาลเตือนล่วงหน้า 3 วัน นัดพบลูกความ 1 วัน กำหนดยื่น 15 วัน — ตัวเลขต่างกันแต่เรียกเมธอดเดียว · กล่องขวา: enum ทั้งสองชนิด + ทุกคลาส domain เป็น @dataclass · legend ล่างสุดรวม multiplicity: Schedule ไม่สร้างนัดเอง แค่ยืมลิสต์จาก repo มาตรวจ (aggregation)</aside>
 </section>
 
 <!-- 8 -->
 <section class="slide" id="s8">
-<div class="kicker">08 · INHERITANCE — สืบทอดแล้วเติมของตัวเอง</div>
+<div class="kicker">08 · ABSTRACTION — แม่ประกาศสัญญา ลูกต้องเติม</div>
+<h1 class="small">คลาสแม่สร้างไม่ได้ ผู้เรียกพึ่งแค่สัญญา</h1>
+<div class="content">
+<div class="grid2">
+<div>
+<pre># person.py:21,35,39,43
+class Person(ABC):
+    @abstractmethod display_name() …
+class SystemUser(Person):
+    @abstractmethod can_view_case() …
+    @abstractmethod dashboard_cards() …
+    @abstractmethod home_url() …</pre>
+</div>
+<div>
+<pre># appointment.py:41,45,49
+class Appointment(ABC):
+    @abstractmethod reminder_lead_days() …
+    @abstractmethod can_reschedule() …
+    @abstractmethod kind_label() …</pre>
+<pre>Appointment(…) → TypeError:
+can't instantiate abstract class …</pre>
+</div>
+</div>
+<p class="ref">domain/person.py · domain/appointment.py — contact_info() / overlaps() เป็นของจริงที่ใช้ร่วมกัน ไม่ต้องเขียนซ้ำในลูก</p>
+</div>
+<aside class="notes">สร้างคลาสแม่ตรงๆ ไม่ได้ ต้องผ่านลูก — รัน Appointment(…) ได้ TypeError ทันที (ไม่มีเทสเฉพาะเรื่องนี้ แต่ตรวจด้วยการรันจริงแล้ว) · ถามต่อได้ว่าแล้วลูกแต่ละตัวเติมอะไร: ดูสไลด์ถัดไป</aside>
+</section>
+
+<!-- 9 -->
+<section class="slide" id="s9">
+<div class="kicker">09 · INHERITANCE — สืบทอดแล้วเติมของตัวเอง</div>
 <h1 class="small">แม่ประกาศสัญญา ลูกเติมพฤติกรรม</h1>
 <div class="content">
 <pre>class Person(ABC):               @abstractmethod display_name() …
@@ -263,10 +302,10 @@ class Client(Person):            company (ไม่ใช่ user — สืบ�
 <aside class="notes">จุดที่อาจารย์ชอบถาม: ทำไม Client ไม่สืบ SystemUser — ตอบว่าลูกความไม่มี username/password ไม่ผ่าน is-a</aside>
 </section>
 
-<!-- 9 -->
-<section class="slide" id="s9">
-<div class="kicker">09 · POLYMORPHISM — เรียกเมธอดเดียว ได้พฤติกรรมตามชนิด</div>
-<h1 class="small">ไม่มี <code>if role ==</code> ใน route</h1>
+<!-- 10 -->
+<section class="slide" id="s10">
+<div class="kicker">10 · POLYMORPHISM — เรียกเมธอดเดียว ได้พฤติกรรมตามชนิด</div>
+<h1 class="small"><code>/dashboard</code> ไม่ถามว่าเป็น role ไหน</h1>
 <div class="content">
 <div class="grid2">
 <div>
@@ -301,36 +340,34 @@ class FilingDeadline(Appointment):
 </div>
 <p class="ref">domain/person.py · domain/appointment.py · api/routes/dashboard.py — ตัดบางบรรทัดด้วย … โค้ดที่เหลือคัดมาตรงๆ</p>
 </div>
-<aside class="notes">สองตัวอย่างคนละมิติ: home_url คือพฤติกรรมตามบทบาท, reminder_lead_days คือข้อมูลตามชนิดนัด — polymorphism ทั้งคู่</aside>
+<aside class="notes">สองตัวอย่างคนละมิติ: home_url คือพฤติกรรมตามบทบาท, reminder_lead_days คือข้อมูลตามชนิดนัด — polymorphism ทั้งคู่ · ที่ยังใช้ isinstance อยู่ (8 จุดใน api/ + factory ใน repository): require_role ใน auth.py:85, guard ใน deps.py:120,134,148, ฟอร์มต้องเลือกทนายใน manager.py:64,288, กฎปิดคดีแยก FilingDeadline ใน cases.py:137-138, และ _ROLE_TO_CLASS ใน user_repo.py ที่สร้าง subclass จากแถว DB — ทั้งหมดไม่ใช่การแยกพฤติกรรมธุรกิจ ถ้าถามว่าทำไมไม่ลบ: ตอบว่านี่คือขอบเขตตรวจชนิด ไม่ใช่ if ธุรกิจ</aside>
 </section>
 
-<!-- 10 -->
-<section class="slide" id="s10">
-<div class="kicker">10 · ENCAPSULATION — สถานะแตะตรงไม่ได้</div>
+<!-- 11 -->
+<section class="slide" id="s11">
+<div class="kicker">11 · ENCAPSULATION — สถานะแตะตรงไม่ได้</div>
 <h1 class="small">เปลี่ยนสถานะต้องผ่านประตูกฎ</h1>
 <div class="content">
 <p>เลื่อนทีละขั้น (BR-7) · ยื่นฟ้องต้องมีทนายรับแล้ว (BR-18) · ผิดสถานะโยน error</p>
-<pre># case.py:56,87 — _status อ่านผ่าน .status อย่างเดียว
+<pre># case.py:56 — _status อ่านผ่าน .status อย่างเดียว (ไม่มี setter)
 _status: CaseStatus = field(…OPEN…)
-def advance_status(self, new_status): …
-    if self._status == CaseStatus.CANCELLED: …
-        raise InvalidStatusTransition(…)
-    if …FILED and not self.lawyers(): …
-        raise InvalidStatusTransition(…)
+@property
+def status(self): …  # แตะตรงโยน AttributeError
+def advance_status(…): …   # case.py:109
     self._status = new_status</pre>
-<pre># assignment.py:50
-def accept(self) -> None:
-    if self.status != AssignmentStatus.PENDING: …
-        raise AssignmentError(…)
-    self.status = AssignmentStatus.ACCEPTED</pre>
+<pre># assignment.py:47,56 — เหมือนกันทั้งก้อน
+@property
+def status(self): …  # อ่านอย่างเดียว
+def accept(self): …
+    self._status = AssignmentStatus.ACCEPTED</pre>
 <p class="ref">domain/case.py · domain/assignment.py — repository ตั้ง <code>_status</code> ตรงได้ที่เดียวตอนประกอบแถวเดิมจาก DB</p>
 </div>
 <aside class="notes">ย้ำว่า _status มีข้อยกเว้นที่เดียวคือ repository ตอนโหลดข้อมูลเก่า — ไม่ใช่การเปลี่ยนสถานะเลยไม่ผ่านกฎ</aside>
 </section>
 
-<!-- 11 -->
-<section class="slide" id="s11">
-<div class="kicker">11 · REPOSITORY PATTERN — SQL อยู่ที่นี่ที่เดียว</div>
+<!-- 12 -->
+<section class="slide" id="s12">
+<div class="kicker">12 · REPOSITORY PATTERN — SQL อยู่ที่นี่ที่เดียว</div>
 <h1 class="small">domain ไม่เคยเห็น SQL · repository ไม่รู้จักกฎ</h1>
 <div class="content">
 <pre>cases = CaseRepository(conn)        # ถือ connection ไว้หนึ่งตัว
@@ -346,9 +383,9 @@ def __init__(self, conn, clients=None, users=None):
 <aside class="notes">ถ้าถามว่าทำไมไม่ใช้ ORM: ตอบว่าโปรเจกต์เล็ก SQL ตรงๆ อ่านง่ายกว่า และ repository class คือจุดเดียวที่ต้องเปลี่ยนถ้าย้ายฐาน</aside>
 </section>
 
-<!-- 12 -->
-<section class="slide" id="s12">
-<div class="kicker">12 · EXCEPTION HIERARCHY — error มีชนิด ไม่ใช่ string</div>
+<!-- 13 -->
+<section class="slide" id="s13">
+<div class="kicker">13 · EXCEPTION HIERARCHY — error มีชนิด ไม่ใช่ string</div>
 <h1 class="small">แม่เดียว ลูกสี่ · api แปลเป็นภาษาคน</h1>
 <div class="content">
 <div class="grid2">
@@ -365,24 +402,24 @@ except ScheduleConflictError as e:
     → HTTP 409 "รับได้เฉพาะ…"</pre>
 </div>
 </div>
-<p class="ref">domain/errors.py:8 — เทสบังคับ assert ชนิด subclass เจาะจง ไม่ใช่แม่เฉยๆ</p>
+<p class="ref">domain/errors.py:9 — เทสบังคับ assert ชนิด subclass เจาะจง ไม่ใช่แม่เฉยๆ</p>
 </div>
-<aside class="notes">ข้อยกเว้น: docstring ใน errors.py พูดถึง handler กลางที่ไม่มีจริง — ของจริงคือแต่ละ route จับ subclass เองแล้วแปลเป็นข้อความไทย อย่าอ้าง handler กลางตอนถาม</aside>
+<aside class="notes">ไม่มี handler กลาง: แต่ละ route จับ subclass ของมันเองแล้วแปลเป็นข้อความไทย (แก้ docstring ใน errors.py ให้พูดตรงนี้แล้ว) — อย่าอ้าง handler กลางตอนถาม</aside>
 </section>
 
-<!-- 13 -->
-<section class="slide" id="s13">
-<div class="kicker">13 · FLOW ของคดี — ทุกขั้นมีเมธอดคุม</div>
+<!-- 14 -->
+<section class="slide" id="s14">
+<div class="kicker">14 · FLOW ของคดี — ทุกขั้นมีเมธอดคุม</div>
 <h1 class="small">จากเปิดคดีถึงปิดคดี ไม่ข้ามกฎ</h1>
 <div class="content">
 <svg viewBox="0 0 1136 376" width="1136" height="376" role="img" aria-label="case flow">
 <defs><marker id="fl" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="none" stroke="#5E35B1" stroke-width="2"/></marker></defs>
 <rect x="8" y="20" width="200" height="78" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
 <text x="108" y="53" text-anchor="middle" font-size="22" font-weight="600">เปิดคดี</text>
-<text x="108" y="79" text-anchor="middle" font-size="16" fill="#6B6280">open_case()</text>
+<text x="108" y="79" text-anchor="middle" font-size="16" fill="#6B6280">Case() → repo.add()</text>
 <rect x="238" y="20" width="200" height="78" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
 <text x="338" y="53" text-anchor="middle" font-size="22" font-weight="600">มอบหมายทนาย</text>
-<text x="338" y="79" text-anchor="middle" font-size="16" fill="#6B6280">assign_lawyer()</text>
+<text x="338" y="79" text-anchor="middle" font-size="16" fill="#6B6280">case.assign_lawyer()</text>
 <rect x="468" y="20" width="200" height="78" rx="12" fill="#FFFFFF" stroke="#E8E3F2" stroke-width="2"/>
 <text x="568" y="53" text-anchor="middle" font-size="22" font-weight="600">รับ / ปฏิเสธ</text>
 <text x="568" y="79" text-anchor="middle" font-size="16" fill="#6B6280">accept() · decline()</text>
@@ -411,22 +448,23 @@ except ScheduleConflictError as e:
 <line x1="680" y1="224" x2="694" y2="224" stroke="#E1523D" stroke-width="2" marker-end="url(#fl)"/>
 <text x="1028" y="230" text-anchor="middle" font-size="18" fill="#6B6280">กล่องแดง = ทางแยกถอนตัว</text>
 </svg>
-<p class="ref">domain/firm.py:26,49 · assignment.py:50,89 · schedule.py:37 · case.py:87,142 · repository/appointment_repo.py:92,113</p>
+<p class="ref">manager.py:161 · case.py:64 · assignment.py:56,95 · schedule.py:37 · case.py:109,164 · appointment_repo.py:58,113</p>
 </div>
-<aside class="notes">เดินตามลูกศร: เส้นทึบคือทางหลัก เส้นประแดงคือทางแยกถอนตัว — ทุกกล่องมีเมธอด domain คุม ไม่มีขั้นไหนแก้ DB ตรง</aside>
+<aside class="notes">เดินตามลูกศร: เส้นทึบคือทางหลัก เส้นประแดงคือทางแยกถอนตัว — กล่องหลักทุกกล่องมีเมธอด domain คุมกฎ (เปิดคดีเริ่มที่ route POST /manager/cases/new สร้าง Case() แล้ว CaseRepository.add) · ยกเว้นย้าย/ยกเลิกนัดที่เป็นงานของ AppointmentRepository.reassign()/cancel() โดยตรง ไม่ใช่กฎ domain</aside>
 </section>
 
-<!-- 14 -->
-<section class="slide" id="s14">
-<div class="kicker">14 · TESTING — 92 เทส · เคยล้างฐานจริงมาแล้ว</div>
+<!-- 15 -->
+<section class="slide" id="s15">
+<div class="kicker">15 · TESTING — 90 เทส · เคยล้างฐานจริงมาแล้ว</div>
 <h1 class="small">domain ไม่ต้องใช้ DB · เทส DB วิ่งบนฐานแยก</h1>
 <div class="content">
 <table>
 <tr><th>ไฟล์</th><th>จำนวน</th><th>ไฟล์</th><th>จำนวน</th></tr>
-<tr><td>appointment</td><td>10</td><td>assignment</td><td>21</td></tr>
-<tr><td>case / firm</td><td>14 / 5</td><td>person / schedule</td><td>8 / 12</td></tr>
-<tr><td>auth</td><td>6</td><td>repository (ฐานแยก)</td><td>12</td></tr>
-<tr><td>db_safety (guard)</td><td>4</td><td><strong>รวม</strong></td><td><strong>92</strong></td></tr>
+<tr><td>appointment</td><td>10</td><td>assignment</td><td>19</td></tr>
+<tr><td>case</td><td>19</td><td>person</td><td>8</td></tr>
+<tr><td>schedule</td><td>12</td><td>auth</td><td>6</td></tr>
+<tr><td>repository (ฐานแยก)</td><td>12</td><td>db_safety (guard)</td><td>4</td></tr>
+<tr><td colspan="3"><strong>รวม</strong></td><td><strong>90</strong></td></tr>
 </table>
 <ul style="margin-top:12px">
 <li>บทเรียนจริง: fixture เคย TRUNCATE ฐาน <code>lawfirm-db</code> ของแอป → ตอนนี้เทสใช้ <code>lawfirm_test</code> สร้าง+ลง schema ให้เอง มี guard <code>pytest.fail</code> ก่อน TRUNCATE ถ้าชื่อชน</li>
@@ -436,9 +474,9 @@ except ScheduleConflictError as e:
 <aside class="notes">เล่า lesson learned อย่างภาคภูมิ: เจอเอง แก้เอง มีเทส guard 4 เคสที่ไม่ต้องใช้ DB คอยกันไม่ให้เกิดซ้ำ</aside>
 </section>
 
-<!-- 15 -->
-<section class="slide" id="s15">
-<div class="kicker">15 · DEMO SCRIPT — 3 ฉาก รหัสผ่านเดียวกันหมด</div>
+<!-- 16 -->
+<section class="slide" id="s16">
+<div class="kicker">16 · DEMO SCRIPT — 3 ฉาก รหัสผ่านเดียวกันหมด</div>
 <h1 class="small"><code>http://localhost:8000</code> · รหัส <code>password123</code></h1>
 <div class="content">
 <div class="grid3">
@@ -451,16 +489,17 @@ except ScheduleConflictError as e:
 <aside class="notes">ซ้อม 3 ฉากตามเวลาที่มี: ถ้าเวลาน้อยเล่นแค่ฉากทนาย (รับคดี+เพิ่มนัด) ฉากเดียวก็เห็น loop หลักครบ</aside>
 </section>
 
-<!-- 16 -->
-<section class="slide" id="s16">
-<div class="kicker">16 · สรุป + งานต่อยอด</div>
+<!-- 17 -->
+<section class="slide" id="s17">
+<div class="kicker">17 · สรุป + งานต่อยอด</div>
 <h1 class="small">OOP ที่โชว์ได้ กับขั้นต่อไปที่ทำได้จริง</h1>
 <div class="content">
 <ul>
-<li><strong>Inheritance</strong> — Person/SystemUser/Client แยกตาม is-a จริง (ลูกความไม่ใช่ user)</li>
-<li><strong>Polymorphism</strong> — <code>home_url()</code> / <code>reminder_lead_days()</code> ไม่มี if ชนิดในผู้เรียก</li>
-<li><strong>Encapsulation</strong> — สถานะคดีแตะตรงไม่ได้ ผ่าน <code>advance_status()</code> อย่างเดียว</li>
-<li><strong>Separation</strong> — api → repository → domain ทิศทางเดียว ตรวจด้วย grep ได้</li>
+<li><strong>Encapsulation</strong> — <code>Case._status</code> / <code>CaseAssignment._status</code> อ่านอย่างเดียว เปลี่ยนผ่านเมธอด</li>
+<li><strong>Abstraction</strong> — Person / SystemUser / Appointment ประกาศสัญญา ลูกต้องเติม (สไลด์ 08)</li>
+<li><strong>Inheritance</strong> — Lawyer/Manager/Admin สืบ SystemUser · นัด 3 ชนิดสืบ Appointment (is-a จริง)</li>
+<li><strong>Polymorphism</strong> — <code>home_url()</code> / <code>reminder_lead_days()</code> เรียกบรรทัดเดียว ไม่ถามชนิด</li>
+<li><strong>Separation</strong> (สถาปัตยกรรม ไม่ใช่ pillar) — api → repository → domain ทิศทางเดียว ตรวจด้วย grep ได้</li>
 </ul>
 <p style="margin-top:14px"><strong>ต่อยอด:</strong> แจ้งเตือนทางอีเมล/ไลน์ · ปฏิทินซิงก์ · สิทธิ์ละเอียดต่อคดี (ตอนนี้ manager เห็นหมด)</p>
 </div>
