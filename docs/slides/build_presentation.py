@@ -20,8 +20,8 @@ from pptx.util import Pt
 
 HERE = Path(__file__).parent
 ASSETS = HERE / "assets"  # screenshots of the running app (localhost:8000)
-OUT_MAIN = HERE / "LawFirm_Presentation.pptx"  # 12 main slides (ORDER[:12])
-OUT_BACKUP = HERE / "LawFirm_Presentation_Backup.pptx"  # Q&A + B1..B6 (ORDER[12:])
+OUT_MAIN = HERE / "LawFirm_Presentation.pptx"  # 13 main slides (ORDER[:13])
+OUT_BACKUP = HERE / "LawFirm_Presentation_Backup.pptx"  # Q&A + B1..B7 (ORDER[13:])
 OUT = OUT_MAIN
 STAMP_MAIN = HERE / ".LawFirm_Presentation.pptx.sha256"  # hash of the last generated file
 STAMP_BACKUP = HERE / ".LawFirm_Presentation_Backup.pptx.sha256"
@@ -109,9 +109,10 @@ def text(s, x, y, w, h, lines, size=18, color=WHITE, bold=False, align=PP_ALIGN.
 
 
 # presentation order: 12 main slides, Q&A, then backup slides (B7 = full case diagram)
-ORDER = [1, 2, 3, 6, 7, 8, 9, 10, 11, 13, 14, 18, 19, 4, 5, 12, 15, 16, 17, 20]
-LABEL = {old: str(new) for new, old in enumerate(ORDER[:12], 1)}
-LABEL.update({old: f"B{i}" for i, old in enumerate(ORDER[13:], 1)})
+ORDER = [1, 2, 3, 6, 7, 8, 9, 10, 11, 13, 14, 18, 21, 19, 4, 5, 12, 15, 16, 17, 20]
+LABEL = {old: str(new) for new, old in enumerate(ORDER[:13], 1)}
+LABEL.update({old: f"B{i}" for i, old in enumerate(ORDER[14:], 1)})
+LABEL[21] = ""  # end slide matches AML: no page number
 
 
 def title(s, t, sub=None, num=None):
@@ -654,7 +655,7 @@ caption(s, 40, 478, 880, "อ้างอิง: pytest --collect-only · tests/
 
 # 17 ─ Demo script ─────────────────────────────────────────────────────────
 s = new_slide(
-    "ต่อไปเป็น demo มีสามฉาก ทุกบัญชีใช้รหัสผ่าน password123 "
+    "ถ้าอาจารย์ขอดู demo มีสามฉาก ทุกบัญชีใช้รหัสผ่าน password123 "
     "ฉากแรก lawyer1 เปิด popup คดีรอตอบรับ กดรับคดี แล้วเพิ่มนัดศาลพรุ่งนี้ จากนั้นดูแผงรายการใกล้ครบกำหนด "
     "ฉากสอง manager1 ดูคิวคดีที่ยังไม่มีทนายตอบรับ กดมอบหมาย แล้วเปิดคำขอถอนตัว กดอนุมัติพร้อมย้ายนัด "
     "ฉากสาม admin เพิ่มผู้ใช้ใหม่เป็นทนาย ปิดใช้งาน แล้วเปิดคืน "
@@ -678,14 +679,14 @@ caption(s, 40, 478, 880, "อ้างอิง: README.md §บัญชีต�
 
 # 18 ─ Summary ─────────────────────────────────────────────────────────────
 s = new_slide(
-    "สรุป สี่หลักของ OOP ที่โชว์ในระบบนี้ "
+    "สรุป สี่หลักของ OOP กับการจัดการ error ที่โชว์ในระบบนี้ "
     "Encapsulation สถานะคดีและการมอบหมายอ่านได้อย่างเดียว เปลี่ยนผ่านเมธอดที่ตรวจกฎ "
     "Abstraction Person SystemUser และ Appointment ประกาศสัญญาให้ลูกเติม "
     "Inheritance ผู้ใช้สามบทบาทสืบจาก SystemUser และนัดสามชนิดสืบจาก Appointment ซึ่งเป็น is-a จริง "
     "Polymorphism home_url บรรทัดเดียวพาผู้ใช้ไปหน้าแรกตามบทบาท และ Exception ทำผิดกฎแล้วได้ error ชนิดเฉพาะที่หน้าเว็บแปลเป็นข้อความไทย "
     "งานต่อยอดคือแจ้งเตือนทางอีเมลหรือไลน์ ซิงก์ปฏิทิน และสิทธิ์ละเอียดต่อคดี "
     "กฎทั้งหมดนี้มีเทสคุม 90 เทส ผ่านทั้งหมด "
-    "กฎธุรกิจทั้งหมดอยู่ในเมธอดของคลาสใน domain ขอบคุณครับ เปิดรับคำถามครับ"
+    "กฎธุรกิจทั้งหมดอยู่ในเมธอดของคลาสใน domain ครับ"
 )
 title(s, "สรุป 4 หลัก OOP และงานต่อยอด", num=18)
 table(s, 40, 120, 880, [190, 690], [
@@ -764,6 +765,14 @@ text(s, 340, 395, 580, 50, ["Case 1 : * มอบหมาย / นัด / โ�
 caption(s, 40, 478, 880, "อ้างอิง: domain/case.py · assignment.py · appointment.py · schedule.py")
 
 
+# 21 ─ End ─────────────────────────────────────────────────────────────────────
+s = new_slide("ขอบคุณครับ เปิดรับคำถามครับ")
+text(s, 860, 28, 60, 30, LABEL[21], size=14, color=MUTED, align=PP_ALIGN.RIGHT)
+text(s, 40, 150, 880, 80, "จบการนำเสนอ", size=54, bold=True, align=PP_ALIGN.CENTER)
+text(s, 40, 250, 880, 50, "ขอบคุณครับ", size=30, color=MUTED, align=PP_ALIGN.CENTER)
+text(s, 40, 320, 880, 40, "นายเมทนี พูลสมบัติ · รหัสนักศึกษา 6821500060", size=20, align=PP_ALIGN.CENTER)
+
+
 def sha256(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -793,7 +802,7 @@ def save_subset(src, dst, keep):
     sub.save(dst)
 
 
-MAIN_N = 12
+MAIN_N = 13
 
 check_guard(OUT_MAIN, STAMP_MAIN)
 check_guard(OUT_BACKUP, STAMP_BACKUP)
@@ -812,5 +821,5 @@ save_subset(tmp, OUT_BACKUP, range(MAIN_N, len(ORDER)))
 tmp.unlink(missing_ok=True)
 STAMP_MAIN.write_text(sha256(OUT_MAIN))
 STAMP_BACKUP.write_text(sha256(OUT_BACKUP))
-print(f"saved {OUT_MAIN} (12 slides)")
+print(f"saved {OUT_MAIN} ({MAIN_N} slides)")
 print(f"saved {OUT_BACKUP} ({len(ORDER) - MAIN_N} slides)")
