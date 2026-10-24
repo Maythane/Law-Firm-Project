@@ -108,8 +108,8 @@ def text(s, x, y, w, h, lines, size=18, color=WHITE, bold=False, align=PP_ALIGN.
     return tb
 
 
-# presentation order: 12 main slides, Q&A, then backup slides opened only when asked
-ORDER = [1, 2, 3, 6, 7, 8, 9, 10, 11, 13, 14, 18, 19, 4, 5, 12, 15, 16, 17]
+# presentation order: 12 main slides, Q&A, then backup slides (B7 = full case diagram)
+ORDER = [1, 2, 3, 6, 7, 8, 9, 10, 11, 13, 14, 18, 19, 4, 5, 12, 15, 16, 17, 20]
 LABEL = {old: str(new) for new, old in enumerate(ORDER[:12], 1)}
 LABEL.update({old: f"B{i}" for i, old in enumerate(ORDER[13:], 1)})
 
@@ -144,10 +144,31 @@ def image(s, name, x, y, w, h, crop=(0, 0, 0, 0)):
 
 
 def code(s, x, y, w, h, lines, size=13):
-    """Monospace block; comment lines (starting with #) are muted."""
+    """Monospace block; # lines muted; ! prefix marks a key line (ACCENT, ! stripped)."""
     rect(s, x, y, w, h, fill=CODE_BG, line=LINE)
-    styled = [(ln, {"color": MUTED}) if ln.lstrip().startswith("#") else ln for ln in lines]
+    styled = []
+    for ln in lines:
+        stripped = ln.lstrip()
+        if stripped.startswith("#"):
+            styled.append((ln, {"color": MUTED}))
+        elif stripped.startswith("!"):
+            i = ln.find("!")
+            styled.append((ln[:i] + ln[i + 1:], {"color": ACCENT, "bold": True}))
+        else:
+            styled.append(ln)
     text(s, x + 10, y + 8, w - 20, h - 16, styled, size=size, spacing=2, mono=True)
+
+
+def result_bar(s, y, t, h=40, size=16):
+    """Small 'ผลที่ได้' box near the bottom."""
+    rect(s, 40, y, 880, h, fill=HILITE)
+    text(s, 50, y + 4, 860, h - 8, t, size=size, bold=True, anchor=MSO_ANCHOR.MIDDLE,
+         align=PP_ALIGN.CENTER)
+
+
+def defn(s, t):
+    """One plain-Thai definition line under the title bar."""
+    text(s, 40, 108, 880, 30, t, size=18, color=ACCENT, bold=True)
 
 
 def panel(s, x, y, w, h, head, lines, size=17, spacing=10):
@@ -338,28 +359,24 @@ text(s, 40, 125, 240, 80, [("* = abstract method", {"color": MUTED}), ("ลู�
      size=13)
 caption(s, 40, 478, 880, "อ้างอิง: domain/person.py · docs/uml.md §1")
 
-# 7 ─ Class diagram: case & schedule ───────────────────────────────────────
+# 7 ─ Class diagram: case & schedule (simplified; full version is backup B7) ──
 s = new_slide(
-    "ฝั่งคดีและตาราง ตรงกลางคือ Case เก็บสถานะและรายการมอบหมายไว้เป็น private คดีหนึ่งมี CaseAssignment ได้หลายรายการ แต่ละรายการผูกกับทนายหนึ่งคน "
-    "ซ้ายล่างคือ Appointment เป็นคลาส abstract มีลูกสามชนิด นัดศาล นัดพบลูกความ และกำหนดยื่นเอกสาร "
-    "นัดศาลเตือนล่วงหน้า 3 วัน นัดพบลูกความ 1 วัน กำหนดยื่น 15 วัน ตัวเลขต่างกันแต่เรียกเมธอดเดียวกัน "
-    "ขวามือคือ Schedule ไม่ได้สร้างนัดเอง แค่ยืมรายการนัดจาก repository มาตรวจนัดชน เป็นความสัมพันธ์แบบ aggregation "
-    "และทุกคลาสใน domain เขียนเป็น dataclass ส่วนสถานะคดีกับสถานะการมอบหมายเป็น enum ครับ"
+    "ฝั่งคดีและตาราง ตรงกลางคือ Case เก็บสถานะและรายการมอบหมายไว้เป็น private คดีหนึ่งมี CaseAssignment ได้หลายรายการ "
+    "ซ้ายล่าง Appointment เป็นคลาส abstract มีลูกสามชนิด ขวามือ Schedule ไม่ได้สร้างนัดเอง "
+    "แค่ยืมรายการนัดจาก repository มาตรวจนัดชน ฉบับเต็มของแผนภาพนี้อยู่ในสไลด์สำรอง B7 ครับ"
 )
 title(s, "Case เป็นศูนย์กลาง ถือการมอบหมาย นัด และโน้ต", "CLASS DIAGRAM ฝั่งคดีและตาราง (2/2) · หัวสามเหลี่ยม = สืบทอด · เส้นธรรมดา = ความสัมพันธ์", num=7)
-box(s, 40, 118, 270, 84, ["CaseAssignment (−status)", "accept() · decline()", "request_withdraw() · approve/reject()"],
-    size=12)
-box(s, 340, 118, 280, 84, ["Case (−status, −assignments)", "assign_lawyer() · advance_status()",
-                           "lawyers() · lead_lawyer() · can_close()"], fill=HILITE, line=ACCENT, size=12)
-box(s, 650, 118, 270, 84, ["Schedule", "add() · find_conflicts()", "day/week/month_view() · mark_done()"], size=12)
+box(s, 40, 118, 270, 84, ["CaseAssignment (−status)", "accept() · decline()"], size=12)
+box(s, 340, 118, 280, 84, ["Case (−status, −assignments)", "assign_lawyer() · advance_status()"],
+    fill=HILITE, line=ACCENT, size=12)
+box(s, 650, 118, 270, 84, ["Schedule", "add() · find_conflicts()"], size=12)
 line(s, 310, 160, 340, 160)
 text(s, 306, 160, 20, 20, "*", size=14, color=ACCENT)
 text(s, 326, 160, 20, 20, "1", size=13, color=ACCENT)
 text(s, 40, 204, 270, 22, "หลายรายการ ต่อ 1 Lawyer (สไลด์ 4)", size=12, color=ACCENT, align=PP_ALIGN.CENTER)
 line(s, 785, 202, 785, 250, dash=True)
 text(s, 790, 210, 130, 22, "◇ ยืมลิสต์นัด", size=12, color=ACCENT)
-box(s, 40, 240, 270, 100, ["Appointment «abstract»", "reminder_lead_days()* · kind_label()*",
-                           "can_reschedule()* · overlaps()", "reschedule() · cancel() · is_due_soon()"], size=12)
+box(s, 40, 240, 270, 100, ["Appointment «abstract»", "reminder_lead_days()* · kind_label()*"], size=12)
 box(s, 40, 372, 270, 80, ["CourtHearing · ClientMeeting", "FilingDeadline",
                           ("นัดศาล 3 วัน · พบลูกความ 1 วัน · ยื่น 15 วัน", {"color": MUTED})],
     fill=HILITE, line=ACCENT, size=12)
@@ -367,11 +384,9 @@ line(s, 175, 372, 175, 340, head="triangle")
 line(s, 480, 202, 480, 240)
 text(s, 484, 204, 30, 20, "1", size=13, color=ACCENT)
 text(s, 484, 222, 30, 20, "*", size=14, color=ACCENT)
-box(s, 340, 240, 280, 70, ["CaseNote · CaseEvent", "คดี 1 : * (ผูกด้วย case_id)",
-                           ("validate_text() · can_modify()", {"color": MUTED})], size=12)
+box(s, 340, 240, 280, 70, ["CaseNote · CaseEvent", "คดี 1 : * (ผูกด้วย case_id)"], size=12)
 box(s, 340, 325, 280, 55, ["Client", ("ลูกความ 1 : คดี * (case.client)", {"color": MUTED})], size=12)
-box(s, 650, 250, 270, 100, ["«enum» · @dataclass", "CaseStatus 7 ค่า", "AssignmentStatus 4 ค่า",
-                            ("domain ทุกคลาสเป็น @dataclass", {"color": MUTED})], size=12)
+box(s, 650, 250, 270, 100, ["«enum» · @dataclass", "CaseStatus 7 ค่า", "AssignmentStatus 4 ค่า"], size=12)
 text(s, 340, 395, 580, 50, ["Case 1 : * มอบหมาย / นัด / โน้ต",
                             "Schedule ◇ นัด * (ยืมลิสต์นัดจาก repo มาตรวจ)"], size=13, color=ACCENT)
 caption(s, 40, 478, 880, "อ้างอิง: domain/case.py · assignment.py · appointment.py · schedule.py")
@@ -385,22 +400,23 @@ s = new_slide(
     "ส่วนเมธอดที่ใช้ร่วมกันจริง เช่น contact_info กับ overlaps เขียนไว้ที่แม่ครั้งเดียว ไม่ต้องเขียนซ้ำในลูกครับ"
 )
 title(s, "คลาสแม่เป็น ABC: สร้างตรงไม่ได้ ลูกต้องเขียนเมธอดที่กำหนด", "ABSTRACTION · คลาสแม่กำหนดเมธอดที่ลูกต้องมี", num=8)
-code(s, 40, 120, 430, 210, [
+defn(s, "คลาสแม่บอกว่าลูกต้องมีเมธอดอะไร แต่ไม่บอกว่าทำยังไง")
+code(s, 40, 142, 430, 185, [
     "# domain/person.py:15,30",
     "class Person(ABC):",
     "    @abstractmethod",
-    "    def display_name(self): ...",
+    "!    def display_name(self): ...",
     "",
     "class SystemUser(Person):",
     "    @abstractmethod can_view_case()",
     "    @abstractmethod dashboard_cards()",
     "    @abstractmethod home_url()",
 ], size=14)
-code(s, 490, 120, 430, 210, [
+code(s, 490, 142, 430, 185, [
     "# domain/appointment.py:29",
     "class Appointment(ABC):",
     "    @abstractmethod",
-    "    def reminder_lead_days(self): ...",
+    "!    def reminder_lead_days(self): ...",
     "    @abstractmethod",
     "    def can_reschedule(self): ...",
     "    @abstractmethod",
@@ -410,22 +426,24 @@ code(s, 490, 345, 430, 62, [
     "Appointment(...)  →  TypeError:",
     "Can't instantiate abstract class ...",
 ], size=14)
-text(s, 40, 345, 430, 110, [
-    "• สร้างได้เฉพาะคลาสลูก",
-    "• contact_info() / overlaps() เขียนที่แม่ครั้งเดียว ลูกทุกตัวใช้ร่วมกัน",
+text(s, 40, 335, 430, 70, [
+    "• contact_info()/overlaps() เขียนที่แม่ครั้งเดียว ลูกทุกตัวใช้ร่วมกัน",
 ], size=16, spacing=8)
+result_bar(s, 412, "ผลที่ได้: สร้าง Appointment() ตรงๆ ไม่ได้ ต้องสร้างคลาสลูก", h=40, size=16)
 caption(s, 40, 478, 880, "อ้างอิง: domain/person.py · domain/appointment.py")
 
 # 9 ─ Inheritance ──────────────────────────────────────────────────────────
 s = new_slide(
     "Inheritance คลาสลูกได้ทุกอย่างจากแม่ แล้วเติมของตัวเอง "
     "Lawyer, Manager และ Admin ได้ username และ password จาก SystemUser แล้วแต่ละตัวเขียน display_name ของตัวเอง "
-    "Lawyer เพิ่มเลขใบอนุญาตว่าความ ส่วน Client สืบจาก Person ตรงๆ "
+    "Lawyer ได้ทั้ง name phone จาก Person และ username password จาก SystemUser โดยไม่ต้องเขียนซ้ำ "
+    "Lawyer เพิ่มแค่เลขใบอนุญาตว่าความ ส่วน Client สืบจาก Person ตรงๆ "
     "จุดที่อาจารย์มักถามคือ ทำไม Client ไม่สืบจาก SystemUser คำตอบคือลูกความไม่มี username และ password "
     "จึงไม่ผ่านความสัมพันธ์แบบ is-a กับผู้ใช้ระบบครับ"
 )
 title(s, "ลูกแต่ละคลาสเติม attribute และ display_name() ของตัวเอง", "INHERITANCE · ลูกได้ของจากแม่แล้วเติมของตัวเอง", num=9)
-table(s, 40, 125, 880, [250, 630], [
+defn(s, "ลูกได้ทุกอย่างจากแม่ แล้วเติมของตัวเอง")
+t_inherit = table(s, 40, 148, 880, [250, 630], [
     ["คลาส", "ได้จากแม่ / เติมเอง"],
     ["Person(ABC)", "@abstractmethod display_name()"],
     ["SystemUser(Person)", "username · password_hash · is_active"],
@@ -433,89 +451,74 @@ table(s, 40, 125, 880, [250, 630], [
     ["Manager(SystemUser)", "display_name() → \"ผู้จัดการ…\""],
     ["Admin(SystemUser)", "display_name() → \"ผู้ดูแลระบบ…\""],
     ["Client(Person)", "+ company (ลูกความไม่ได้ล็อกอิน จึงสืบจาก Person ตรง)"],
-], size=16, row_h=40)
-rect(s, 40, 420, 880, 44, fill=HILITE)
-text(s, 50, 424, 860, 36, "ลูกความไม่มี username/password จึงไม่ใช่ SystemUser ตามหลัก is-a", size=17,
-     bold=True, anchor=MSO_ANCHOR.MIDDLE)
+], size=16, row_h=32)
+for _p in t_inherit.cell(3, 1).text_frame.paragraphs:
+    for _r in _p.runs:
+        _r.font.color.rgb = ACCENT
+        _r.font.bold = True
+result_bar(s, 412, "ผลที่ได้: Lawyer มี name/phone โดยไม่ต้องเขียนซ้ำ · Client ไม่ใช่ SystemUser", h=52, size=16)
 caption(s, 40, 478, 880, "อ้างอิง: domain/person.py:15,30,50,75,90,105")
 
-# 10 ─ Polymorphism ────────────────────────────────────────────────────────
+# 10 ─ Polymorphism (home_url only) ───────────────────────────────────────────
 s = new_slide(
-    "Polymorphism คือเรียกเมธอดเดียว แต่ได้พฤติกรรมตามชนิดของ object มีสองตัวอย่าง "
-    "ซ้าย home_url ทนายไปหน้าตารางวันนี้ ผู้จัดการไปหน้า dashboard ของผู้จัดการ แอดมินไปหน้าแอดมิน "
-    "route /dashboard เรียกแค่ current_user.home_url() บรรทัดเดียว ไม่ต้องถามว่าเป็น role ไหน หน้าแรกสามแบบในสไลด์ 3 มาจากบรรทัดนี้ "
-    "ขวา reminder_lead_days นัดศาลคืน 3 นัดพบลูกความคืน 1 กำหนดยื่นคืน 15 โค้ดที่ใช้งานเรียกบรรทัดเดียวเหมือนกันทุกชนิด "
-    "ถ้าถูกถามว่ายังมี isinstance เหลือไหม มี 8 จุดใน api กับ factory ใน repository แต่เป็นการตรวจชนิดที่ขอบระบบ "
-    "เช่น require_role ตรวจสิทธิ์ ส่วนพฤติกรรมตามบทบาทและชนิดนัดใช้ polymorphism ทั้งหมดครับ"
+    "Polymorphism คือเรียกเมธอดชื่อเดียว แต่ละคลาสตอบไม่เหมือนกัน ตัวอย่างคือ home_url "
+    "ทนายไปหน้าตารางวันนี้ ผู้จัดการไปหน้า dashboard ของผู้จัดการ แอดมินไปหน้าแอดมิน "
+    "route เรียกแค่ current_user.home_url() บรรทัดเดียว ไม่ต้องถามว่าเป็น role ไหน หน้าแรกสามแบบในสไลด์ 3 มาจากบรรทัดนี้ครับ "
+    "ส่วน reminder_lead_days ของนัดสามชนิดก็เรียกบรรทัดเดียวเหมือนกันครับ"
 )
-title(s, "เมธอดเดียว ผลต่างตามคลาส: home_url() · reminder_lead_days()", "POLYMORPHISM · เรียกเมธอดเดียว ได้พฤติกรรมตามชนิด", num=10)
-code(s, 40, 120, 430, 230, [
+title(s, "เรียก home_url() ชื่อเดียว ได้หน้าแรกตามบทบาท", "POLYMORPHISM · เรียกเมธอดเดียว ได้พฤติกรรมตามชนิด", num=10)
+defn(s, "เรียกเมธอดชื่อเดียว แต่ละคลาสตอบไม่เหมือนกัน")
+code(s, 40, 142, 540, 240, [
     "# domain/person.py:63,85,100",
     "class Lawyer(SystemUser):",
     "    def home_url(self) -> str:",
-    "        return \"/schedule/today\"",
+    "!        return \"/schedule/today\"",
     "class Manager(SystemUser):",
     "    def home_url(self) -> str:",
-    "        return \"/manager/dashboard\"",
+    "!        return \"/manager/dashboard\"",
     "class Admin(SystemUser):",
     "    def home_url(self) -> str:",
-    "        return \"/admin/dashboard\"",
-], size=13)
-code(s, 40, 362, 430, 78, [
+    "!        return \"/admin/dashboard\"",
+], size=14)
+code(s, 600, 142, 320, 110, [
     "# api/routes/dashboard.py",
     "return RedirectResponse(",
     "    current_user.home_url())",
-], size=13)
-code(s, 490, 120, 430, 230, [
-    "# domain/appointment.py:86,102,114",
-    "class CourtHearing(Appointment):",
-    "    def reminder_lead_days(self):",
-    "        return 3",
-    "class ClientMeeting(Appointment):",
-    "    def reminder_lead_days(self):",
-    "        return 1",
-    "class FilingDeadline(Appointment):",
-    "    def reminder_lead_days(self):",
-    "        return 15",
-], size=13)
-code(s, 490, 362, 430, 78, [
-    "days = appt.reminder_lead_days()",
-    "# ชนิดไหนก็เรียกบรรทัดเดียว",
-], size=13)
-caption(s, 40, 478, 880, "อ้างอิง: domain/person.py · domain/appointment.py · api/routes/dashboard.py (ตัดบางบรรทัด)")
+], size=16)
+result_bar(s, 396, "ผลที่ได้: home_url() บรรทัดเดียว ได้หน้าแรก 3 แบบ (ดูภาพหน้า 3)", h=44, size=16)
+caption(s, 40, 478, 880, "อ้างอิง: domain/person.py · api/routes/dashboard.py (ตัดบางบรรทัด)")
 
 # 11 ─ Encapsulation ───────────────────────────────────────────────────────
 s = new_slide(
     "Encapsulation สถานะของคดีกับสถานะการมอบหมายแก้ตรงจากข้างนอกไม่ได้ "
     "เก็บไว้ใน _status และเปิดให้อ่านผ่าน property status ที่ไม่มี setter ถ้าสั่ง case.status = ... จะได้ AttributeError "
-    "การเปลี่ยนสถานะต้องผ่านเมธอดที่ตรวจกฎก่อน เช่น advance_status ต้องเลื่อนทีละขั้นตาม BR-7 "
-    "และจะยื่นฟ้องได้ต้องมีทนายตอบรับแล้วตาม BR-18 ถ้าผิดกฎจะโยน error "
+    "การเปลี่ยนสถานะต้องผ่านเมธอดที่ตรวจกฎก่อน เช่น advance_status ต้องเลื่อนทีละขั้น "
+    "และจะยื่นฟ้องได้ต้องมีทนายตอบรับแล้ว ถ้าผิดกฎจะโยน error "
     "ภาพขวาคือหน้าคดีจริง คดีนี้อยู่ขั้นสืบพยาน ปุ่มจึงเสนอแค่ขั้นถัดไปคือตัดสิน เพราะ advance_status ไม่ยอมให้ข้ามขั้น "
     "ข้อยกเว้นมีที่เดียวคือ repository ตั้ง _status ตรงตอนโหลดแถวเดิมจากฐาน ค่านั้นผ่านกฎมาแล้วตอนบันทึก จึงไม่ต้องตรวจซ้ำครับ"
 )
 title(s, "เปลี่ยนสถานะได้ผ่านเมธอดที่ตรวจกฎเท่านั้น", "ENCAPSULATION · แก้สถานะตรงจากข้างนอกไม่ได้", num=11)
-text(s, 40, 115, 880, 28, "เลื่อนทีละขั้น (BR-7) · ยื่นฟ้องต้องมีทนายรับแล้ว (BR-18) · ผิดสถานะโยน error", size=17)
-code(s, 40, 150, 440, 165, [
+defn(s, "ข้อมูลสำคัญแก้ได้ผ่านเมธอดที่ตรวจกฎเท่านั้น")
+code(s, 40, 142, 440, 165, [
     "# domain/case.py",
     "_status: CaseStatus = field(...OPEN...)",
     "@property",
     "def status(self): ...",
-    "# ไม่มี setter: แก้ตรงได้ AttributeError",
+    "    # ไม่มี setter: แก้ตรงได้ AttributeError",
     "def advance_status(self, ...):",
-    "    # ตรวจ BR-7 / BR-18 ก่อน",
-    "    self._status = new_status",
+    "    # ตรวจกฎก่อนเปลี่ยนสถานะ",
+    "!    self._status = new_status",
 ], size=12)
-code(s, 40, 325, 440, 100, [
+code(s, 40, 317, 440, 100, [
     "# domain/assignment.py",
     "def accept(self):",
     "    # ตรวจว่ายังรอตอบรับอยู่",
-    "    self._status = AssignmentStatus.ACCEPTED",
+    "!    self._status = AssignmentStatus.ACCEPTED",
 ], size=12)
-text(s, 40, 432, 440, 40, "ข้อยกเว้น: repository ตั้ง _status ตอนโหลดแถวเดิมจาก DB (ผ่านกฎมาแล้วตอนบันทึก)",
+text(s, 500, 370, 420, 42, "ข้อยกเว้น: repository ตั้ง _status ตอนโหลดแถวเดิมจาก DB (ผ่านกฎมาแล้วตอนบันทึก)",
      size=13, color=MUTED)
-image(s, "case_detail.png", 500, 150, 420, 280, crop=(0, 0, 0, 0.4))
-text(s, 500, 436, 420, 36, "หน้าคดีจริง: ขั้นสืบพยาน ปุ่มเสนอแค่ขั้นถัดไป \"ตัดสิน\"", size=13, color=ACCENT,
-     bold=True, align=PP_ALIGN.CENTER)
+image(s, "case_detail.png", 500, 142, 420, 220, crop=(0, 0, 0, 0.4))
+result_bar(s, 420, "ผลที่ได้: ข้ามขั้นไม่ได้ ปุ่มเสนอแค่ขั้นถัดไป \"ตัดสิน\"", h=40, size=16)
 caption(s, 40, 478, 880, "อ้างอิง: domain/case.py · domain/assignment.py")
 
 # 12 ─ Repository pattern ──────────────────────────────────────────────────
@@ -550,30 +553,27 @@ caption(s, 40, 478, 880, "อ้างอิง: repository/case_repo.py · repo
 s = new_slide(
     "Exception hierarchy error ทุกตัวในระบบเป็นคลาส มีแม่คือ DomainError และลูกสี่ตัวตามกลุ่มกฎ "
     "นัดชนตาม BR-1 เปลี่ยนสถานะผิดตาม BR-7 8 9 18 เลื่อนนัดไม่ได้ตาม BR-3 กับ 5 และการมอบหมายผิดกฎ BR-15 ถึง 19 "
-    "ชั้น api จับ error ชนิดที่เจาะจงแล้วแปลเป็นภาษาคน เช่น นัดชนก็แสดงฟอร์มเดิมพร้อมข้อความ หรือการมอบหมายผิดก็ตอบ HTTP 409 "
-    "ระบบนี้ไม่มี handler กลาง แต่ละ route จับ subclass ของตัวเอง และเทสต้อง assert ชนิด subclass ที่เจาะจงครับ"
+    "ชั้น api ไม่มี handler กลาง แต่ละ route จับ subclass ของตัวเองแล้วแปลเป็นภาษาคน "
+    "เช่น นัดชนก็แสดงฟอร์มเดิมพร้อมข้อความ หรือมอบหมายผิดก็ตอบ HTTP 409 เทสต้อง assert ชนิด subclass ที่เจาะจงครับ"
 )
 title(s, "DomainError กับลูก 4 ชนิด · api แปลเป็นข้อความไทย", "EXCEPTION HIERARCHY · แยก error ตามกลุ่มกฎ", num=13)
 code(s, 40, 125, 430, 190, [
-    "DomainError                (แม่)",
-    "├ ScheduleConflictError    BR-1",
-    "├ InvalidStatusTransition  BR-7/8/9/18",
-    "├ RescheduleNotAllowed     BR-3/5",
-    "└ AssignmentError          BR-15…19",
-], size=15)
-code(s, 490, 125, 430, 90, [
+    "DomainError (แม่)",
+    "├ ScheduleConflictError  นัดเวลาชนกัน",
+    "├ InvalidStatusTransition  ข้ามขั้นสถานะ",
+    "├ RescheduleNotAllowed  เลื่อนนัดไม่ได้",
+    "└ AssignmentError  มอบหมาย/รับคดีผิดกฎ",
+], size=14)
+code(s, 490, 125, 430, 96, [
     "try: schedule.add(appt)",
     "except ScheduleConflictError as e:",
     "    → ฟอร์มเดิม + \"นัดชน…\"",
-], size=14)
-code(s, 490, 225, 430, 90, [
+], size=15)
+code(s, 490, 225, 430, 96, [
     "except AssignmentError as e:",
     "    → HTTP 409 \"รับได้เฉพาะ…\"",
-], size=14)
-text(s, 40, 335, 880, 100, [
-    "• ไม่มี handler กลาง: แต่ละ route จับ subclass ของตัวเองแล้วแปลเป็นข้อความไทย",
-    "• เทสต้อง assert ชนิด subclass ที่เจาะจง",
-], size=16, spacing=8)
+], size=15)
+result_bar(s, 418, "ทำผิดกฎ → โยน error ชนิดเฉพาะ → หน้าเว็บแสดงข้อความไทย", h=44, size=16)
 caption(s, 40, 478, 880, "อ้างอิง: domain/errors.py")
 
 # 14 ─ Case flow ───────────────────────────────────────────────────────────
@@ -582,29 +582,27 @@ s = new_slide(
     "ผู้จัดการเปิดคดี มอบหมายทนายด้วย assign_lawyer ทนายตอบรับหรือปฏิเสธด้วย accept หรือ decline "
     "จากนั้นเพิ่มนัดและเลื่อนสถานะคดี จนปิดคดีได้เมื่อ can_close เป็นจริง คือไม่มีนัดหรือกำหนดยื่นค้าง "
     "ทางแยกสีแดงคือการถอนตัว ทนายขอถอนตัว ผู้จัดการอนุมัติหรือไม่อนุมัติ ถ้าอนุมัติก็ย้ายหรือยกเลิกนัด "
-    "ขั้นย้ายและยกเลิกนัดเป็นงานของ AppointmentRepository โดยตรง ไม่มีกฎใน domain คุมครับ"
+    "ขั้นย้ายและยกเลิกนัดเป็นงานของ AppointmentRepository โดยตรง ไม่มีกฎใน domain คุม "
+    "ถ้าถามชื่อเมธอด ขั้นหลักคือ Case กับ repo.add assign_lawyer accept decline add advance_status can_close "
+    "ส่วนทางแยกคือ request_withdraw approve reject_withdraw reassign cancel ครับ"
 )
 title(s, "เส้นทางคดีจากเปิดถึงปิด และทางแยกเมื่อทนายขอถอนตัว", "FLOW ของคดี", num=14)
-steps = [("เปิดคดี", "Case() → repo.add()"), ("มอบหมายทนาย", "case.assign_lawyer()"),
-         ("รับ / ปฏิเสธ", "accept() · decline()"), ("นัด + เลื่อนสถานะ", "add() · advance_status()"),
-         ("ปิดคดี", "can_close() → CLOSED")]
-for i, (a, b) in enumerate(steps):
+steps = ["เปิดคดี", "มอบหมายทนาย", "รับ / ปฏิเสธ", "นัด + เลื่อนสถานะ", "ปิดคดี"]
+for i, a in enumerate(steps):
     x = 40 + i * 180
-    box(s, x, 130, 160, 74, [a, (b, {"color": MUTED, "size": 11})], size=13)
+    box(s, x, 130, 160, 74, [a], size=14)
     if i:
         line(s, x - 20, 167, x, 167, head="triangle", width=2)
-red = [("ขอถอนตัว", "request_withdraw()", 220), ("อนุมัติ / ไม่อนุมัติ", "approve/reject_withdraw()", 400),
-       ("ย้าย / ยกเลิกนัด", "reassign() · cancel()", 580)]
-for a, b, x in red:
-    box(s, x, 265, 160, 80, [a, (b, {"color": RED, "size": 11})], fill=RED_BG, line=RED, size=13)
+red = [("ขอถอนตัว", 220), ("อนุมัติ / ไม่อนุมัติ", 400), ("ย้าย / ยกเลิกนัด", 580)]
+for a, x in red:
+    box(s, x, 265, 160, 80, [a], fill=RED_BG, line=RED, size=14)
 line(s, 480, 204, 480, 265, color=RED, head="triangle", dash=True, width=2)
 line(s, 380, 305, 400, 305, color=RED, head="triangle", width=2)
 line(s, 560, 305, 580, 305, color=RED, head="triangle", width=2)
-text(s, 580, 350, 160, 22, "ของ AppointmentRepository", size=11, color=MUTED, align=PP_ALIGN.CENTER)
 text(s, 760, 280, 160, 50, ["กล่องแดง =", "ทางแยกถอนตัว"], size=14, color=MUTED)
 text(s, 40, 395, 880, 60, [
     "• เส้นทึบ = ทางหลัก · เส้นประแดง = ทางแยกถอนตัว",
-    "• ปิดคดีได้เมื่อไม่มีนัดในอนาคตหรือกำหนดยื่นค้าง (BR-9)",
+    "• ปิดคดีได้เมื่อไม่มีนัดในอนาคตหรือกำหนดยื่นค้าง",
 ], size=15, spacing=4)
 caption(s, 40, 478, 880, "อ้างอิง: api/routes/manager.py · domain/case.py · assignment.py · schedule.py · repository/appointment_repo.py")
 
@@ -727,6 +725,44 @@ for i, (q, a) in enumerate([
     rect(s, x, y, 430, 160, fill=PANEL, line=LINE)
     text(s, x + 16, y + 12, 398, 28, q, size=17, bold=True, color=ACCENT)
     text(s, x + 16, y + 48, 398, 104, a, size=16)
+
+# 20 ─ Backup B7: full case class diagram ────────────────────────────────────
+s = new_slide(
+    "ฝั่งคดีและตาราง ตรงกลางคือ Case เก็บสถานะและรายการมอบหมายไว้เป็น private คดีหนึ่งมี CaseAssignment ได้หลายรายการ แต่ละรายการผูกกับทนายหนึ่งคน "
+    "ซ้ายล่างคือ Appointment เป็นคลาส abstract มีลูกสามชนิด นัดศาล นัดพบลูกความ และกำหนดยื่นเอกสาร "
+    "นัดศาลเตือนล่วงหน้า 3 วัน นัดพบลูกความ 1 วัน กำหนดยื่น 15 วัน ตัวเลขต่างกันแต่เรียกเมธอดเดียวกัน "
+    "ขวามือคือ Schedule ไม่ได้สร้างนัดเอง แค่ยืมรายการนัดจาก repository มาตรวจนัดชน เป็นความสัมพันธ์แบบ aggregation "
+    "และทุกคลาสใน domain เขียนเป็น dataclass ส่วนสถานะคดีกับสถานะการมอบหมายเป็น enum ครับ"
+)
+title(s, "Case เป็นศูนย์กลาง ถือการมอบหมาย นัด และโน้ต (ฉบับเต็ม)", "CLASS DIAGRAM ฉบับเต็ม · สำรอง", num=20)
+box(s, 40, 118, 270, 84, ["CaseAssignment (−status)", "accept() · decline()", "request_withdraw() · approve/reject()"],
+    size=12)
+box(s, 340, 118, 280, 84, ["Case (−status, −assignments)", "assign_lawyer() · advance_status()",
+                           "lawyers() · lead_lawyer() · can_close()"], fill=HILITE, line=ACCENT, size=12)
+box(s, 650, 118, 270, 84, ["Schedule", "add() · find_conflicts()", "day/week/month_view() · mark_done()"], size=12)
+line(s, 310, 160, 340, 160)
+text(s, 306, 160, 20, 20, "*", size=14, color=ACCENT)
+text(s, 326, 160, 20, 20, "1", size=13, color=ACCENT)
+text(s, 40, 204, 270, 22, "หลายรายการ ต่อ 1 Lawyer (สไลด์ 4)", size=12, color=ACCENT, align=PP_ALIGN.CENTER)
+line(s, 785, 202, 785, 250, dash=True)
+text(s, 790, 210, 130, 22, "◇ ยืมลิสต์นัด", size=12, color=ACCENT)
+box(s, 40, 240, 270, 100, ["Appointment «abstract»", "reminder_lead_days()* · kind_label()*",
+                           "can_reschedule()* · overlaps()", "reschedule() · cancel() · is_due_soon()"], size=12)
+box(s, 40, 372, 270, 80, ["CourtHearing · ClientMeeting", "FilingDeadline",
+                          ("นัดศาล 3 วัน · พบลูกความ 1 วัน · ยื่น 15 วัน", {"color": MUTED})],
+    fill=HILITE, line=ACCENT, size=12)
+line(s, 175, 372, 175, 340, head="triangle")
+line(s, 480, 202, 480, 240)
+text(s, 484, 204, 30, 20, "1", size=13, color=ACCENT)
+text(s, 484, 222, 30, 20, "*", size=14, color=ACCENT)
+box(s, 340, 240, 280, 70, ["CaseNote · CaseEvent", "คดี 1 : * (ผูกด้วย case_id)",
+                           ("validate_text() · can_modify()", {"color": MUTED})], size=12)
+box(s, 340, 325, 280, 55, ["Client", ("ลูกความ 1 : คดี * (case.client)", {"color": MUTED})], size=12)
+box(s, 650, 250, 270, 100, ["«enum» · @dataclass", "CaseStatus 7 ค่า", "AssignmentStatus 4 ค่า",
+                            ("domain ทุกคลาสเป็น @dataclass", {"color": MUTED})], size=12)
+text(s, 340, 395, 580, 50, ["Case 1 : * มอบหมาย / นัด / โน้ต",
+                            "Schedule ◇ นัด * (ยืมลิสต์นัดจาก repo มาตรวจ)"], size=13, color=ACCENT)
+caption(s, 40, 478, 880, "อ้างอิง: domain/case.py · assignment.py · appointment.py · schedule.py")
 
 
 def sha256(path):
